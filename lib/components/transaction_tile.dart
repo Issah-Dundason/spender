@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 class TransactionTile extends StatelessWidget {
   const TransactionTile(
       {super.key,
+      this.icon = Icons.bed_sharp,
       this.store = "Puma Store",
       this.type = "Bank Amount",
       this.amount = 954,
       this.date = "Fri, 05 April 2022"});
-
+  final IconData icon;
   final String store;
   final String type;
   final int amount;
@@ -21,9 +22,13 @@ class TransactionTile extends StatelessWidget {
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        color: Colors.grey[100],
+        color: Colors.grey[200],
         child: ListTile(
-          leading: Icon(Icons.image),
+          leading: CircleAvatar(
+              child: Icon(
+            icon,
+            color: Colors.black,
+          )),
           title: Text(
             store,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
