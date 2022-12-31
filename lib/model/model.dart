@@ -1,14 +1,16 @@
-class Expenditure {
-  int? id;
-  String product;
-  String? description;
-  PaymentType paymentType;
-  ProductType type;
-  Priority priority;
-  int price;
-  late String date;
+import 'package:equatable/equatable.dart';
 
-  Expenditure.withDate(
+class Expenditure extends Equatable {
+  final int? id;
+  final String product;
+  final String? description;
+  final PaymentType paymentType;
+  final ProductType type;
+  final Priority priority;
+  final int price;
+  final String date;
+
+  const Expenditure.withDate(
     this.product,
     this.description,
     this.paymentType,
@@ -16,16 +18,18 @@ class Expenditure {
     this.date,
     this.price,
     this.priority,
-  );
+  ): id = null;
 
-  Expenditure.latest(this.product, this.description, this.paymentType,
-      this.type, this.price, this.priority) {
+  static String _generateDate() {
     var d = DateTime.now();
     d = DateTime.utc(d.year, d.month, d.day);
-    date = d.toIso8601String();
+    return d.toIso8601String();
   }
 
-  Expenditure(this.id, this.product, this.description, this.paymentType,
+  Expenditure.latest(this.product, this.description, this.paymentType,
+      this.type, this.price, this.priority): id = null, date = _generateDate();
+
+  const Expenditure(this.id, this.product, this.description, this.paymentType,
       this.type, this.price, this.date, this.priority);
 
   static Expenditure fromMap(Map<String, dynamic> json) {
@@ -52,13 +56,16 @@ class Expenditure {
       "priority": priority.index
     };
   }
+
+  @override
+  List<Object?> get props => [id, date, price, priority];
 }
 
-class ProductType {
+class ProductType extends Equatable{
   final int id;
   final String name;
 
-  ProductType(this.id, this.name);
+  const ProductType(this.id, this.name);
 
   toMap() => {"id": id, "name": name};
 
@@ -67,26 +74,32 @@ class ProductType {
     String name = map["pname"];
     return ProductType(id, name);
   }
+
+  @override
+  List<Object?> get props => [id, name];
 }
 
 enum PaymentType { cash, cheque, momo, vodafoneCash }
 
 enum Priority { need, want }
 
-class Budget {
-  int? id;
-  int amount;
+class Budget extends Equatable{
+  final int? id;
+  final int amount;
 
   ///date is yyyy-MM formatted
-  String date;
+  final String date;
 
-  Budget(this.date, this.amount);
+  const Budget(this.date, this.amount): id = null;
 
-  Budget.date(this.date) : amount = 0;
+  const Budget.date(this.date) : amount = 0, id = null;
 
   Map<String, dynamic> toMap() => {"amount": amount, "date": date};
 
   Budget.fromMap(Map<String, dynamic> map)
       : date = map["date"],
         amount = map["amount"], id = map["id"];
+
+  @override
+  List<Object?> get props => [id, amount, date];
 }
