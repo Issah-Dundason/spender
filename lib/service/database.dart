@@ -24,10 +24,25 @@ class DatabaseClient {
     await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
   }
 
-  Future<Budget> getBudget() {
-    throw UnimplementedError();
+  Future saveBudget(Budget budget) async {
+    await _db.insert("budget", budget.toMap());
   }
 
+  Future updateBudget(Budget budget) async {
+    await _db.update("budget", budget.toMap(),
+        where: "id = ?", whereArgs: [budget.id]);
+  }
+
+  Future deleteBudget(Budget budget) async {
+    await _db.delete("budget", where: "id = ?", whereArgs: [budget.id]);
+  }
+
+  Future<Budget?> getBudget(String date) async {
+    var result =
+        await _db.query("budget", where: "date = ?", whereArgs: [date]);
+    if (result.isEmpty) return null;
+    return Budget.fromMap(result[0]);
+  }
 
   ///date is a string of date formatted as yyyy-MM
   Future<List<Expenditure>> getByYearAndMonth(String date) async {
@@ -102,6 +117,13 @@ class DatabaseClient {
         date TEXT NOT NULL,
         FOREIGN KEY (product_type_id) REFERENCES product_type(id)
       );
+    ''');
+    await db.execute('''
+        CREATE TABLE IF NOT EXISTS budget (
+          id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+          date TEXT NOT NULL UNIQUE,
+          amount INTEGER NOT NULL
+       );
     ''');
     await db.insert("product_type", {"name": "Food"});
     await db.insert("product_type", {"name": "Shoe"});

@@ -74,6 +74,7 @@ enum PaymentType { cash, cheque, momo, vodafoneCash }
 enum Priority { need, want }
 
 class Budget {
+  int? id;
   int amount;
 
   ///date is yyyy-MM formatted
@@ -83,7 +84,9 @@ class Budget {
 
   Budget.date(this.date) : amount = 0;
 
+  Map<String, dynamic> toMap() => {"amount": amount, "date": date};
+
   Budget.fromMap(Map<String, dynamic> map)
       : date = map["date"],
-        amount = map["amount"];
+        amount = map["amount"], id = map["id"];
 }
