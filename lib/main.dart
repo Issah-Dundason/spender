@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/app_bloc.dart';
+import 'package:spender/bloc/app_state.dart';
+import 'package:spender/pages/app_view.dart';
 import 'package:spender/pages/expenses.dart';
 import 'package:spender/pages/home_page.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
+import 'package:spender/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,9 +29,7 @@ class Spender extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: AppTheme.lightTheme,
       home: RepositoryProvider<AppRepository>.value(
           value: appRepo,
           child: BlocProvider<HomeCubit>(
@@ -37,34 +38,4 @@ class Spender extends StatelessWidget {
   }
 }
 
-class AppView extends StatelessWidget {
 
-  const AppView({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final selectedTab = context.select((HomeCubit bloc) => bloc.state);
-    return Scaffold(
-      body: IndexedStack(
-        index: selectedTab.index,
-        children: const [HomePage(), ExpensesPage()],
-      ),
-      bottomNavigationBar: const MainBottomAppBar(),
-    );
-  }
-}
-
-class MainBottomAppBar extends StatelessWidget {
-  const MainBottomAppBar({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomAppBar(child: Row(
-      children: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.home_mini_rounded)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.home_mini_rounded)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.home_mini_rounded))
-      ],
-    ),);
-  }
-}

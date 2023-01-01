@@ -10,7 +10,7 @@ import 'app_state.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   final AppRepository appRepo;
 
-  AppBloc({required this.appRepo}) : super(const AppState(null)) {
+  AppBloc({required this.appRepo}) : super(const AppState()) {
     on<AppStart>(_onStartHandler);
   }
 
