@@ -1,6 +1,9 @@
-
 import 'package:flutter/material.dart';
-import 'package:spender/model/model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/app_bloc.dart';
+import 'package:spender/pages/expenses.dart';
+import 'package:spender/pages/home_page.dart';
+import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
 
 void main() async {
@@ -8,71 +11,60 @@ void main() async {
 
   DatabaseClient dbClient = await DatabaseClient().init();
 
+  AppRepository appRepo = AppRepository(dbClient);
 
-
-  //result.forEach((element) {print(element.toString());});
-
-  runApp(const MyApp());
+  runApp(Spender(
+    appRepo: appRepo,
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Spender extends StatelessWidget {
+  final AppRepository appRepo;
+
+  const Spender({super.key, required this.appRepo});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: RepositoryProvider<AppRepository>.value(
+          value: appRepo,
+          child: BlocProvider<HomeCubit>(
+              create: (_) => HomeCubit(), child: const AppView())),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class AppView extends StatelessWidget {
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  const AppView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final selectedTab = context.select((HomeCubit bloc) => bloc.state);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      body: IndexedStack(
+        index: selectedTab.index,
+        children: const [HomePage(), ExpensesPage()],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      bottomNavigationBar: const MainBottomAppBar(),
     );
+  }
+}
+
+class MainBottomAppBar extends StatelessWidget {
+  const MainBottomAppBar({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(child: Row(
+      children: [
+        IconButton(onPressed: () {}, icon: const Icon(Icons.home_mini_rounded)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.home_mini_rounded)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.home_mini_rounded))
+      ],
+    ),);
   }
 }

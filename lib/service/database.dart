@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -42,6 +43,28 @@ class DatabaseClient {
         await _db.query("budget", where: "date = ?", whereArgs: [date]);
     if (result.isEmpty) return null;
     return Budget.fromMap(result[0]);
+  }
+
+  Future<Financials?> getFinancials(String date) async {
+    var result = await _db.rawQuery('''
+    SELECT b.amount as budget, 
+           (b.amount - t.amount_spent) as balance, 
+           t.amount_spent as amount_spent 
+    FROM budget b 
+    JOIN 
+    (SELECT SUM(price) as amount_spent, 
+            strftime('%Y-%m', date) as date 
+    FROM expenditure 
+    GROUP BY 2
+    HAVING strftime('%Y-%m', date) == ?) t 
+    on t.date = strftime('%Y-%m', b.date);
+    ''', [date]);
+    if(result.isEmpty) {
+      return null;
+    }
+
+    return Financials.fromMap(result[0]);
+
   }
 
   ///date is a string of date formatted as yyyy-MM
@@ -130,14 +153,33 @@ class DatabaseClient {
   }
 }
 
-class MonthSpending {
-  int month;
-  int amount;
+class Financials extends Equatable{
+  final int budget;
+  final int balance;
+  final int amountSpent;
 
-  MonthSpending(this.month, this.amount);
+  const Financials(this.budget, this.balance, this.amountSpent);
+
+  Financials.fromMap(Map<String, dynamic> map)
+      : budget = map["budget"],
+        balance = map["balance"],
+        amountSpent = map["amount_spent"];
+
+  @override
+  List<Object?> get props => [budget, balance, amountSpent];
+}
+
+class MonthSpending extends Equatable{
+  final int month;
+  final int amount;
+
+  const MonthSpending(this.month, this.amount);
 
   @override
   String toString() {
     return '{month: $month, amount: $amount}';
   }
+
+  @override
+  List<Object?> get props => [amount, month];
 }

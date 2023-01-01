@@ -87,7 +87,8 @@ class Budget extends Equatable{
   final int? id;
   final int amount;
 
-  ///date is yyyy-MM formatted
+  ///date is yyyy-MM-dd formatted
+  ///dd must should be set to the first day of the month
   final String date;
 
   const Budget(this.date, this.amount): id = null;
