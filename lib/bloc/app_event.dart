@@ -47,8 +47,8 @@ class BillPriorityChangeEvent extends BillEvent {
 }
 
 
-class BillBillTypeChangeEvent extends BillEvent {
+class BillTypeChangeEvent extends BillEvent {
   final ProductType productType;
 
-  BillBillTypeChangeEvent(this.productType);
+ BillTypeChangeEvent(this.productType);
 }

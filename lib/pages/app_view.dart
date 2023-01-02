@@ -43,7 +43,9 @@ class MainBottomAppBar extends StatelessWidget {
                     topLeft: Radius.circular(10),
                     topRight: Radius.circular(10))),
             context: context,
-            builder: (_) => _BillView(appRepo: appRepo,));
+            builder: (_) => _BillView(
+                  appRepo: appRepo,
+                ));
 
         context.read<HomeCubit>().currentState =
             HomeState(current: state.previous);
@@ -101,26 +103,24 @@ class _BillView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<BillBloc>(
       create: (context) =>
-      BillBloc(appRepo: appRepo)
-        ..add(BillInitializationEvent()),
-      child: _BillSheet(),
+          BillBloc(appRepo: appRepo)..add(BillInitializationEvent()),
+      child: const _BillSheet(),
     );
   }
 }
 
-
 class _BillSheet extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
+  static final _formKey = GlobalKey<FormState>();
 
-  _BillSheet({Key? key}) : super(key: key);
+  const _BillSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BillBloc, BillingState>(
-      builder: (context, state) {
-        return Padding(
-          padding: MediaQuery.of(context).viewInsets,
-          child: Form(
+    return Padding(
+      padding: MediaQuery.of(context).viewInsets,
+      child: BlocBuilder<BillBloc, BillingState>(
+        builder: (context, state) {
+          return Form(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -144,6 +144,7 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                               flex: 4,
                               child: TextFormField(
+                                initialValue: state.bill,
                                 onChanged: (s) => context
                                     .read<BillBloc>()
                                     .add(BillTitleChangeEvent(s)),
@@ -156,6 +157,10 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                             flex: 2,
                             child: ProductTypeDropDown<ProductType>(
+                              onChange: (t) => context
+                                  .read<BillBloc>()
+                                  .add(BillTypeChangeEvent(t!)),
+                              value: state.billType,
                               title: "Bill Type",
                               items: state.billTypes,
                               menuItemBuilder: (t) => Text(t.name),
@@ -192,9 +197,16 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                             flex: 2,
                             child: ProductTypeDropDown<PaymentType>(
+                              onChange: (t) => context
+                                  .read<BillBloc>()
+                                  .add(BillPaymentTypeEvent(t!)),
                               title: "Payment Type",
                               value: state.paymentType,
-                              menuItemBuilder: (t) => Text(t.name, softWrap: false, overflow: TextOverflow.ellipsis,),
+                              menuItemBuilder: (t) => Text(
+                                t.name,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               items: PaymentType.values,
                             ),
                           )
@@ -209,6 +221,7 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                               flex: 4,
                               child: TextFormField(
+                                initialValue: state.description,
                                 onChanged: (s) => context
                                     .read<BillBloc>()
                                     .add(BillDescriptionEvent(s)),
@@ -223,9 +236,12 @@ class _BillSheet extends StatelessWidget {
                           const SizedBox(
                             width: 10,
                           ),
-                           Expanded(
+                          Expanded(
                             flex: 2,
                             child: ProductTypeDropDown<Priority>(
+                              onChange: (t) => context
+                                  .read<BillBloc>()
+                                  .add(BillPriorityChangeEvent(t!)),
                               value: state.priority,
                               title: "Priority",
                               menuItemBuilder: (t) => Text(t.name),
@@ -256,9 +272,9 @@ class _BillSheet extends StatelessWidget {
                 )
               ],
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
@@ -287,11 +303,13 @@ class ProductTypeDropDown<T> extends StatelessWidget {
         Text(title),
         DropdownButton<T>(
           isExpanded: true,
-          onChanged: (s) {if(onChange != null) onChange!(s); },
+          onChanged: (s) {
+            if (onChange != null) onChange!(s);
+          },
           alignment: AlignmentDirectional.bottomEnd,
           hint: const Padding(
-            padding:  EdgeInsets.only(bottom: 15),
-            child:  Text("----Select"),
+            padding: EdgeInsets.only(bottom: 15),
+            child: Text("----Select"),
           ),
           value: value,
           itemHeight: null,
