@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spender/bloc/app_bloc.dart';
-import 'package:spender/bloc/app_state.dart';
 import 'package:spender/pages/app_view.dart';
-import 'package:spender/pages/expenses.dart';
-import 'package:spender/pages/home_page.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
 import 'package:spender/theme/theme.dart';
+
+import 'bloc/app_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,8 +30,8 @@ class Spender extends StatelessWidget {
       theme: AppTheme.lightTheme,
       home: RepositoryProvider<AppRepository>.value(
           value: appRepo,
-          child: BlocProvider<HomeCubit>(
-              create: (_) => HomeCubit(), child: const AppView())),
+          child: BlocProvider<AppCubit>(
+              create: (_) => AppCubit(), child: const AppView())),
     );
   }
 }

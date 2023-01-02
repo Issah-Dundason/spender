@@ -1,6 +1,7 @@
 import 'package:spender/service/database.dart';
 
-import '../model/model.dart';
+import '../model/budget.dart';
+import '../model/product_type.dart';
 
 
 class AppRepository {

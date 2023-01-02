@@ -2,7 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../model/model.dart';
+import '../model/budget.dart';
+import '../model/expenditure.dart';
+import '../model/product_type.dart';
 
 class DatabaseClient {
   static const int _version = 2;

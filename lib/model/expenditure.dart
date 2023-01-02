@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import 'product_type.dart';
+
 class Expenditure extends Equatable {
   final int? id;
   final String product;
@@ -11,14 +13,14 @@ class Expenditure extends Equatable {
   final String date;
 
   const Expenditure.withDate(
-    this.product,
-    this.description,
-    this.paymentType,
-    this.type,
-    this.date,
-    this.price,
-    this.priority,
-  ): id = null;
+      this.product,
+      this.description,
+      this.paymentType,
+      this.type,
+      this.date,
+      this.price,
+      this.priority,
+      ): id = null;
 
   static String _generateDate() {
     var d = DateTime.now();
@@ -61,46 +63,6 @@ class Expenditure extends Equatable {
   List<Object?> get props => [id, date, price, priority];
 }
 
-class ProductType extends Equatable{
-  final int id;
-  final String name;
-
-  const ProductType(this.id, this.name);
-
-  toMap() => {"id": id, "name": name};
-
-  static fromMap(Map<String, dynamic> map) {
-    int id = map["pid"];
-    String name = map["pname"];
-    return ProductType(id, name);
-  }
-
-  @override
-  List<Object?> get props => [id, name];
-}
-
 enum PaymentType { cash, cheque, momo, vodafoneCash }
 
 enum Priority { need, want }
-
-class Budget extends Equatable{
-  final int? id;
-  final int amount;
-
-  ///date is yyyy-MM-dd formatted
-  ///dd must should be set to the first day of the month
-  final String date;
-
-  const Budget(this.date, this.amount): id = null;
-
-  const Budget.date(this.date) : amount = 0, id = null;
-
-  Map<String, dynamic> toMap() => {"amount": amount, "date": date};
-
-  Budget.fromMap(Map<String, dynamic> map)
-      : date = map["date"],
-        amount = map["amount"], id = map["id"];
-
-  @override
-  List<Object?> get props => [id, amount, date];
-}

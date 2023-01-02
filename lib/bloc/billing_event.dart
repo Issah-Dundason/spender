@@ -1,14 +1,6 @@
-import 'package:equatable/equatable.dart';
-import 'package:spender/model/model.dart';
 
-abstract class AppEvent{
-  const AppEvent();
-}
-
-class AppStart extends AppEvent {
-  const AppStart();
-}
-
+import '../model/expenditure.dart';
+import '../model/product_type.dart';
 
 abstract class BillEvent {
   const BillEvent();
@@ -50,5 +42,5 @@ class BillPriorityChangeEvent extends BillEvent {
 class BillTypeChangeEvent extends BillEvent {
   final ProductType productType;
 
- BillTypeChangeEvent(this.productType);
+  BillTypeChangeEvent(this.productType);
 }
