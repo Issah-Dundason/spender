@@ -12,4 +12,8 @@ class AppRepository {
     return dbClient.getBudget(date);
   }
 
+  Future<List<ProductType>> getBillTypes() {
+    return dbClient.getProductTypes();
+  }
+
 }

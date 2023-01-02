@@ -15,7 +15,6 @@ class AppTheme {
           tertiary: tertiaryColor),
       iconTheme: const IconThemeData(color: tertiaryColor),
       inputDecorationTheme: const InputDecorationTheme(
-          constraints: BoxConstraints(maxHeight: 40),
           filled: true,
           fillColor: Color(0xFFFFF0F5),
           focusedBorder: OutlineInputBorder(
