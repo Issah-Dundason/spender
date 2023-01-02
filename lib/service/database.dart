@@ -115,7 +115,9 @@ class DatabaseClient {
 
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
     var result = await _db.rawQuery('''SELECT strftime('%m',date) as month, 
-          SUM(price) as amount FROM expenditure GROUP BY 1 HAVING strftime('%Y',date) = ?''',
+          SUM(price) as amount FROM expenditure GROUP BY 1 HAVING strftime('%Y',date) = ?
+          ORDER BY strftime('%m',date) ASC
+          ''',
         [year]);
     return result
         .map((q) =>
