@@ -8,7 +8,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final AppRepository appRepo;
 
   HomeBloc({required this.appRepo}) : super(const HomeState()) {
-    on<HomeOpenEvent>(_onStartHandler);
+    on<HomeInitializationEvent>(_onStartHandler);
   }
 
   void _onStartHandler(HomeEvent event, Emitter<HomeState> emit) {}

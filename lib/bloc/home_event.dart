@@ -3,6 +3,6 @@ abstract class HomeEvent{
   const HomeEvent();
 }
 
-class HomeOpenEvent extends HomeEvent {
-  const HomeOpenEvent();
+class HomeInitializationEvent extends HomeEvent {
+  const HomeInitializationEvent();
 }

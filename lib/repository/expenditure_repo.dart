@@ -17,4 +17,8 @@ class AppRepository {
     return dbClient.getProductTypes();
   }
 
+  Future<List<MonthSpending>> getAmountSpentEachMonth(String year) {
+    return dbClient.getAmountSpentEachMonth(year);
+  }
+
 }
