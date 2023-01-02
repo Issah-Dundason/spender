@@ -33,10 +33,11 @@ class MainBottomAppBar extends StatelessWidget {
         if (state.current != HomeTab.bill) return;
 
         showModalBottomSheet(
+          isScrollControlled : true,
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40))),
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10))),
             context: context,
             builder: (_) => const _BillSheet());
 
@@ -92,8 +93,109 @@ class _BillSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Modal'),
+    return Padding(
+      padding: MediaQuery.of(context).viewInsets,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            width: 80,
+            height: 10,
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(12)),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 20, left: 24, right: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 4,
+                        child: TextFormField(
+                          decoration:
+                              const InputDecoration(hintText: "bill name"),
+                        )),
+                    const Expanded(
+                      flex: 2,
+                      child: ProductTypeDropDown(),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 35,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 4,
+                        child: TextFormField(
+                          decoration:
+                              const InputDecoration(hintText: "amount paid"),
+                        )),
+                    const Expanded(
+                      flex: 2,
+                      child: ProductTypeDropDown(),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 35,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 4,
+                        child: TextFormField(
+                          decoration:
+                              const InputDecoration(hintText: "description"),
+                        )),
+                    const Expanded(
+                      flex: 2,
+                      child: ProductTypeDropDown(),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 35,
+                ),
+                Center(
+                    child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(40),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20))),
+                        child: const Text("ADD")))
+              ],
+            ),
+          ),
+          const SizedBox(height: 30,)
+        ],
+      ),
+    );
+  }
+}
+
+class ProductTypeDropDown extends StatelessWidget {
+  const ProductTypeDropDown({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          child: const Text("Hello"),
+        ),Container(
+          child: const Text("Hello"),
+        ),
+      ],
     );
   }
 }

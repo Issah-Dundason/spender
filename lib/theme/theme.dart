@@ -13,5 +13,13 @@ class AppTheme {
           secondary: secondaryColor,
           onSecondary: Colors.white,
           tertiary: tertiaryColor),
-  iconTheme: const IconThemeData(color: tertiaryColor));
+      iconTheme: const IconThemeData(color: tertiaryColor),
+      inputDecorationTheme: const InputDecorationTheme(
+          constraints: BoxConstraints(maxHeight: 40),
+          filled: true,
+          fillColor: Color(0xFFFFF0F5),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: secondaryColor),
+              borderRadius: BorderRadius.zero),
+          border: InputBorder.none));
 }
