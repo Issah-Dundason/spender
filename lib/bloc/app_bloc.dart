@@ -19,8 +19,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 }
 
-class HomeCubit extends Cubit<HomeTabs> {
-  HomeCubit(): super(HomeTabs.home);
+class HomeCubit extends Cubit<HomeState> {
+  HomeCubit(): super(const HomeState());
 
-  set tab(HomeTabs tab) => emit(tab);
+  set currentState(HomeState state) => emit(state);
 }

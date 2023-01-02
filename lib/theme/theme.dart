@@ -12,5 +12,6 @@ class AppTheme {
       colorScheme: ColorScheme.fromSwatch().copyWith(
           secondary: secondaryColor,
           onSecondary: Colors.white,
-          tertiary: tertiaryColor));
+          tertiary: tertiaryColor),
+  iconTheme: const IconThemeData(color: tertiaryColor));
 }

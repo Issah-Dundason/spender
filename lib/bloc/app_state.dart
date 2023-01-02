@@ -11,13 +11,27 @@ class AppState extends Equatable {
 
   AppState copyWith({Financials? financials, List<ProductType>? productTypes}) {
     return AppState(
-      currentFinancials: financials ?? financials,
-      productTypes: productTypes ?? this.productTypes
-    );
+        currentFinancials: financials ?? currentFinancials,
+        productTypes: productTypes ?? this.productTypes);
   }
 
   @override
   List<Object?> get props => [currentFinancials];
 }
 
-enum HomeTabs { home, expenses, profile }
+enum HomeTab { home, expenses, bill }
+
+class HomeState extends Equatable {
+  final HomeTab previous;
+  final HomeTab current;
+
+  const HomeState({this.previous = HomeTab.home, this.current = HomeTab.home});
+
+  copyWith({HomeTab? previous, HomeTab? current}) {
+    return HomeState(
+        previous: previous ?? this.previous, current: current ?? this.current);
+  }
+
+  @override
+  List<Object?> get props => [previous, current];
+}
