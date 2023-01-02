@@ -33,7 +33,7 @@ class MainBottomAppBar extends StatelessWidget {
         if (state.current != HomeTab.bill) return;
 
         showModalBottomSheet(
-          isScrollControlled : true,
+            isScrollControlled: true,
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(10),
@@ -112,6 +112,7 @@ class _BillSheet extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
                         flex: 4,
@@ -119,6 +120,7 @@ class _BillSheet extends StatelessWidget {
                           decoration:
                               const InputDecoration(hintText: "bill name"),
                         )),
+                    const Spacer(),
                     const Expanded(
                       flex: 2,
                       child: ProductTypeDropDown(),
@@ -129,6 +131,7 @@ class _BillSheet extends StatelessWidget {
                   height: 35,
                 ),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
                         flex: 4,
@@ -136,6 +139,7 @@ class _BillSheet extends StatelessWidget {
                           decoration:
                               const InputDecoration(hintText: "amount paid"),
                         )),
+                    const Spacer(),
                     const Expanded(
                       flex: 2,
                       child: ProductTypeDropDown(),
@@ -146,6 +150,7 @@ class _BillSheet extends StatelessWidget {
                   height: 35,
                 ),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
                         flex: 4,
@@ -153,6 +158,7 @@ class _BillSheet extends StatelessWidget {
                           decoration:
                               const InputDecoration(hintText: "description"),
                         )),
+                    const Spacer(),
                     const Expanded(
                       flex: 2,
                       child: ProductTypeDropDown(),
@@ -176,7 +182,9 @@ class _BillSheet extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 30,)
+          const SizedBox(
+            height: 30,
+          )
         ],
       ),
     );
@@ -184,17 +192,25 @@ class _BillSheet extends StatelessWidget {
 }
 
 class ProductTypeDropDown extends StatelessWidget {
-  const ProductTypeDropDown({Key? key}) : super(key: key);
+  final List<String> items;
+
+  const ProductTypeDropDown({Key? key, this.items = const ["aa", "isjer"]})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      //  mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          child: const Text("Hello"),
-        ),Container(
-          child: const Text("Hello"),
-        ),
+       const Text("Bill Type"),
+        DropdownButton<String>(
+          value: items[0],
+           // isExpanded: true,
+            itemHeight: null,
+            items: [
+              ...items.map((e) => DropdownMenuItem<String>(value : e, child: Text(e),))
+            ],
+            onChanged: (s) {})
       ],
     );
   }
