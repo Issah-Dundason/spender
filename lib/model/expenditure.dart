@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
@@ -50,6 +51,12 @@ class Expenditure extends Equatable {
 
   String get formattedDate {
     return DateFormat('EEE,dd MMM yyyy').format(DateTime.parse(date));
+  }
+
+  String get cash {
+    Decimal d = Decimal.fromInt(price);
+    var r = d / Decimal.fromInt(100);
+    return '${r.toDouble()}';
   }
 
   Map<String, dynamic> toJson() {

@@ -8,13 +8,13 @@ class TransactionTile extends StatelessWidget {
       this.icon = Cart.icon,
       this.store = "Puma Store",
       this.type = "Bank Amount",
-      this.amount = 954,
+      this.amount = '954',
       this.date = "Fri, 05 April 2022"});
 
   final IconData icon;
   final String store;
   final String type;
-  final int amount;
+  final String amount;
   final String date;
 
   @override

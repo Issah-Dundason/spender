@@ -38,7 +38,14 @@ class HomeTransactions extends StatelessWidget {
                     const _NoTransaction()
                   else
                     ...state.transactionsToday
-                        .map((e) => TransactionTile())
+                        .map((t) {
+                      return TransactionTile(
+                        store: t.product,
+                        type: t.paymentType.name,
+                        amount: t.cash,
+                        date: t.formattedDate,
+                      );
+                    })
                         .toList()
                 ],
               );
