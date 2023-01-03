@@ -1,3 +1,4 @@
+import 'package:spender/model/expenditure.dart';
 import 'package:spender/service/database.dart';
 
 import '../model/budget.dart';
@@ -23,6 +24,10 @@ class AppRepository {
 
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) {
     return dbClient.getAmountSpentEachMonth(year);
+  }
+
+  Future<List<Expenditure>> getExpenditureAt(String date, int limit) {
+    return dbClient.getExpenditureAtWithLimit(date, limit);
   }
 
 }

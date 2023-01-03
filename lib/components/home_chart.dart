@@ -88,7 +88,7 @@ class ChartWidget extends StatelessWidget {
         var ms = monthSpendings.firstWhere((m) => m.month == value.toInt());
         Decimal d = Decimal.fromInt(ms.amount);
         var r = d / Decimal.fromInt(100);
-        return Text('₵‎${r.toDouble()}', style: TextStyle(
+        return Text('₵${r.toDouble()}', style: TextStyle(
           color: value.toInt() == month
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).colorScheme.tertiary,

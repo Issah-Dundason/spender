@@ -12,13 +12,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeInitializationEvent>(_onStartHandler);
   }
 
-  void _onStartHandler(HomeEvent event, Emitter<HomeState> emit)  async {
+  void _onStartHandler(HomeEvent event, Emitter<HomeState> emit) async {
     DateTime date = DateTime.now();
     var year = "${date.year}";
     var yearAndMonth = DateFormat("yyyy-MM").format(date);
+    var yearMonthDay = DateFormat("yyyy-MM-dd").format(date);
     var expenditures = await appRepo.getAmountSpentEachMonth(year);
     var financials = await appRepo.getFinancials(yearAndMonth);
-    //print('length: ${spendings.length}: month: ${spendings[0].month}');
-    emit(state.copyWith(monthSpending: expenditures));
+    var transactions = await appRepo.getExpenditureAt(yearMonthDay, 4);
+    emit(state.copyWith(
+        monthSpending: expenditures,
+        transactions: transactions,
+        financials: financials));
   }
 }

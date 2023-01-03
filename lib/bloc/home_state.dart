@@ -9,14 +9,19 @@ class HomeState extends Equatable {
   final List<MonthSpending> monthExpenditures;
   final List<Expenditure> transactionsToday;
 
-  const HomeState({this.currentFinancials, this.monthExpenditures = const [], this.transactionsToday = const[]});
+  const HomeState(
+      {this.currentFinancials,
+      this.monthExpenditures = const [],
+      this.transactionsToday = const []});
 
   HomeState copyWith(
-      {Financials? financials, List<MonthSpending>? monthSpending, List<Expenditure>? transactions}) {
+      {Financials? financials,
+      List<MonthSpending>? monthSpending,
+      List<Expenditure>? transactions}) {
     return HomeState(
         currentFinancials: financials ?? currentFinancials,
         monthExpenditures: monthSpending ?? monthExpenditures,
-    transactionsToday: transactions ?? transactionsToday);
+        transactionsToday: transactions ?? transactionsToday);
   }
 
   @override

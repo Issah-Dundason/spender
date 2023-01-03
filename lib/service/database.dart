@@ -113,6 +113,22 @@ class DatabaseClient {
     await _db.insert("expenditure", map);
   }
 
+  Future<List<Expenditure>> getExpenditureAtWithLimit(String date, int limit) async {
+    var result = await _db.rawQuery('''
+      SELECT e.id as eid, 
+            e.product AS eproduct, 
+            e.description as edesc, 
+            e.payment_type as epay, 
+            e.price as eprice, e.date as edate, 
+            e.priority as epri, 
+            p.id as pid, p.name as pname
+      FROM expenditure e 
+      JOIN product_type p 
+      ON e.product_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY edate LIMIT ?;
+    ''', [date, limit]);
+    return result.map((e) => Expenditure.fromMap(e)).toList();
+  }
+
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
     var result = await _db.rawQuery('''SELECT strftime('%m',date) as month, 
           SUM(price) as amount FROM expenditure GROUP BY 1 HAVING strftime('%Y',date) = ?
