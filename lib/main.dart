@@ -17,10 +17,10 @@ void main() async {
   var a = Expenditure.latest(
       "kskier", null, PaymentType.cash, types[0], 1020, Priority.want);
 
-  var d = DateTime.now().add(Duration(days: 31));;
+  var d = DateTime.now().add(Duration(days: 31));
 
   var b = Expenditure.withDate(
-      "kskier", null, PaymentType.cash, types[0], d.toIso8601String(), 1020, Priority.want,);
+      "kskier", null, PaymentType.cash, types[0], d.toIso8601String(), 1340, Priority.want,);
 
   await dbClient.saveExpenditure(a.toJson());
   await dbClient.saveExpenditure(b.toJson());

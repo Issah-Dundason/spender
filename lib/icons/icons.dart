@@ -23,3 +23,11 @@ class AddIcon {
 
   static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
+
+class Whiteboard {
+  Whiteboard._();
+
+  static const String _fontFamily = 'whiteboard';
+
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
+}

@@ -23,6 +23,7 @@ dependencies:
   equatable: ^2.0.5
   decimal: ^2.3.2
   fl_chart: ^0.55.2
+  datepicker_dropdown: ^0.0.7+2
 
 dev_dependencies:
   flutter_test:
@@ -50,4 +51,7 @@ flutter:
     - family: add
       fonts:
         - asset: assets/fonts/add.ttf
+    - family: whiteboard
+      fonts:
+        - asset: assets/fonts/whiteboard.ttf
 

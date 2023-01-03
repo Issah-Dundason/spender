@@ -19,6 +19,7 @@ class AppView extends StatelessWidget {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
     var appRepo = context.read<AppRepository>();
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: IndexedStack(
         index: selectedTab.current.index,
         children: [
