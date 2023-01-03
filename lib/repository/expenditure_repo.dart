@@ -13,6 +13,10 @@ class AppRepository {
     return dbClient.getBudget(date);
   }
 
+  Future<Financials?> getFinancials(String date) {
+    return dbClient.getFinancials(date);
+  }
+
   Future<List<ProductType>> getBillTypes() {
     return dbClient.getProductTypes();
   }

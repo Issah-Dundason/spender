@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/home_bloc.dart';
+import 'package:spender/bloc/home_event.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 
@@ -15,10 +17,19 @@ class AppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
+    var appRepo = context.read<AppRepository>();
     return Scaffold(
       body: IndexedStack(
         index: selectedTab.current.index,
-        children: const [HomePage(), ExpensesPage()],
+        children: [
+          BlocProvider(
+            lazy: false,
+            create: (context) => HomeBloc(appRepo: appRepo)
+              ..add(const HomeInitializationEvent()),
+            child: const HomePage(),
+          ),
+          const ExpensesPage()
+        ],
       ),
       bottomNavigationBar: const _MainBottomAppBar(),
     );

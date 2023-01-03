@@ -9,12 +9,13 @@ class HomeState extends Equatable {
 
   const HomeState({this.currentFinancials, this.monthExpenditures = const []});
 
-  HomeState copyWith({Financials? financials, List<ProductType>? productTypes}) {
+  HomeState copyWith({Financials? financials, List<MonthSpending>? monthSpending}) {
     return HomeState(
         currentFinancials: financials ?? currentFinancials,
+      monthExpenditures: monthSpending ?? monthExpenditures
         );
   }
 
   @override
-  List<Object?> get props => [currentFinancials];
+  List<Object?> get props => [currentFinancials, monthExpenditures];
 }

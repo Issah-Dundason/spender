@@ -9,13 +9,13 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: ListView(
-      children: const [
+      children:  [
          SizedBox(height: 30,),
          Align(
           alignment: Alignment.center,
             child: NoBudgetWidget()),
          SizedBox(height: 50,),
-        ChartWidget()
+        ChartWidget(),
       ],
     ),);
   }
