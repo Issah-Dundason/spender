@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 
 import 'product_type.dart';
 
@@ -45,6 +46,10 @@ class Expenditure extends Equatable {
 
     return Expenditure(id, product, description, paymentType,
         ProductType.fromMap(json), price, date, p);
+  }
+
+  String get formattedDate {
+    return DateFormat('EEE,dd MMM yyyy').format(DateTime.parse(date));
   }
 
   Map<String, dynamic> toJson() {

@@ -31,3 +31,11 @@ class Whiteboard {
 
   static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
+
+class Cart {
+  Cart._();
+
+  static const String _fontFamily = 'cart';
+
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
+}
