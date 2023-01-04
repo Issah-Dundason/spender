@@ -1,9 +1,8 @@
 import 'package:spender/model/expenditure.dart';
 import 'package:spender/service/database.dart';
 
+import '../model/bill_type.dart';
 import '../model/budget.dart';
-import '../model/product_type.dart';
-
 
 class AppRepository {
   late DatabaseClient dbClient;
@@ -18,7 +17,7 @@ class AppRepository {
     return dbClient.getFinancials(date);
   }
 
-  Future<List<ProductType>> getBillTypes() {
+  Future<List<BillType>> getBillTypes() {
     return dbClient.getProductTypes();
   }
 

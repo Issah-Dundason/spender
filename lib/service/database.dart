@@ -2,9 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../model/bill_type.dart';
 import '../model/budget.dart';
 import '../model/expenditure.dart';
-import '../model/product_type.dart';
 
 class DatabaseClient {
   static const int _version = 2;
@@ -73,14 +73,14 @@ class DatabaseClient {
   Future<List<Expenditure>> getByYearAndMonth(String date) async {
     var result = await _db.rawQuery('''
       SELECT e.id as eid, 
-            e.product AS eproduct, 
+            e.bill AS ebill, 
             e.description as edesc, 
             e.payment_type as epay, 
             e.price as eprice, e.date as edate, 
             e.priority as epri, 
             p.id as pid, p.name as pname
       FROM expenditure e 
-      JOIN product_type p 
+      JOIN bill_type p 
       ON e.product_type_id = p.id WHERE strftime('%Y-%m', e.date) = ?;
     ''', [date]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
@@ -89,23 +89,23 @@ class DatabaseClient {
   Future<List<Expenditure>> getExpenditureByDate(String date) async {
     var result = await _db.rawQuery('''
       SELECT e.id as eid, 
-            e.product AS eproduct, 
+            e.bill AS ebill, 
             e.description as edesc, 
             e.payment_type as epay, 
             e.price as eprice, e.date as edate, 
             e.priority as epri, 
             p.id as pid, p.name as pname
       FROM expenditure e 
-      JOIN product_type p 
+      JOIN bill_type p 
       ON e.product_type_id = p.id WHERE date = ?;
     ''', [date]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }
 
-  Future<List<ProductType>> getProductTypes() async {
-    var result = await _db.query("product_type");
+  Future<List<BillType>> getProductTypes() async {
+    var result = await _db.query("bill_type");
     return result
-        .map((e) => ProductType(e["id"] as int, e["name"] as String))
+        .map((e) => BillType(e["id"] as int, e["name"] as String))
         .toList();
   }
 
@@ -116,14 +116,14 @@ class DatabaseClient {
   Future<List<Expenditure>> getExpenditureAtWithLimit(String date, int limit) async {
     var result = await _db.rawQuery('''
       SELECT e.id as eid, 
-            e.product AS eproduct, 
+            e.bill AS ebill, 
             e.description as edesc, 
             e.payment_type as epay, 
             e.price as eprice, e.date as edate, 
             e.priority as epri, 
             p.id as pid, p.name as pname
       FROM expenditure e 
-      JOIN product_type p 
+      JOIN bill_type p 
       ON e.product_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY edate LIMIT ?;
     ''', [date, limit]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
@@ -143,7 +143,7 @@ class DatabaseClient {
 
   Future _create(Database db, int i) async {
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS product_type (
+      CREATE TABLE IF NOT EXISTS bill_type (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
         name TEXT  NOT NULL
       );
@@ -151,14 +151,14 @@ class DatabaseClient {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS expenditure (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        product TEXT NOT NULL,
+        bill TEXT NOT NULL,
         description TEXT,
         payment_type INTEGER NOT NULL,
         priority INTEGER NOT NULL,
         product_type_id INTEGER,
         price INTEGER NOT NULL,
         date TEXT NOT NULL,
-        FOREIGN KEY (product_type_id) REFERENCES product_type(id)
+        FOREIGN KEY (product_type_id) REFERENCES bill_type(id)
       );
     ''');
     await db.execute('''
@@ -168,8 +168,8 @@ class DatabaseClient {
           amount INTEGER NOT NULL
        );
     ''');
-    await db.insert("product_type", {"name": "Food"});
-    await db.insert("product_type", {"name": "Shoe"});
+    await db.insert("bill_type", {"name": "Food"});
+    await db.insert("bill_type", {"name": "Shoe"});
   }
 }
 

@@ -1,16 +1,16 @@
 import 'package:equatable/equatable.dart';
 
+import '../model/bill_type.dart';
 import '../model/expenditure.dart';
-import '../model/product_type.dart';
 
 class BillingState extends Equatable {
-  final ProductType? billType;
+  final BillType? billType;
   final String bill;
   final String? description;
   final PaymentType paymentType;
   final Priority priority;
   final String? amount;
-  final List<ProductType> billTypes;
+  final List<BillType> billTypes;
 
   const BillingState({this.billTypes = const [],
     this.billType,
@@ -20,11 +20,11 @@ class BillingState extends Equatable {
     required this.priority,
     this.amount});
 
-  BillingState copyWith({ProductType? billType,
+  BillingState copyWith({BillType? billType,
     String? bill,
     String? description,
     PaymentType? paymentType,
-    Priority? priority, String? amount, List<ProductType>? billTypes}) {
+    Priority? priority, String? amount, List<BillType>? billTypes}) {
     return BillingState(
         bill: bill ?? this.bill,
         description: description ?? this.description,

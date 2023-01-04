@@ -1,17 +1,17 @@
 import 'package:equatable/equatable.dart';
 
-class ProductType extends Equatable{
+class BillType extends Equatable{
   final int id;
   final String name;
 
-  const ProductType(this.id, this.name);
+  const BillType(this.id, this.name);
 
   toMap() => {"id": id, "name": name};
 
   static fromMap(Map<String, dynamic> map) {
     int id = map["pid"];
     String name = map["pname"];
-    return ProductType(id, name);
+    return BillType(id, name);
   }
 
   @override

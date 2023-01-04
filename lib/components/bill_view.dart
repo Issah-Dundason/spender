@@ -5,8 +5,8 @@ import 'package:spender/bloc/billing_state.dart';
 
 import '../bloc/bill_bloc.dart';
 import '../bloc/billing_event.dart';
+import '../model/bill_type.dart';
 import '../model/expenditure.dart';
-import '../model/product_type.dart';
 import '../repository/expenditure_repo.dart';
 
 class BillView extends StatelessWidget {
@@ -71,7 +71,7 @@ class _BillSheet extends StatelessWidget {
                           ),
                           Expanded(
                             flex: 2,
-                            child: _ProductTypeDropDown<ProductType>(
+                            child: _ProductTypeDropDown<BillType>(
                               onChange: (t) => context
                                   .read<BillBloc>()
                                   .add(BillTypeChangeEvent(t!)),

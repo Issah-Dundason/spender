@@ -40,7 +40,7 @@ class HomeTransactions extends StatelessWidget {
                     ...state.transactionsToday
                         .map((t) {
                       return TransactionTile(
-                        store: t.product,
+                        store: t.bill,
                         type: t.paymentType.name,
                         amount: t.cash,
                         date: t.formattedDate,

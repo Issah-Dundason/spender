@@ -2,20 +2,20 @@ import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
-import 'product_type.dart';
+import 'bill_type.dart';
 
 class Expenditure extends Equatable {
   final int? id;
-  final String product;
+  final String bill;
   final String? description;
   final PaymentType paymentType;
-  final ProductType type;
+  final BillType type;
   final Priority priority;
   final int price;
   final String date;
 
   const Expenditure.withDate(
-      this.product,
+      this.bill,
       this.description,
       this.paymentType,
       this.type,
@@ -30,23 +30,23 @@ class Expenditure extends Equatable {
     return d.toIso8601String();
   }
 
-  Expenditure.latest(this.product, this.description, this.paymentType,
+  Expenditure.latest(this.bill, this.description, this.paymentType,
       this.type, this.price, this.priority): id = null, date = _generateDate();
 
-  const Expenditure(this.id, this.product, this.description, this.paymentType,
+  const Expenditure(this.id, this.bill, this.description, this.paymentType,
       this.type, this.price, this.date, this.priority);
 
   static Expenditure fromMap(Map<String, dynamic> json) {
     int id = json["eid"];
-    String product = json["eproduct"];
+    String bill = json["ebill"];
     String? description = json["edesc"];
     PaymentType paymentType = PaymentType.values[json["epay"]];
     int price = json["eprice"];
     String date = json["edate"];
     Priority p = Priority.values[json["epri"]];
 
-    return Expenditure(id, product, description, paymentType,
-        ProductType.fromMap(json), price, date, p);
+    return Expenditure(id, bill, description, paymentType,
+        BillType.fromMap(json), price, date, p);
   }
 
   String get formattedDate {
@@ -61,7 +61,7 @@ class Expenditure extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
-      "product": product,
+      "bill": bill,
       "description": description,
       "payment_type": paymentType.index,
       "product_type_id": type.id,

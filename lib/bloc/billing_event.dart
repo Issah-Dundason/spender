@@ -1,6 +1,6 @@
 
+import '../model/bill_type.dart';
 import '../model/expenditure.dart';
-import '../model/product_type.dart';
 
 abstract class BillEvent {
   const BillEvent();
@@ -40,7 +40,7 @@ class BillPriorityChangeEvent extends BillEvent {
 
 
 class BillTypeChangeEvent extends BillEvent {
-  final ProductType productType;
+  final BillType productType;
 
   BillTypeChangeEvent(this.productType);
 }
