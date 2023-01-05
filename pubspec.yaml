@@ -24,6 +24,7 @@ dependencies:
   decimal: ^2.3.2
   fl_chart: ^0.55.2
   datepicker_dropdown: ^0.0.7+2
+  flutter_svg: ^1.1.6
 
 dev_dependencies:
   flutter_test:
@@ -35,10 +36,10 @@ flutter:
 
   uses-material-design: true
 
-    # To add assets to your application, add an assets section, like this:
+  # To add assets to your application, add an assets section, like this:
   assets:
-      - assets/images/no_budget.png
-  #   - images/a_dot_ham.jpeg
+    - assets/images/no_budget.png
+    - assets/images/avatar/
 
 
   fonts:

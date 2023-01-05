@@ -19,7 +19,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: ListView(
@@ -92,3 +91,5 @@ class _HomePageState extends State<HomePage> {
     context.read<HomeBloc>().add(HomeAnalysisDateChangeEvent(result));
   }
 }
+
+

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home_bloc.dart';
 import 'package:spender/bloc/home_event.dart';
+import 'package:spender/components/appbar.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 
@@ -19,6 +20,7 @@ class AppView extends StatelessWidget {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
     //var appRepo = context.read<AppRepository>();
     return Scaffold(
+      appBar: TopBar(),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: IndexedStack(
         index: selectedTab.current == AppTab.bill ? selectedTab.previous.index : selectedTab.current.index,
