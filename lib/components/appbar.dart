@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:spender/components/profile_page.dart';
-import 'package:spender/theme/theme.dart';
+import 'package:spender/pages/profile_page.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   const TopBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -15,11 +14,11 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
           IconButton(
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AppProfile()));
+                  MaterialPageRoute(builder: (context) => const AppProfile()));
             },
-            icon: Icon(Icons.person),
+            icon: const Icon(Icons.person),
           ),
-          Text(
+          const Text(
             'Home',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -30,6 +29,5 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => const Size.fromHeight(200);
 }
