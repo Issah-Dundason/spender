@@ -18,7 +18,7 @@ class BillView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<BillBloc>(
       create: (context) =>
-      BillBloc(appRepo: appRepo)..add(BillInitializationEvent()),
+          BillBloc(appRepo: appRepo)..add(BillInitializationEvent()),
       child: const _BillSheet(),
     );
   }
@@ -97,8 +97,8 @@ class _BillSheet extends StatelessWidget {
                                     .read<BillBloc>()
                                     .add(BillAmountChangeEvent(s)),
                                 keyboardType:
-                                const TextInputType.numberWithOptions(
-                                    decimal: true),
+                                    const TextInputType.numberWithOptions(
+                                        decimal: true),
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
                                       RegExp(r'^(\d+)?\.?\d{0,2}'))
@@ -134,20 +134,20 @@ class _BillSheet extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Expanded(
-                              flex: 4,
-                              child: TextFormField(
-                                initialValue: state.description,
-                                onChanged: (s) => context
-                                    .read<BillBloc>()
-                                    .add(BillDescriptionEvent(s)),
-                                textCapitalization:
-                                TextCapitalization.sentences,
-                                minLines: 2,
-                                maxLines: 9,
-                                keyboardType: TextInputType.multiline,
-                                decoration: const InputDecoration(
-                                    hintText: "description"),
-                              )),
+                            flex: 4,
+                            child: TextFormField(
+                              initialValue: state.description,
+                              onChanged: (s) => context
+                                  .read<BillBloc>()
+                                  .add(BillDescriptionEvent(s)),
+                              textCapitalization: TextCapitalization.sentences,
+                              minLines: 2,
+                              maxLines: 9,
+                              keyboardType: TextInputType.multiline,
+                              decoration: const InputDecoration(
+                                  hintText: "description"),
+                            ),
+                          ),
                           const SizedBox(
                             width: 10,
                           ),
@@ -174,7 +174,7 @@ class _BillSheet extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                   minimumSize: const Size.fromHeight(40),
                                   backgroundColor:
-                                  Theme.of(context).colorScheme.secondary,
+                                      Theme.of(context).colorScheme.secondary,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20))),
@@ -203,11 +203,11 @@ class _ProductTypeDropDown<T> extends StatelessWidget {
 
   const _ProductTypeDropDown(
       {Key? key,
-        required this.title,
-        this.items = const [],
-        required this.menuItemBuilder,
-        this.value,
-        this.onChange})
+      required this.title,
+      this.items = const [],
+      required this.menuItemBuilder,
+      this.value,
+      this.onChange})
       : super(key: key);
 
   @override
@@ -230,9 +230,9 @@ class _ProductTypeDropDown<T> extends StatelessWidget {
           itemHeight: null,
           items: [
             ...items.map((e) => DropdownMenuItem<T>(
-              value: e,
-              child: menuItemBuilder(e),
-            ))
+                  value: e,
+                  child: menuItemBuilder(e),
+                ))
           ],
         )
       ],

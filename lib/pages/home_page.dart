@@ -20,26 +20,48 @@ class HomePage extends StatelessWidget {
           const SizedBox(
             height: 60,
           ),
-          Align(
-            alignment: Alignment.center,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                const Text("Analytics (Amount Spent)", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                ElevatedButton(onPressed: () {}, child: Text("Year-2022"), style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
-                ),)
-              ],),
-            ),
-          ),
+          TitleButtonComponent(
+              topTitle: "Analytics (Amount Spent)", buttonText: "Year-2022"),
           const SizedBox(height: 20),
           const ChartWidget(),
           const SizedBox(height: 20),
           const HomeTransactions()
+        ],
+      ),
+    );
+  }
+}
+
+class TitleButtonComponent extends StatelessWidget {
+  final String topTitle;
+  final String buttonText;
+
+  const TitleButtonComponent({
+    Key? key,
+    required this.topTitle,
+    required this.buttonText,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            topTitle,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text(buttonText),
+            style: ElevatedButton.styleFrom(
+                elevation: 0,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12))),
+          ),
         ],
       ),
     );
