@@ -33,7 +33,12 @@ class _BillSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
-      child: BlocBuilder<BillBloc, BillingState>(
+      child: BlocConsumer<BillBloc, BillingState>(
+        listener: (bloc, state) {
+          if (state.processingState == ProcessingState.done) {
+            Navigator.pop(context, true);
+          }
+        },
         builder: (context, state) {
           return Form(
             key: _formKey,
@@ -60,6 +65,12 @@ class _BillSheet extends StatelessWidget {
                               flex: 4,
                               child: TextFormField(
                                 initialValue: state.bill,
+                                validator: (s) {
+                                  if (s != null && s.isEmpty) {
+                                    return 'Field can not be empty';
+                                  }
+                                  return null;
+                                },
                                 onChanged: (s) => context
                                     .read<BillBloc>()
                                     .add(BillTitleChangeEvent(s)),
@@ -93,6 +104,12 @@ class _BillSheet extends StatelessWidget {
                               flex: 4,
                               child: TextFormField(
                                 initialValue: state.amount,
+                                validator: (s) {
+                                  if (s != null && s.isEmpty) {
+                                    return 'Field can not be empty';
+                                  }
+                                  return null;
+                                },
                                 onChanged: (s) => context
                                     .read<BillBloc>()
                                     .add(BillAmountChangeEvent(s)),
@@ -134,20 +151,23 @@ class _BillSheet extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Expanded(
-                            flex: 4,
-                            child: TextFormField(
-                              initialValue: state.description,
-                              onChanged: (s) => context
-                                  .read<BillBloc>()
-                                  .add(BillDescriptionEvent(s)),
-                              textCapitalization: TextCapitalization.sentences,
-                              minLines: 2,
-                              maxLines: 9,
-                              keyboardType: TextInputType.multiline,
-                              decoration: const InputDecoration(
-                                  hintText: "description"),
-                            ),
-                          ),
+                              flex: 4,
+                              child: TextFormField(
+                                initialValue: state.description,
+                                onChanged: (s) => context
+                                    .read<BillBloc>()
+                                    .add(BillDescriptionEvent(s)),
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                minLines: 2,
+                                maxLines: 4,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(120),
+                                ],
+                                keyboardType: TextInputType.multiline,
+                                decoration: const InputDecoration(
+                                    hintText: "description"),
+                              )),
                           const SizedBox(
                             width: 10,
                           ),
@@ -168,9 +188,35 @@ class _BillSheet extends StatelessWidget {
                       const SizedBox(
                         height: 35,
                       ),
-                      Center(
-                          child: ElevatedButton(
-                              onPressed: () {},
+                      state.processingState == ProcessingState.pending
+                          ? const CircularProgressIndicator()
+                          : ElevatedButton(
+                              onPressed: () {
+                                bool? isValid =
+                                    _formKey.currentState?.validate();
+                                if (isValid != null && !isValid) return;
+                                var type = state.billType;
+                                if (type == null) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) => AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            title: const Text(
+                                              'Error',
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            content: const Text(
+                                                'Bill type must be set',
+                                                textAlign: TextAlign.center),
+                                          ));
+                                  return;
+                                }
+                                context
+                                    .read<BillBloc>()
+                                    .add(const BillSaveEvent());
+                              },
                               style: ElevatedButton.styleFrom(
                                   minimumSize: const Size.fromHeight(40),
                                   backgroundColor:
@@ -178,7 +224,7 @@ class _BillSheet extends StatelessWidget {
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20))),
-                              child: const Text("ADD")))
+                              child: const Text("ADD"))
                     ],
                   ),
                 ),

@@ -61,12 +61,11 @@ class DatabaseClient {
     HAVING strftime('%Y-%m', date) == ?) t 
     on t.date = strftime('%Y-%m', b.date);
     ''', [date]);
-    if(result.isEmpty) {
+    if (result.isEmpty) {
       return null;
     }
 
     return Financials.fromMap(result[0]);
-
   }
 
   ///date is a string of date formatted as yyyy-MM
@@ -81,7 +80,7 @@ class DatabaseClient {
             p.id as pid, p.name as pname
       FROM expenditure e 
       JOIN bill_type p 
-      ON e.product_type_id = p.id WHERE strftime('%Y-%m', e.date) = ?;
+      ON e.bill_type_id = p.id WHERE strftime('%Y-%m', e.date) = ?;
     ''', [date]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }
@@ -97,7 +96,7 @@ class DatabaseClient {
             p.id as pid, p.name as pname
       FROM expenditure e 
       JOIN bill_type p 
-      ON e.product_type_id = p.id WHERE date = ?;
+      ON e.bill_type_id = p.id WHERE date = ?;
     ''', [date]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }
@@ -110,10 +109,17 @@ class DatabaseClient {
   }
 
   Future saveExpenditure(Map<String, dynamic> map) async {
-    await _db.insert("expenditure", map);
+    int val = await _db.insert("expenditure", map);
   }
 
-  Future<List<Expenditure>> getExpenditureAtWithLimit(String date, int limit) async {
+  Future<int?> getYearOfFirstInsert() async {
+    var result = await _db.rawQuery("SELECT CAST(strftime('%Y', date) as int) as year FROM expenditure ORDER BY date LIMIT 1");
+    if(result.isNotEmpty) return Sqflite.firstIntValue(result);
+    return null;
+  }
+
+  Future<List<Expenditure>> getExpenditureAtWithLimit(
+      String date, int limit) async {
     var result = await _db.rawQuery('''
       SELECT e.id as eid, 
             e.bill AS ebill, 
@@ -124,7 +130,7 @@ class DatabaseClient {
             p.id as pid, p.name as pname
       FROM expenditure e 
       JOIN bill_type p 
-      ON e.product_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY edate LIMIT ?;
+      ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC LIMIT ?;
     ''', [date, limit]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }
@@ -133,8 +139,7 @@ class DatabaseClient {
     var result = await _db.rawQuery('''SELECT strftime('%m',date) as month, 
           SUM(price) as amount FROM expenditure GROUP BY 1 HAVING strftime('%Y',date) = ?
           ORDER BY strftime('%m',date) ASC
-          ''',
-        [year]);
+          ''', [year]);
     return result
         .map((q) =>
             MonthSpending(int.parse(q["month"] as String), q["amount"] as int))
@@ -155,10 +160,10 @@ class DatabaseClient {
         description TEXT,
         payment_type INTEGER NOT NULL,
         priority INTEGER NOT NULL,
-        product_type_id INTEGER,
+        bill_type_id INTEGER,
         price INTEGER NOT NULL,
         date TEXT NOT NULL,
-        FOREIGN KEY (product_type_id) REFERENCES bill_type(id)
+        FOREIGN KEY (bill_type_id) REFERENCES bill_type(id)
       );
     ''');
     await db.execute('''
@@ -173,7 +178,7 @@ class DatabaseClient {
   }
 }
 
-class Financials extends Equatable{
+class Financials extends Equatable {
   final int budget;
   final int balance;
   final int amountSpent;
@@ -189,7 +194,7 @@ class Financials extends Equatable{
   List<Object?> get props => [budget, balance, amountSpent];
 }
 
-class MonthSpending extends Equatable{
+class MonthSpending extends Equatable {
   final int month;
   final int amount;
 

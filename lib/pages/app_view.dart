@@ -18,20 +18,15 @@ class AppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
-    var appRepo = context.read<AppRepository>();
+    //var appRepo = context.read<AppRepository>();
     return Scaffold(
       appBar: TopBar(),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: IndexedStack(
-        index: selectedTab.current.index,
-        children: [
-          BlocProvider(
-            lazy: false,
-            create: (context) => HomeBloc(appRepo: appRepo)
-              ..add(const HomeInitializationEvent()),
-            child: const HomePage(),
-          ),
-          const ExpensesPage()
+        index: selectedTab.current == AppTab.bill ? selectedTab.previous.index : selectedTab.current.index,
+        children: const [
+          HomePage(),
+          ExpensesPage()
         ],
       ),
       bottomNavigationBar: const _MainBottomAppBar(),
@@ -39,16 +34,21 @@ class AppView extends StatelessWidget {
   }
 }
 
-class _MainBottomAppBar extends StatelessWidget {
+class _MainBottomAppBar extends StatefulWidget {
   const _MainBottomAppBar({Key? key}) : super(key: key);
 
   @override
+  State<_MainBottomAppBar> createState() => _MainBottomAppBarState();
+}
+
+class _MainBottomAppBarState extends State<_MainBottomAppBar> {
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state.current != AppTab.bill) return;
         var appRepo = context.read<AppRepository>();
-        showModalBottomSheet(
+        var data = await showModalBottomSheet(
             isScrollControlled: true,
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -58,9 +58,11 @@ class _MainBottomAppBar extends StatelessWidget {
             builder: (_) => BillView(
                   appRepo: appRepo,
                 ));
-
-        context.read<AppCubit>().currentState =
+        if(!mounted) return;
+        this.context.read<AppCubit>().currentState =
             AppState(current: state.previous);
+        if(data != true) return;
+        this.context.read<HomeBloc>().add(const HomeInitializationEvent());
       },
       builder: (context, state) {
         return Padding(
