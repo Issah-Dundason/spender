@@ -20,7 +20,7 @@ class NoBudgetWidget extends StatelessWidget {
         ]
       ),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+        filter: ImageFilter.blur(sigmaX: 0.6, sigmaY: 0.6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,

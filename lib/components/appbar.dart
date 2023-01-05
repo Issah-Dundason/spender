@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:spender/pages/profile_page.dart';
+
+import '../bloc/profile/profile_bloc.dart';
 
 class TopBar {
   static AppBar getAppBar(BuildContext context, String text) => AppBar(
@@ -9,8 +12,10 @@ class TopBar {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
+            var bloc = context.read<ProfileBloc>();
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AppProfile()));
+                MaterialPageRoute(builder: (context) =>
+                    BlocProvider(child: const AppProfile(), create: (_) => bloc,)));
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0, top: 4, bottom: 4),
