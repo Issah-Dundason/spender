@@ -81,7 +81,7 @@ class Receipt extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
-                    padding: const EdgeInsets.only(bottom: 23),
+                    padding: const EdgeInsets.only(bottom: 25),
                     child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
@@ -102,7 +102,7 @@ class Receipt extends StatelessWidget {
 
   BorderSide buildBorderSide(BuildContext context) {
     return BorderSide(
-        width: 1.5, color: Theme.of(context).colorScheme.secondary);
+        width: 0.9, color: Theme.of(context).colorScheme.secondary);
   }
 }
 
