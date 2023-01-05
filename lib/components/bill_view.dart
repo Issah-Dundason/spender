@@ -160,7 +160,10 @@ class _BillSheet extends StatelessWidget {
                                 textCapitalization:
                                     TextCapitalization.sentences,
                                 minLines: 2,
-                                maxLines: 9,
+                                maxLines: 4,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(120),
+                                ],
                                 keyboardType: TextInputType.multiline,
                                 decoration: const InputDecoration(
                                     hintText: "description"),

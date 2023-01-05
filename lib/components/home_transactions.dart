@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home_state.dart';
+import 'package:spender/components/receipt.dart';
 import 'package:spender/components/transaction_tile.dart';
 import 'package:spender/icons/icons.dart';
+import 'package:spender/model/expenditure.dart';
 
 import '../bloc/home_bloc.dart';
 
@@ -37,21 +39,30 @@ class HomeTransactions extends StatelessWidget {
                   if (state.transactionsToday.isEmpty)
                     const _NoTransaction()
                   else
-                    ...state.transactionsToday
-                        .map((t) {
-                      return TransactionTile(
-                        store: t.bill,
-                        type: t.paymentType.name,
-                        amount: t.cash,
-                        date: t.formattedDate,
+                    ...state.transactionsToday.map((t) {
+                      return GestureDetector(
+                        onTap: () => _onTransactionTap(context, t),
+                        child: TransactionTile(
+                          store: t.bill,
+                          type: t.paymentType.name,
+                          amount: t.cash,
+                          date: t.formattedDate,
+                        ),
                       );
-                    })
-                        .toList()
+                    }).toList()
                 ],
               );
             },
           ),
         ));
+  }
+
+  void _onTransactionTap(BuildContext context, Expenditure e) async {
+    await showDialog(
+        context: context,
+        builder: (_) => Receipt(
+              expenditure: e,
+            ));
   }
 }
 

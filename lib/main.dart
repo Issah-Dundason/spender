@@ -14,7 +14,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   DatabaseClient dbClient = await DatabaseClient().init();
-  var types = await dbClient.getProductTypes();
 
   AppRepository appRepo = AppRepository(dbClient);
 
