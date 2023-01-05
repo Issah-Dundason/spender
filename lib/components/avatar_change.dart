@@ -17,26 +17,22 @@ class AvatarChanger extends StatelessWidget {
           backColor: Colors.blueAccent,
         ),
         const SizedBox(width: 15),
-        Column(
-          children: [
-            const Divider(),
-            SizedBox(
-              height: 50,
-              width: 270,
-              child: ListView.separated(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) =>
-                      const AvatarProfile(
-                          avatarHeight: 50,
-                          avatarWidth: 50,
-                          backColor: Colors.deepOrangeAccent),
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const SizedBox(width: 10),
-                  itemCount: 20),
-            ),
-            const Divider(),
-          ],
+        Expanded(
+          child: SizedBox(
+            height: 50,
+            child: ListView.separated(
+              physics: const BouncingScrollPhysics(),
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (BuildContext context, int index) =>
+                    const AvatarProfile(
+                        avatarHeight: 50,
+                        avatarWidth: 50,
+                        backColor: Colors.deepOrangeAccent),
+                separatorBuilder: (BuildContext context, int index) =>
+                    const SizedBox(width: 10),
+                itemCount: 20),
+          ),
         ),
       ],
     );
