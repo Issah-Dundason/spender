@@ -26,7 +26,7 @@ class Expenditure extends Equatable {
 
   static String _generateDate() {
     var d = DateTime.now();
-    d = DateTime.utc(d.year, d.month, d.day);
+    d = DateTime.utc(d.year, d.month, d.day, d.hour, d.minute, d.second);
     return d.toIso8601String();
   }
 
@@ -64,7 +64,7 @@ class Expenditure extends Equatable {
       "bill": bill,
       "description": description,
       "payment_type": paymentType.index,
-      "product_type_id": type.id,
+      "bill_type_id": type.id,
       "price": price,
       "date": date,
       "priority": priority.index

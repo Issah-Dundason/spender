@@ -44,3 +44,7 @@ class BillTypeChangeEvent extends BillEvent {
 
   BillTypeChangeEvent(this.productType);
 }
+
+class BillSaveEvent extends BillEvent {
+  const BillSaveEvent();
+}

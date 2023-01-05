@@ -1,47 +1,68 @@
 import 'package:decimal/decimal.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/home_bloc.dart';
 import '../bloc/home_state.dart';
 import '../service/database.dart';
 
-class ChartWidget extends StatelessWidget {
+class ChartWidget extends StatefulWidget {
+  final HomeState state;
+
   const ChartWidget({
     Key? key,
+    required this.state,
   }) : super(key: key);
 
   @override
+  State<ChartWidget> createState() => _ChartWidgetState();
+}
+
+class _ChartWidgetState extends State<ChartWidget> {
+  ScrollController scrollController = ScrollController();
+
+  void _scrollToRightPosition() async {
+    await Future.value();
+
+    int month = 1;
+    if (widget.state.monthExpenditures.isNotEmpty) {
+      month = widget.state.monthExpenditures.last.month;
+    }
+
+    var maxScroll = scrollController.position.maxScrollExtent;
+    var scrollPos = (((month - 1) * (maxScroll - 0)) / (11));
+    scrollController.jumpTo(scrollPos);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _scrollToRightPosition();
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.7,
         height: 200,
         child: SingleChildScrollView(
+          controller: scrollController,
           scrollDirection: Axis.horizontal,
-          child: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              return AspectRatio(
-                aspectRatio: 5,
-                child: BarChart(BarChartData(
-                    gridData: FlGridData(show: false),
-                    borderData: FlBorderData(
-                      border: null,
-                      show: false,
-                    ),
-                    titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: AxisTitles(),
-                        topTitles: AxisTitles(sideTitles: _topTitle(context, _displayList(state.monthExpenditures))),
-                        bottomTitles:
-                            AxisTitles(sideTitles: _getBottomTitle(context))),
-                    barGroups: _chartGroups(
-                        _displayList(state.monthExpenditures), context))),
-              );
-            },
+          child: AspectRatio(
+            aspectRatio: 5,
+            child: BarChart(BarChartData(
+                gridData: FlGridData(show: false),
+                borderData: FlBorderData(
+                  border: null,
+                  show: false,
+                ),
+                titlesData: FlTitlesData(
+                    leftTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: AxisTitles(),
+                    topTitles: AxisTitles(
+                        sideTitles: _topTitle(context,
+                            _displayList(widget.state.monthExpenditures))),
+                    bottomTitles:
+                        AxisTitles(sideTitles: _getBottomTitle(context))),
+                barGroups: _chartGroups(
+                    _displayList(widget.state.monthExpenditures), context))),
           ),
         ),
       ),
@@ -80,21 +101,22 @@ class ChartWidget extends StatelessWidget {
     }).toList();
   }
 
-  SideTitles _topTitle(BuildContext context, List<MonthSpending> monthSpendings) {
+  SideTitles _topTitle(
+      BuildContext context, List<MonthSpending> monthSpendings) {
     return SideTitles(
-      showTitles: true,
-      getTitlesWidget: (value, meta) {
-        var month = DateTime.now().month;
-        var ms = monthSpendings.firstWhere((m) => m.month == value.toInt());
-        Decimal d = Decimal.fromInt(ms.amount);
-        var r = d / Decimal.fromInt(100);
-        return Text('₵${r.toDouble()}', style: TextStyle(
-          color: value.toInt() == month
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.tertiary,
-        ));
-      }
-    );
+        showTitles: true,
+        getTitlesWidget: (value, meta) {
+          var month = DateTime.now().month;
+          var ms = monthSpendings.firstWhere((m) => m.month == value.toInt());
+          Decimal d = Decimal.fromInt(ms.amount);
+          var r = d / Decimal.fromInt(100);
+          return Text('₵${r.toDouble()}',
+              style: TextStyle(
+                color: value.toInt() == month
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.tertiary,
+              ));
+        });
   }
 
   SideTitles _getBottomTitle(BuildContext context) {
@@ -161,5 +183,11 @@ class ChartWidget extends StatelessWidget {
                 ),
               ));
         });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 }

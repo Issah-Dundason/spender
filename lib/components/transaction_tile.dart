@@ -38,7 +38,8 @@ class TransactionTile extends StatelessWidget {
           store,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(type, style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
+        subtitle: Text(type,
+            style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -47,9 +48,13 @@ class TransactionTile extends StatelessWidget {
                 "₵$amount",
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
               ),
-              Text(date, style: TextStyle(color: Theme.of(context).colorScheme.tertiary),)
+              Text(
+                date,
+                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              )
             ]),
       ),
     );

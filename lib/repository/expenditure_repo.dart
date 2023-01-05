@@ -29,4 +29,12 @@ class AppRepository {
     return dbClient.getExpenditureAtWithLimit(date, limit);
   }
 
+  Future<int?> getYearOfFirstInsert() {
+    return dbClient.getYearOfFirstInsert();
+  }
+
+  Future  saveExpenditure(Expenditure expenditure) {
+    return dbClient.saveExpenditure(expenditure.toJson());
+  }
+
 }
