@@ -18,9 +18,10 @@ class Receipt extends StatelessWidget {
           width: size.width * 0.7,
           height: size.height * 0.5,
           color: Theme.of(context).colorScheme.background,
-          //  color: Theme.of(context).colorScheme.primary,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              //header
               Container(
                 height: 50,
                 color: Theme.of(context).colorScheme.secondary,
@@ -30,15 +31,66 @@ class Receipt extends StatelessWidget {
                     Text(
                       'Transaction',
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600
-                      ),
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
                     ),
-                    Text('Number #${expenditure.id}',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSecondary))
+                    Text(
+                      'Number #${expenditure.id}',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.onSecondary),
+                    )
                   ],
+                ),
+              ),
+              //body
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text('Bill: ${expenditure.bill}'),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 20),
+                child: Text('Amount: ${expenditure.cash}'),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 20),
+                child: Text(
+                    'Payment type: ${expenditure.paymentType.name.toUpperCase()}'),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 20),
+                child: Text(
+                    'Priority of service: ${expenditure.priority.name.toUpperCase()}'),
+              ),
+              if (expenditure.description != null)
+                const Padding(
+                  padding: EdgeInsets.only(top: 20.0, left: 8),
+                  child: Text('Description'),
+                ),
+              if (expenditure.description != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, top: 6, right: 8.0),
+                  child: Text(expenditure.description!),
+                ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 23),
+                    child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            border: Border(
+                                top: buildBorderSide(context),
+                                left: buildBorderSide(context),
+                                right: buildBorderSide(context))),
+                        child: Text(expenditure.formattedDate)),
+                  ),
                 ),
               )
             ],
@@ -46,6 +98,11 @@ class Receipt extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  BorderSide buildBorderSide(BuildContext context) {
+    return BorderSide(
+        width: 1.5, color: Theme.of(context).colorScheme.secondary);
   }
 }
 
