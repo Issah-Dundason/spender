@@ -2,7 +2,7 @@ import 'package:decimal/decimal.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../bloc/home_state.dart';
+import '../bloc/home/home_state.dart';
 import '../service/database.dart';
 
 class ChartWidget extends StatefulWidget {

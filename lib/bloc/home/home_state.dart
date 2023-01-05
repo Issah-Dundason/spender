@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-import '../model/expenditure.dart';
-import '../service/database.dart';
+import '../../model/expenditure.dart';
+import '../../service/database.dart';
 
 class HomeState extends Equatable {
   final Financials? currentFinancials;

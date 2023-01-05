@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
-import 'package:spender/bloc/billing_event.dart';
+import 'package:spender/bloc/bill/billing_event.dart';
 
-import '../model/expenditure.dart';
-import '../repository/expenditure_repo.dart';
+import '../../model/expenditure.dart';
+import '../../repository/expenditure_repo.dart';
 import 'billing_state.dart';
 
 class BillBloc extends Bloc<BillEvent, BillingState> {

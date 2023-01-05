@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spender/bloc/home_bloc.dart';
-import 'package:spender/bloc/home_event.dart';
+import 'package:spender/bloc/home/home_bloc.dart';
+import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 
-import '../bloc/app_cubit.dart';
-import '../bloc/app_state.dart';
+import '../bloc/app/app_cubit.dart';
+import '../bloc/app/app_state.dart';
 import '../components/bill_view.dart';
 import 'expenses.dart';
 import 'home_page.dart';
@@ -18,9 +18,8 @@ class AppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
-    //var appRepo = context.read<AppRepository>();
     return Scaffold(
-      appBar: TopBar(),
+      appBar: TopBar.getAppBar(context, selectedTab.current.name.toUpperCase()),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: IndexedStack(
         index: selectedTab.current == AppTab.bill ? selectedTab.previous.index : selectedTab.current.index,

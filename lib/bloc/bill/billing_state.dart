@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-import '../model/bill_type.dart';
-import '../model/expenditure.dart';
+import '../../model/bill_type.dart';
+import '../../model/expenditure.dart';
 
 enum ProcessingState {none, done, pending}
 

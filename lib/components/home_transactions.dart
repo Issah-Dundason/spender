@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spender/bloc/home_state.dart';
+import 'package:spender/bloc/home/home_state.dart';
 import 'package:spender/components/receipt.dart';
 import 'package:spender/components/transaction_tile.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/model/expenditure.dart';
 
-import '../bloc/home_bloc.dart';
+import '../bloc/home/home_bloc.dart';
 
 class HomeTransactions extends StatelessWidget {
   const HomeTransactions({Key? key}) : super(key: key);
