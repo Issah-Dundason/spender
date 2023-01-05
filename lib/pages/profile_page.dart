@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:spender/components/update_budget.dart';
 
 import '../components/avatar_change.dart';
-import '../components/budget_year.dart';
 
 class AppProfile extends StatefulWidget {
   const AppProfile({Key? key}) : super(key: key);
@@ -26,7 +25,6 @@ class _AppProfileState extends State<AppProfile> {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SingleChildScrollView(
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20,),
