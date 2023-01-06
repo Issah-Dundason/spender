@@ -11,7 +11,7 @@ class TopBar {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Navigator.of(context).push(_createRoute());
+            Navigator.of(context).push(createRoute());
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0, top: 4, bottom: 4),
@@ -29,7 +29,7 @@ class TopBar {
         foregroundColor: Colors.black,
       );
 
-  static Route _createRoute() {
+  static Route createRoute() {
     return PageRouteBuilder(
         pageBuilder: (context, anim, anim2) => const AppProfile(),
     transitionsBuilder: (context, anim, anim2, child) {

@@ -31,6 +31,19 @@ class DatabaseClient {
     await _db.insert("budget", budget.toMap());
   }
 
+  Future<int?> getYearOfFirstBudget() async {
+    var result = await _db.rawQuery(
+        "SELECT CAST(strftime('%Y', date) as int) as year FROM budget ORDER BY date LIMIT 1");
+    if (result.isNotEmpty) return Sqflite.firstIntValue(result);
+    return null;
+  }
+
+  Future<bool> budgetExists(String yearMonth) async {
+    var records = await _db.query("budget",
+        where: "strftime('%Y-%m', date) = ?", whereArgs: [yearMonth]);
+    return records.length == 1;
+  }
+
   Future updateBudget(Budget budget) async {
     await _db.update("budget", budget.toMap(),
         where: "id = ?", whereArgs: [budget.id]);
@@ -40,11 +53,20 @@ class DatabaseClient {
     await _db.delete("budget", where: "id = ?", whereArgs: [budget.id]);
   }
 
-  Future<Budget?> getBudget(String date) async {
-    var result =
-        await _db.query("budget", where: "date = ?", whereArgs: [date]);
+  Future<Budget?> getBudget(String yearMonth) async {
+    var result = await _db.query("budget",
+        where: "strftime('%Y-%m', date) = ?", whereArgs: [yearMonth]);
     if (result.isEmpty) return null;
     return Budget.fromMap(result[0]);
+  }
+
+  Future<List<Budget>> getBudgets(String year) async {
+    var result = await _db.query("budget",
+        where: "strftime('%Y', date) = ?",
+        orderBy: "date ASC",
+        whereArgs: [year]);
+    if (result.isEmpty) return [];
+    return result.map((map) => Budget.fromMap(map)).toList();
   }
 
   Future<Financials?> getFinancials(String date) async {
@@ -113,8 +135,9 @@ class DatabaseClient {
   }
 
   Future<int?> getYearOfFirstInsert() async {
-    var result = await _db.rawQuery("SELECT CAST(strftime('%Y', date) as int) as year FROM expenditure ORDER BY date LIMIT 1");
-    if(result.isNotEmpty) return Sqflite.firstIntValue(result);
+    var result = await _db.rawQuery(
+        "SELECT CAST(strftime('%Y', date) as int) as year FROM expenditure ORDER BY date LIMIT 1");
+    if (result.isNotEmpty) return Sqflite.firstIntValue(result);
     return null;
   }
 

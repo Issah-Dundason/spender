@@ -3,7 +3,7 @@ import 'package:spender/bloc/profile/profile_event.dart';
 import 'package:spender/bloc/profile/profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  ProfileBloc() : super(ProfileState()) {
+  ProfileBloc() : super(const ProfileState()) {
     on<ProfileAvatarChangeEvent>(_onProfileAvatarChange);
   }
 

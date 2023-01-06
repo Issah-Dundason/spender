@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:spender/components/appbar.dart';
 
 class NoBudgetWidget extends StatelessWidget {
   const NoBudgetWidget({Key? key}) : super(key: key);
@@ -39,7 +40,9 @@ class NoBudgetWidget extends StatelessWidget {
                   )),
                   const SizedBox(width: 5,),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(TopBar.createRoute());
+                    },
                     style: TextButton.styleFrom(
                       shape:  RoundedRectangleBorder(side: BorderSide(width: 2, color: Theme.of(context).colorScheme.onSecondary)),
                       padding: EdgeInsets.zero

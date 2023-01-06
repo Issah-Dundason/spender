@@ -9,8 +9,28 @@ class AppRepository {
 
   AppRepository(this.dbClient);
 
-  Future<Budget?> getBudget(String date) {
-    return dbClient.getBudget(date);
+  Future<bool> budgetExist(String yearMonth) {
+    return dbClient.budgetExists(yearMonth);
+  }
+
+  Future updateBudget(Budget budget) {
+    return dbClient.updateBudget(budget);
+  }
+
+  Future saveBudget(Budget budget) {
+    return dbClient.saveBudget(budget);
+  }
+
+  Future<Budget?> getBudget(String yearMonth) {
+    return dbClient.getBudget(yearMonth);
+  }
+
+  Future<List<Budget>> getBudgetsForYear(String year) {
+    return dbClient.getBudgets(year);
+  }
+
+  Future<int?> getYearOfFirstBudget() {
+    return dbClient.getYearOfFirstBudget();
   }
 
   Future<Financials?> getFinancials(String date) {
@@ -33,8 +53,7 @@ class AppRepository {
     return dbClient.getYearOfFirstInsert();
   }
 
-  Future  saveExpenditure(Expenditure expenditure) {
+  Future saveExpenditure(Expenditure expenditure) {
     return dbClient.saveExpenditure(expenditure.toJson());
   }
-
 }

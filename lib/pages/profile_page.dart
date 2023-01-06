@@ -1,16 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/budget/amount_cubit.dart';
+import 'package:spender/bloc/budget/budget_bloc.dart';
+import 'package:spender/bloc/budget/budget_event.dart';
 import 'package:spender/components/update_budget.dart';
+import 'package:spender/model/budget.dart';
+import 'package:spender/model/budget.dart';
+import 'package:spender/repository/expenditure_repo.dart';
 
+import '../bloc/budget/budget_state.dart';
 import '../components/avatar_change.dart';
 
 class AppProfile extends StatelessWidget {
-  static String routeName = '/profile';
-
   const AppProfile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return (Scaffold(
+    return BlocProvider<BudgetBloc>(
+        lazy: true,
+        create: (_) => BudgetBloc(appRepo: context.read<AppRepository>())
+          ..add(InitializeEvent()),
+        child: const ProfileView());
+  }
+}
+
+class ProfileView extends StatelessWidget {
+  const ProfileView({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // var state = context.select((BudgetBloc bloc) => bloc.state);
+    // String? amount;
+    // if (state.currentMonthBudget != null) {
+    //   amount = state.currentMonthBudget?.amount.toString();
+    // }
+    //
+    // print('amount: $amount');
+
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
@@ -23,16 +52,18 @@ class AppProfile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             const Padding(
               padding: EdgeInsets.only(left: 24),
-              child:  Text (
+              child: Text(
                 'Change your avatar',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
             const Padding(
-              padding:  EdgeInsets.only(left: 24, top: 20),
+              padding: EdgeInsets.only(left: 24, top: 20),
               child: AvatarChanger(),
             ),
             const SizedBox(height: 20),
@@ -43,10 +74,13 @@ class AppProfile extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
-            const SizedBox(height: 10),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: BudgetUpdate(),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: BlocProvider(
+                create: (context) => AmountCubit(context.read<AppRepository>())..initialize(),
+                child: const BudgetUpdate(),
+              ),
             ),
             const SizedBox(height: 50),
             Padding(
@@ -62,7 +96,8 @@ class AppProfile extends StatelessWidget {
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                         elevation: 0,
-                        backgroundColor: Theme.of(context).colorScheme.secondary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12))),
                     child: const Text('Year-2022'),
@@ -70,7 +105,9 @@ class AppProfile extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24,),
+            const SizedBox(
+              height: 24,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: DataTable(columns: const [
@@ -109,6 +146,6 @@ class AppProfile extends StatelessWidget {
           ],
         ),
       ),
-    ));
+    );
   }
 }

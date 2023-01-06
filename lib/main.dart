@@ -5,7 +5,6 @@ import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/bloc/profile/profile_event.dart';
 import 'package:spender/pages/app_view.dart';
-import 'package:spender/pages/profile_page.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
 import 'package:spender/theme/theme.dart';
@@ -44,18 +43,15 @@ class Spender extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-              create: (_) =>
-              ProfileBloc()
+              create: (_) => ProfileBloc()
                 ..add(ProfileAvatarChangeEvent(assetName: 'tracker.svg'))),
         ],
         child: MaterialApp(
             theme: AppTheme.lightTheme,
-            routes: {AppProfile.routeName: (context) => const AppProfile()},
             home: MultiBlocProvider(
               providers: [
                 BlocProvider(
-                    create: (_) =>
-                    HomeBloc(appRepo: appRepo)
+                    create: (_) => HomeBloc(appRepo: appRepo)
                       ..add(const HomeInitializationEvent())),
                 BlocProvider(create: (_) => AppCubit()),
               ],

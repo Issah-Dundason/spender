@@ -33,7 +33,7 @@ class AvatarChanger extends StatelessWidget {
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (BuildContext context, int index) =>
-                        GestureDetector(
+                        InkWell(
                           onTap: () {
                             context.read<ProfileBloc>().add(ProfileAvatarChangeEvent(assetName: avatars[index]));
                           },

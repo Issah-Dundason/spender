@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-class Budget extends Equatable{
+class Budget extends Equatable {
   final int? id;
   final int amount;
 
@@ -8,15 +8,25 @@ class Budget extends Equatable{
   ///dd must should be set to the first day of the month
   final String date;
 
-  const Budget(this.date, this.amount): id = null;
+  const Budget(this.date, this.amount) : id = null;
 
-  const Budget.date(this.date) : amount = 0, id = null;
+  const Budget.all(
+      {required this.id, required this.date, required this.amount});
+
+  const Budget.date(this.date)
+      : amount = 0,
+        id = null;
 
   Map<String, dynamic> toMap() => {"amount": amount, "date": date};
 
+  copyWith({int? amount}) {
+    return Budget.all(id : id, date: date, amount: amount ?? this.amount);
+  }
+
   Budget.fromMap(Map<String, dynamic> map)
       : date = map["date"],
-        amount = map["amount"], id = map["id"];
+        amount = map["amount"],
+        id = map["id"];
 
   @override
   List<Object?> get props => [id, amount, date];
