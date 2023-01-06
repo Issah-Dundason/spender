@@ -29,6 +29,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     DateTime date = DateTime.now();
     var yearAndMonth = DateFormat("yyyy-MM").format(date);
     var budget = await appRepo.getBudget(yearAndMonth);
+    emitter(state.copyWith(stat: BudgetingStat.pending));
     if(budget == null) {
       await _saveBudgetForCurrentMonth(e);
     } else {
@@ -36,7 +37,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       var newBudget = budget.copyWith(amount: amount);
       await appRepo.updateBudget(newBudget);
     }
-
+    emitter(state.copyWith(stat: BudgetingStat.done));
     if(date.year != state.selectedYear) return;
     var budgets = await appRepo.getBudgetsForYear('${state.selectedYear}');
     emitter(state.copyWith(budgets: budgets));

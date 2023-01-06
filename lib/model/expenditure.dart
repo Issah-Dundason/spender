@@ -1,6 +1,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
+import 'package:spender/util/app_utils.dart';
 
 import 'bill_type.dart';
 
@@ -54,9 +55,8 @@ class Expenditure extends Equatable {
   }
 
   String get cash {
-    Decimal d = Decimal.fromInt(price);
-    var r = d / Decimal.fromInt(100);
-    return '${r.toDouble()}';
+    var cash = AppUtils.amountPresented(price);
+    return '$cash';
   }
 
   Map<String, dynamic> toJson() {

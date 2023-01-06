@@ -1,6 +1,6 @@
-import 'package:decimal/decimal.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:spender/util/app_utils.dart';
 
 import '../bloc/home/home_state.dart';
 import '../service/database.dart';
@@ -86,8 +86,7 @@ class _ChartWidgetState extends State<ChartWidget> {
       List<MonthSpending> monthSpendings, BuildContext context) {
     var month = DateTime.now().month;
     return monthSpendings.map((m) {
-      Decimal decimal = Decimal.fromInt(m.amount);
-      var r = decimal / Decimal.fromInt(100);
+      var r = AppUtils.amountPresented(m.amount);
       return BarChartGroupData(barsSpace: 30, x: m.month, barRods: [
         BarChartRodData(
             color: month == m.month
@@ -95,7 +94,7 @@ class _ChartWidgetState extends State<ChartWidget> {
                 : Theme.of(context).colorScheme.tertiary,
             borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(12), topLeft: Radius.circular(12)),
-            toY: r.toDouble(),
+            toY: r,
             width: 50)
       ]);
     }).toList();
@@ -108,9 +107,8 @@ class _ChartWidgetState extends State<ChartWidget> {
         getTitlesWidget: (value, meta) {
           var month = DateTime.now().month;
           var ms = monthSpendings.firstWhere((m) => m.month == value.toInt());
-          Decimal d = Decimal.fromInt(ms.amount);
-          var r = d / Decimal.fromInt(100);
-          return Text('₵${r.toDouble()}',
+          var r = AppUtils.amountPresented(ms.amount);
+          return Text('₵$r',
               style: TextStyle(
                 color: value.toInt() == month
                     ? Theme.of(context).colorScheme.primary

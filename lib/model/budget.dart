@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 
 class Budget extends Equatable {
   final int? id;
@@ -21,6 +22,10 @@ class Budget extends Equatable {
 
   copyWith({int? amount}) {
     return Budget.all(id : id, date: date, amount: amount ?? this.amount);
+  }
+
+  String get formattedDate {
+    return DateFormat("yyyy mm").format(DateTime.parse(date));
   }
 
   Budget.fromMap(Map<String, dynamic> map)
