@@ -4,6 +4,7 @@ import 'package:spender/bloc/budget/amount_cubit.dart';
 import 'package:spender/bloc/budget/budget_bloc.dart';
 import 'package:spender/bloc/budget/budget_event.dart';
 import 'package:spender/components/update_budget.dart';
+import 'package:spender/components/year_picker_dialog.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 
 import '../bloc/budget/budget_state.dart';
@@ -23,11 +24,16 @@ class AppProfile extends StatelessWidget {
   }
 }
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,11 +47,11 @@ class ProfileView extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocListener<BudgetBloc, BudgetState>(
         listener: (context, state) {
-          if(state.budgetingState == BudgetingStat.done) {
-            _handleDone("Done", context);
+          if (state.budgetingState == BudgetingStat.done) {
+            _handleDone("Done");
           }
-          if(state.budgetingState == BudgetingStat.error) {
-            _handleDone("error", context);
+          if (state.budgetingState == BudgetingStat.error) {
+            _handleDone("error");
           }
         },
         child: SingleChildScrollView(
@@ -94,15 +100,19 @@ class ProfileView extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12))),
-                      child: const Text('Year-2022'),
+                    BlocBuilder<BudgetBloc, BudgetState>(
+                      builder: (context, state) {
+                        return ElevatedButton(
+                          onPressed: () => _onYearChange(),
+                          style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12))),
+                          child: Text('Year-${state.selectedYear}'),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -121,7 +131,23 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  void _handleDone(String s, BuildContext context) {
+  void _handleDone(String s) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
+  }
+
+  void _onYearChange() async {
+    var budgetBloc = context.read<BudgetBloc>();
+    var first = budgetBloc.state.firstYearOfBudgetEntry;
+    var selectedDate = budgetBloc.state.selectedYear;
+    var year = await showDialog(
+        context: context,
+        builder: (_) => YearPickerDialog(
+            selectedDate: DateTime.utc(selectedDate),
+            firstDate: first == null ? DateTime.now() : DateTime.utc(first),
+            onChange: (s) => Navigator.pop(_, s.year),
+            lastDate: DateTime.now()));
+
+    if (year == null || !mounted) return;
+    budgetBloc.add(YearBudgetEvent(year: year));
   }
 }

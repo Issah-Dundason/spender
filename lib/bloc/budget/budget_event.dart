@@ -9,3 +9,9 @@ class SaveBudgetEvent extends BudgetEvent{
 
   const SaveBudgetEvent({required this.amount});
 }
+
+class YearBudgetEvent extends BudgetEvent {
+  final int year;
+
+  const YearBudgetEvent({required this.year});
+}

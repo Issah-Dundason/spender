@@ -11,6 +11,7 @@ import 'package:spender/theme/theme.dart';
 
 import 'bloc/app/app_cubit.dart';
 import 'bloc/profile/profile_bloc.dart';
+import 'model/budget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,12 @@ void main() async {
   DatabaseClient dbClient = await DatabaseClient().init();
 
   AppRepository appRepo = AppRepository(dbClient);
+
+  // DateTime date = DateTime.utc(2019, 02);
+  //
+  // var b = Budget(date.toIso8601String(), 323);
+  //
+  // appRepo.saveBudget(b);
 
   //check shared preference
   //if avatar is not there

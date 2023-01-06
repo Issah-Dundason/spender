@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:decimal/decimal.dart';
 import 'package:intl/intl.dart';
 import 'package:spender/bloc/budget/budget_event.dart';
+import 'package:spender/util/app_utils.dart';
 
 import '../../model/budget.dart';
 import '../../repository/expenditure_repo.dart';
@@ -16,6 +16,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       .year)) {
     on<InitializeEvent>(_onInitialize);
     on<SaveBudgetEvent>(_onSave);
+    on<YearBudgetEvent>(_handleSelectedYearChange);
   }
 
   _onInitialize(InitializeEvent e, Emitter<BudgetState> emitter) async {
@@ -33,7 +34,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     if(budget == null) {
       await _saveBudgetForCurrentMonth(e);
     } else {
-      int amount = _getAmount(e.amount);
+      int amount = AppUtils.getActualAmount(e.amount);
       var newBudget = budget.copyWith(amount: amount);
       await appRepo.updateBudget(newBudget);
     }
@@ -44,17 +45,16 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   }
 
   Future<void> _saveBudgetForCurrentMonth(SaveBudgetEvent e) async {
-    int r = _getAmount(e.amount);
+    int r = AppUtils.getActualAmount(e.amount);
     var date = DateTime.now();
     var s = DateTime.utc(date.year, date.month);
     var budget = Budget(s.toIso8601String(), r);
     await appRepo.saveBudget(budget);
   }
 
-  int _getAmount(String amount) {
-    var d = Decimal.parse(amount);
-    var r = d * Decimal.fromInt(100);
-    return r.toBigInt().toInt();
+  void _handleSelectedYearChange(YearBudgetEvent e, Emitter<BudgetState> emitter) async {
+    var budgets = await appRepo.getBudgetsForYear('${e.year}');
+    emitter(state.copyWith(budgets: budgets, selectedYear: e.year));
   }
 
 }
