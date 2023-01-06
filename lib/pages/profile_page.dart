@@ -8,6 +8,7 @@ import 'package:spender/repository/expenditure_repo.dart';
 
 import '../bloc/budget/budget_state.dart';
 import '../components/avatar_change.dart';
+import '../components/budget_table.dart';
 
 class AppProfile extends StatelessWidget {
   const AppProfile({Key? key}) : super(key: key);
@@ -122,53 +123,5 @@ class ProfileView extends StatelessWidget {
 
   void _handleDone(String s, BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
-  }
-}
-
-class BudgetTable extends StatelessWidget {
-  const BudgetTable({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<BudgetBloc, BudgetState>(
-  builder: (context, state) {
-    return DataTable(columns: const [
-      DataColumn(
-        label: Expanded(
-          child: Text(
-            'ID',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-      DataColumn(
-        label: Expanded(
-          child: Text(
-            'Amount',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-      DataColumn(
-        label: Expanded(
-          child: Text(
-            'Date',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-    ], rows:  [
-      ...state.budgets.map((b) {
-        return DataRow(cells: [
-          DataCell(Text('${b.id}')),
-          DataCell(Text('GHS200.00')),
-          DataCell(Text('4-Jan-2023')),
-        ]);
-      }).toList()
-    ]);
-  },
-);
   }
 }

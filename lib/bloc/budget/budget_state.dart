@@ -30,5 +30,6 @@ class BudgetState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [selectedYear, budgets, firstYearOfBudgetEntry, budgetingState];
+  List<Object?> get props =>
+      [selectedYear, budgets, firstYearOfBudgetEntry, budgetingState];
 }
