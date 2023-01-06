@@ -5,6 +5,7 @@ import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/repository/expenditure_repo.dart';
+import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 import '../bloc/app/app_cubit.dart';
 import '../bloc/app/app_state.dart';
@@ -21,7 +22,7 @@ class AppView extends StatelessWidget {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
     final profileState = context.select((ProfileBloc bloc) => bloc.state);
     return Scaffold(
-      appBar: TopBar.getAppBar(context, selectedTab.current.name.toUpperCase(),
+      appBar: TopBar.getAppBar(context, toBeginningOfSentenceCase(selectedTab.current.name) as String,
           profileState.currentAvatar),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: IndexedStack(
