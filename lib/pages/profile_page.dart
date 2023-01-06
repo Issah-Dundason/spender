@@ -3,17 +3,13 @@ import 'package:spender/components/update_budget.dart';
 
 import '../components/avatar_change.dart';
 
-class AppProfile extends StatefulWidget {
+class AppProfile extends StatelessWidget {
+  static String routeName = '/profile';
+
   const AppProfile({Key? key}) : super(key: key);
 
   @override
-  State<AppProfile> createState() => _AppProfileState();
-}
-
-class _AppProfileState extends State<AppProfile> {
-  @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return (Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,

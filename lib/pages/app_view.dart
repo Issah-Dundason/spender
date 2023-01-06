@@ -8,6 +8,7 @@ import 'package:spender/repository/expenditure_repo.dart';
 
 import '../bloc/app/app_cubit.dart';
 import '../bloc/app/app_state.dart';
+import '../bloc/profile/profile_bloc.dart';
 import '../components/bill_view.dart';
 import 'expenses.dart';
 import 'home_page.dart';
@@ -18,15 +19,16 @@ class AppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
+    final profileState = context.select((ProfileBloc bloc) => bloc.state);
     return Scaffold(
-      appBar: TopBar.getAppBar(context, selectedTab.current.name.toUpperCase()),
+      appBar: TopBar.getAppBar(context, selectedTab.current.name.toUpperCase(),
+          profileState.currentAvatar),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: IndexedStack(
-        index: selectedTab.current == AppTab.bill ? selectedTab.previous.index : selectedTab.current.index,
-        children: const [
-          HomePage(),
-          ExpensesPage()
-        ],
+        index: selectedTab.current == AppTab.bill
+            ? selectedTab.previous.index
+            : selectedTab.current.index,
+        children: const [HomePage(), ExpensesPage()],
       ),
       bottomNavigationBar: const _MainBottomAppBar(),
     );
@@ -57,10 +59,10 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
             builder: (_) => BillView(
                   appRepo: appRepo,
                 ));
-        if(!mounted) return;
+        if (!mounted) return;
         this.context.read<AppCubit>().currentState =
             AppState(current: state.previous);
-        if(data != true) return;
+        if (data != true) return;
         this.context.read<HomeBloc>().add(const HomeInitializationEvent());
       },
       builder: (context, state) {
