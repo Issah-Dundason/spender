@@ -132,7 +132,9 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   void _handleDone(String s) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+        content: Text(s)));
   }
 
   void _onYearChange() async {

@@ -23,6 +23,11 @@ class DatabaseClient {
         version: _version, onCreate: _create);
   }
 
+  Future<bool> didTransactionOccurOnDay(String day) async {
+    var results = await _db.query("expenditure", where: "strftime('%Y-%m-%d', date) = ?", whereArgs: [day], limit: 1);
+    return results.isNotEmpty;
+  }
+
   Future deleteExpenditure(int id) async {
     await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
   }
