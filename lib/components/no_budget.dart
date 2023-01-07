@@ -1,11 +1,20 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
 
-class NoBudgetWidget extends StatelessWidget {
+import '../bloc/home/home_bloc.dart';
+
+class NoBudgetWidget extends StatefulWidget {
   const NoBudgetWidget({Key? key}) : super(key: key);
 
+  @override
+  State<NoBudgetWidget> createState() => _NoBudgetWidgetState();
+}
+
+class _NoBudgetWidgetState extends State<NoBudgetWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,8 +49,10 @@ class NoBudgetWidget extends StatelessWidget {
                   )),
                   const SizedBox(width: 5,),
                   TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(TopBar.createRoute());
+                    onPressed: () async {
+                     await  Navigator.of(context).push(TopBar.createRoute());
+                     if(!mounted) return;
+                     context.read<HomeBloc>().add(const HomeInitializationEvent());
                     },
                     style: TextButton.styleFrom(
                       shape:  RoundedRectangleBorder(side: BorderSide(width: 2, color: Theme.of(context).colorScheme.onSecondary)),

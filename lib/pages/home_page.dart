@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/no_budget.dart';
 import 'package:spender/components/total_budget_card.dart';
-import 'package:spender/components/transaction_tile.dart';
-
 import '../bloc/home/home_bloc.dart';
 import '../bloc/home/home_state.dart';
 import '../components/home_chart.dart';

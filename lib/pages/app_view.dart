@@ -14,16 +14,27 @@ import '../components/bill_view.dart';
 import 'expenses.dart';
 import 'home_page.dart';
 
-class AppView extends StatelessWidget {
+class AppView extends StatefulWidget {
   const AppView({Key? key}) : super(key: key);
 
+  @override
+  State<AppView> createState() => _AppViewState();
+}
+
+class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
     final profileState = context.select((ProfileBloc bloc) => bloc.state);
     return Scaffold(
-      appBar: TopBar.getAppBar(context, toBeginningOfSentenceCase(selectedTab.current.name) as String,
-          profileState.currentAvatar),
+      appBar: TopBar.getAppBar(
+          context,
+          toBeginningOfSentenceCase(selectedTab.current.name) as String,
+          profileState.currentAvatar, () async {
+        await Navigator.of(context).push(TopBar.createRoute());
+        if (!mounted) return;
+        context.read<HomeBloc>().add(const HomeInitializationEvent());
+      }),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: IndexedStack(
         index: selectedTab.current == AppTab.bill

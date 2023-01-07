@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:spender/bloc/home/home_bloc.dart';
+import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/pages/profile_page.dart';
 
 class TopBar {
   static AppBar getAppBar(
-          BuildContext context, String text, String assetName) =>
+          BuildContext context, String text, String assetName, Function() func) =>
       AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
         centerTitle: true,
         leading: GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(createRoute());
-          },
+          onTap: func,
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0, top: 4, bottom: 4),
             child: Container(
