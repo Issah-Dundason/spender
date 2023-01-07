@@ -5,55 +5,59 @@ import '../model/bill_type.dart';
 import '../model/budget.dart';
 
 class AppRepository {
-  late DatabaseClient dbClient;
+  final DatabaseClient _dbClient;
 
-  AppRepository(this.dbClient);
+  AppRepository(this._dbClient);
 
   Future<bool> budgetExist(String yearMonth) {
-    return dbClient.budgetExists(yearMonth);
+    return _dbClient.budgetExists(yearMonth);
   }
 
   Future updateBudget(Budget budget) {
-    return dbClient.updateBudget(budget);
+    return _dbClient.updateBudget(budget);
   }
 
   Future saveBudget(Budget budget) {
-    return dbClient.saveBudget(budget);
+    return _dbClient.saveBudget(budget);
   }
 
   Future<Budget?> getBudget(String yearMonth) {
-    return dbClient.getBudget(yearMonth);
+    return _dbClient.getBudget(yearMonth);
   }
 
   Future<List<Budget>> getBudgetsForYear(String year) {
-    return dbClient.getBudgets(year);
+    return _dbClient.getBudgets(year);
   }
 
   Future<int?> getYearOfFirstBudget() {
-    return dbClient.getYearOfFirstBudget();
+    return _dbClient.getYearOfFirstBudget();
+  }
+
+  Future<bool> didTransactionsOnDay(String day) {
+    return _dbClient.didTransactionOccurOnDay(day);
   }
 
   Future<Financials?> getFinancials(String date) {
-    return dbClient.getFinancials(date);
+    return _dbClient.getFinancials(date);
   }
 
   Future<List<BillType>> getBillTypes() {
-    return dbClient.getProductTypes();
+    return _dbClient.getProductTypes();
   }
 
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) {
-    return dbClient.getAmountSpentEachMonth(year);
+    return _dbClient.getAmountSpentEachMonth(year);
   }
 
   Future<List<Expenditure>> getExpenditureAt(String date, int limit) {
-    return dbClient.getExpenditureAtWithLimit(date, limit);
+    return _dbClient.getExpenditureAtWithLimit(date, limit);
   }
 
   Future<int?> getYearOfFirstInsert() {
-    return dbClient.getYearOfFirstInsert();
+    return _dbClient.getYearOfFirstInsert();
   }
 
   Future saveExpenditure(Expenditure expenditure) {
-    return dbClient.saveExpenditure(expenditure.toJson());
+    return _dbClient.saveExpenditure(expenditure.toJson());
   }
 }
