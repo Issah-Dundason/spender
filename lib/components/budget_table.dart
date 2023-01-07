@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spender/bloc/budget/budget_state.dart';
+import 'package:intl/intl.dart';
+import 'package:spender/bloc/budget/budget_review_state.dart';
 
-import '../bloc/budget/budget_bloc.dart';
+import '../bloc/budget/budget_review_bloc.dart';
 import '../util/app_utils.dart';
 
 
@@ -13,7 +14,7 @@ class BudgetTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BudgetBloc, BudgetState>(
+    return BlocBuilder<BudgetReviewBloc, BudgetReviewState>(
       builder: (context, state) {
         return SizedBox(
           width: double.infinity,
@@ -40,7 +41,7 @@ class BudgetTable extends StatelessWidget {
             ...state.budgets.map((b) {
               return DataRow(cells: [
                 DataCell(Text('${b.id}')),
-                DataCell(Text('Ȼ ${AppUtils.amountPresented(b.amount)}')),
+                DataCell(Text('Ȼ ${NumberFormat().format(AppUtils.amountPresented(b.amount))}')),
                 DataCell(Text(b.formattedDate)),
               ]);
             }).toList()

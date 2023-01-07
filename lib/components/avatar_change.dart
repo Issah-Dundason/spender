@@ -20,9 +20,9 @@ class AvatarChanger extends StatelessWidget {
           children: [
             AvatarProfile(
               assetName: state.currentAvatar,
-              avatarWidth: 90,
-              avatarHeight: 90,
-              backColor: Colors.white70,
+              avatarWidth: 100,
+              avatarHeight: 100,
+              backColor: Theme.of(context).colorScheme.tertiary,
             ),
             const SizedBox(width: 15),
             Expanded(

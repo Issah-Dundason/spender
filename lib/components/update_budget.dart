@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/budget/amount_cubit.dart';
 
-import '../bloc/budget/budget_bloc.dart';
-import '../bloc/budget/budget_event.dart';
+import '../bloc/budget/budget_review_bloc.dart';
+import '../bloc/budget/budget_review_event.dart';
 
 
 
@@ -76,7 +76,7 @@ class _BudgetUpdateState extends State<BudgetUpdate> {
     bool valid = _formKey.currentState!.validate();
     if (!valid) return;
     context
-        .read<BudgetBloc>()
+        .read<BudgetReviewBloc>()
         .add(SaveBudgetEvent(amount: amountController.text));
   }
 }

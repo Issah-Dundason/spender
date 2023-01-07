@@ -1,17 +1,17 @@
 import 'package:bloc/bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:spender/bloc/budget/budget_event.dart';
+import 'package:spender/bloc/budget/budget_review_event.dart';
 import 'package:spender/util/app_utils.dart';
 
 import '../../model/budget.dart';
 import '../../repository/expenditure_repo.dart';
-import 'budget_state.dart';
+import 'budget_review_state.dart';
 
-class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
+class BudgetReviewBloc extends Bloc<BudgetReviewEvent, BudgetReviewState> {
 
   final AppRepository appRepo;
 
-  BudgetBloc({required this.appRepo}) : super(BudgetState(selectedYear: DateTime
+  BudgetReviewBloc({required this.appRepo}) : super(BudgetReviewState(selectedYear: DateTime
       .now()
       .year)) {
     on<InitializeEvent>(_onInitialize);
@@ -19,14 +19,14 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     on<YearBudgetEvent>(_handleSelectedYearChange);
   }
 
-  _onInitialize(InitializeEvent e, Emitter<BudgetState> emitter) async {
+  _onInitialize(InitializeEvent e, Emitter<BudgetReviewState> emitter) async {
     int? first = await appRepo.getYearOfFirstBudget();
     var budgets = await appRepo.getBudgetsForYear('${state.selectedYear}');
     emitter(state.copyWith(firstYearOfBudgetEntry: first,
         budgets: budgets));
   }
 
-  _onSave(SaveBudgetEvent e, Emitter<BudgetState> emitter) async {
+  _onSave(SaveBudgetEvent e, Emitter<BudgetReviewState> emitter) async {
     DateTime date = DateTime.now();
     var yearAndMonth = DateFormat("yyyy-MM").format(date);
     var budget = await appRepo.getBudget(yearAndMonth);
@@ -52,7 +52,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     await appRepo.saveBudget(budget);
   }
 
-  void _handleSelectedYearChange(YearBudgetEvent e, Emitter<BudgetState> emitter) async {
+  void _handleSelectedYearChange(YearBudgetEvent e, Emitter<BudgetReviewState> emitter) async {
     var budgets = await appRepo.getBudgetsForYear('${e.year}');
     emitter(state.copyWith(budgets: budgets, selectedYear: e.year));
   }

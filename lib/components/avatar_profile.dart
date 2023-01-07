@@ -24,7 +24,7 @@ class AvatarProfile extends StatelessWidget {
       decoration: BoxDecoration(
         color: backColor,
         borderRadius: const BorderRadius.all(
-          Radius.circular(10),
+          Radius.circular(15),
         ),
       ),
       child: SvgPicture.asset('assets/images/avatar/$assetName'),

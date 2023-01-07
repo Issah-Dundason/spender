@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../model/expenditure.dart';
+import '../util/app_utils.dart';
 
 class Receipt extends StatelessWidget {
   final Expenditure expenditure;
@@ -55,7 +57,7 @@ class Receipt extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 20),
-                child: Text('Amount: ${expenditure.cash}'),
+                child: Text('Amount:  Ȼ${NumberFormat().format(AppUtils.amountPresented(expenditure.price))}'),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 20),

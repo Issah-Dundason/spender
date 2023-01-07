@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../icons/icons.dart';
 
@@ -8,13 +9,13 @@ class TransactionTile extends StatelessWidget {
       this.icon = Cart.icon,
       this.store = "Puma Store",
       this.type = "Bank Amount",
-      this.amount = '954',
+      this.amount = 954,
       this.date = "Fri, 05 April 2022"});
 
   final IconData icon;
   final String store;
   final String type;
-  final String amount;
+  final double amount;
   final String date;
 
   @override
@@ -45,7 +46,7 @@ class TransactionTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "₵$amount",
+                "₵${NumberFormat().format(amount)}",
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
                     fontSize: 16,

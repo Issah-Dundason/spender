@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/budget/amount_cubit.dart';
-import 'package:spender/bloc/budget/budget_bloc.dart';
-import 'package:spender/bloc/budget/budget_event.dart';
+import 'package:spender/bloc/budget/budget_review_bloc.dart';
+import 'package:spender/bloc/budget/budget_review_event.dart';
 import 'package:spender/components/update_budget.dart';
 import 'package:spender/components/year_picker_dialog.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 
-import '../bloc/budget/budget_state.dart';
+import '../bloc/budget/budget_review_state.dart';
 import '../components/avatar_change.dart';
 import '../components/budget_table.dart';
 
@@ -16,9 +16,9 @@ class AppProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<BudgetBloc>(
+    return BlocProvider<BudgetReviewBloc>(
         lazy: true,
-        create: (_) => BudgetBloc(appRepo: context.read<AppRepository>())
+        create: (_) => BudgetReviewBloc(appRepo: context.read<AppRepository>())
           ..add(InitializeEvent()),
         child: const ProfileView());
   }
@@ -45,7 +45,7 @@ class _ProfileViewState extends State<ProfileView> {
         centerTitle: true,
       ),
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: BlocListener<BudgetBloc, BudgetState>(
+      body: BlocListener<BudgetReviewBloc, BudgetReviewState>(
         listener: (context, state) {
           if (state.budgetingState == BudgetingStat.done) {
             _handleDone("Done");
@@ -100,7 +100,7 @@ class _ProfileViewState extends State<ProfileView> {
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    BlocBuilder<BudgetBloc, BudgetState>(
+                    BlocBuilder<BudgetReviewBloc, BudgetReviewState>(
                       builder: (context, state) {
                         return ElevatedButton(
                           onPressed: () => _onYearChange(),
@@ -136,7 +136,7 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   void _onYearChange() async {
-    var budgetBloc = context.read<BudgetBloc>();
+    var budgetBloc = context.read<BudgetReviewBloc>();
     var first = budgetBloc.state.firstYearOfBudgetEntry;
     var selectedDate = budgetBloc.state.selectedYear;
     var year = await showDialog(

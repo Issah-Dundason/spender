@@ -7,6 +7,7 @@ import 'package:spender/icons/icons.dart';
 import 'package:spender/model/expenditure.dart';
 
 import '../bloc/home/home_bloc.dart';
+import '../util/app_utils.dart';
 
 class HomeTransactions extends StatelessWidget {
   const HomeTransactions({Key? key}) : super(key: key);
@@ -45,7 +46,7 @@ class HomeTransactions extends StatelessWidget {
                         child: TransactionTile(
                           store: t.bill,
                           type: t.paymentType.name,
-                          amount: t.cash,
+                          amount: AppUtils.amountPresented(t.price),
                           date: t.formattedDate,
                         ),
                       );

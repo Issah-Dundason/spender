@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:spender/service/database.dart';
 import 'package:spender/util/app_utils.dart';
 
@@ -60,7 +61,7 @@ class TotalBudgetCard extends StatelessWidget {
                         const SizedBox(
                           height: 9,
                         ),
-                        Text("Ȼ ${AppUtils.amountPresented(financials.budget)}",
+                        Text("Ȼ ${NumberFormat().format(AppUtils.amountPresented(financials.budget))}",
                             style: const TextStyle(
                                 fontSize: 24,
                                 color: Colors.white,
@@ -79,7 +80,7 @@ class TotalBudgetCard extends StatelessWidget {
                         ),
                         //NumberFormat.currency(symbol: 'Ȼ', decimalDigits: AppUtils.amountPresented(financials.balance)).toString()
                         Text(
-                          "Ȼ ${AppUtils.amountPresented(financials.balance)}",
+                          "Ȼ ${NumberFormat().format(AppUtils.amountPresented(financials.balance))}",
                           style: const TextStyle(
                               fontSize: 24,
                               color: Colors.white,

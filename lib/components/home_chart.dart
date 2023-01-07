@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:spender/util/app_utils.dart';
 
 import '../bloc/home/home_state.dart';
@@ -108,7 +109,7 @@ class _ChartWidgetState extends State<ChartWidget> {
           var month = DateTime.now().month;
           var ms = monthSpendings.firstWhere((m) => m.month == value.toInt());
           var r = AppUtils.amountPresented(ms.amount);
-          return Text('₵$r',
+          return Text('₵${NumberFormat().format(r)}',
               style: TextStyle(
                 color: value.toInt() == month
                     ? Theme.of(context).colorScheme.primary
