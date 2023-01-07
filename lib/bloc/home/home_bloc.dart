@@ -18,7 +18,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     DateTime date = DateTime.now();
     var yearAndMonth = DateFormat("yyyy-MM").format(date);
     var yearMonthDay = DateFormat("yyyy-MM-dd").format(date);
-    var expenditures = await appRepo.getAmountSpentEachMonth("${state.analysisYear}");
+    var expenditures =
+        await appRepo.getAmountSpentEachMonth("${state.analysisYear}");
     var financials = await appRepo.getFinancials(yearAndMonth);
     var transactions = await appRepo.getExpenditureAt(yearMonthDay, 3);
     var firstRecordYear = await appRepo.getYearOfFirstInsert();
@@ -29,7 +30,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         financials: financials));
   }
 
-  void _onHandleAnalysisDateChange(HomeAnalysisDateChangeEvent event,Emitter<HomeState> e) async {
+  void _onHandleAnalysisDateChange(
+      HomeAnalysisDateChangeEvent event, Emitter<HomeState> e) async {
     var record = await appRepo.getAmountSpentEachMonth('${event.year}');
     e(state.copyWith(monthSpending: record, analysisYear: event.year));
   }

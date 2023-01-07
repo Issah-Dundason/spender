@@ -1,72 +1,97 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:spender/service/database.dart';
+import 'package:spender/util/app_utils.dart';
 
 class TotalBudgetCard extends StatelessWidget {
-  final double budget;
-  const TotalBudgetCard({super.key, this.budget = 59765.00});
+  final double backgroundImageWidth;
+
+  final Financials financials;
+
+  const TotalBudgetCard(
+      {super.key, required this.financials, this.backgroundImageWidth = 80});
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        const SmallBgProjection(),
-        Align(
-          alignment: Alignment(0, 0),
-          child: SizedBox(
-            width: 300,
-            height: 150,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              color: Colors.black,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
+    return SizedBox(
+      height: 180,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            top: 5,
+            child: Container(
+              width: backgroundImageWidth,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(30)),
+              height: 100,
+            ),
+          ),
+          Positioned(
+            top: 20,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: const Alignment(0.8, 1),
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.secondary
+                      ])),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 1.2),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text("Total Buget",
-                            style: TextStyle(color: Colors.grey[500])),
-                        const Icon(Icons.more_horiz, color: Colors.white)
+                        const Text(
+                          "Current Month Budget: ",
+                          style: TextStyle(fontSize: 17, color: Colors.white),
+                        ),
+                        const SizedBox(
+                          height: 9,
+                        ),
+                        Text("Ȼ ${AppUtils.amountPresented(financials.budget)}",
+                            style: const TextStyle(
+                                fontSize: 24,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600))
                       ],
                     ),
-                    Text(
-                      "\$$budget",
-                      style: const TextStyle(fontSize: 24, color: Colors.white),
-                    ),
                     const SizedBox(
-                      height: 30,
+                      height: 12,
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "Balance: ",
+                          style: TextStyle(fontSize: 17, color: Colors.white),
+                        ),
+                        Text(
+                          "Ȼ ${AppUtils.amountPresented(financials.balance)}",
+                          style: const TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                        )
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class SmallBgProjection extends StatelessWidget {
-  const SmallBgProjection({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: const Alignment(0.1, -0.2),
-      child: SizedBox(
-        height: 100,
-        width: 260,
-        child: Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            color: Colors.indigo[500]),
+        ],
       ),
     );
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/no_budget.dart';
+import 'package:spender/components/total_budget_card.dart';
+import 'package:spender/components/transaction_tile.dart';
 
 import '../bloc/home/home_bloc.dart';
 import '../bloc/home/home_state.dart';
@@ -27,7 +29,23 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 40,
           ),
-          const Align(alignment: Alignment.center, child: NoBudgetWidget()),
+          Align(
+              alignment: Alignment.center,
+              child: BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) {
+                  var width = MediaQuery.of(context).size.width;
+                  if (state.currentFinancials != null) {
+                    return Align(
+                        child: SizedBox(
+                            width: width * 0.8,
+                            child: TotalBudgetCard(
+                              financials: state.currentFinancials!,
+                              backgroundImageWidth: width * 0.68,
+                            )));
+                  }
+                  return const NoBudgetWidget();
+                },
+              )),
           const SizedBox(
             height: 60,
           ),
@@ -91,5 +109,3 @@ class _HomePageState extends State<HomePage> {
     context.read<HomeBloc>().add(HomeAnalysisDateChangeEvent(result));
   }
 }
-
-
