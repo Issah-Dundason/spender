@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/expenses/expenses_bloc.dart';
+import '../bloc/expenses/expenses_state.dart';
+import '../icons/icons.dart';
+import 'expense_transaction_tile.dart';
+
+
+class ExpensesTransactions extends StatelessWidget {
+  const ExpensesTransactions({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: BlocBuilder<ExpensesBloc, ExpensesState>(
+        builder: (context, state) {
+          if (state.transactions.isEmpty) {
+            return Stack(
+              alignment: Alignment.center,
+              children: const [
+                Text("No Data"),
+                Icon(
+                  Whiteboard.icon,
+                  size: 150,
+                )
+              ],
+            );
+          }
+          return ListView(
+            children: [
+              ...state.transactions.map((e) {
+                return EditableTransactionTile(expenditure: e);
+              }).toList()
+            ],
+          );
+        },
+      ),
+    );
+  }
+}

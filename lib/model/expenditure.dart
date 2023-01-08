@@ -54,9 +54,9 @@ class Expenditure extends Equatable {
     return DateFormat('EEE,dd MMM yyyy').format(DateTime.parse(date));
   }
 
-  String get cash {
+  double get cash {
     var cash = AppUtils.amountPresented(price);
-    return '$cash';
+    return cash;
   }
 
   Map<String, dynamic> toJson() {

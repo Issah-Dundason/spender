@@ -7,24 +7,18 @@ import '../repository/expenditure_repo.dart';
 
 class TransactionCalendar extends StatelessWidget {
   const TransactionCalendar(
-      {Key? key, required this.selectedDay, this.onDateSelected,this.firstYear})
+      {Key? key, required this.selectedDay, this.onDateSelected,required this.firstYear})
       : super(key: key);
 
   final DateTime selectedDay;
-  final int? firstYear;
+  final int firstYear;
 
   final void Function(DateTime, DateTime)? onDateSelected;
 
   @override
   Widget build(BuildContext context) {
     var date = DateTime.now();
-    var q = DateTime.utc(date.year, date.month, date.day);
-    //print('first: ${firstDay}');
-    print('selected: ${selectedDay}');
-    print('last: ${q}');
-    print('test: ${selectedDay.year}');
-    print('isSameday: ${DateUtils.isSameDay(selectedDay, q)}');
-    print('isBefore: ${selectedDay.isBefore(q)}');
+    var last = DateTime.utc(date.year, date.month, date.day);
     return Card(
       elevation: 0,
       color: Theme
@@ -37,8 +31,8 @@ class TransactionCalendar extends StatelessWidget {
         child: TableCalendar(
           onDaySelected: onDateSelected,
           focusedDay: selectedDay,
-          firstDay: firstYear == null ? DateTime.now() : DateTime(firstYear!),
-          lastDay: q,
+          firstDay:DateTime(firstYear),
+          lastDay: last,
           calendarFormat: CalendarFormat.week,
           calendarBuilders: CalendarBuilders(
               defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder,
