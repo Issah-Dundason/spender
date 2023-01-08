@@ -27,7 +27,7 @@ class BudgetTable extends StatelessWidget {
             ),
             DataColumn(
               label: Text(
-                'Amount',
+                'Amount(₵)',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -41,7 +41,7 @@ class BudgetTable extends StatelessWidget {
             ...state.budgets.map((b) {
               return DataRow(cells: [
                 DataCell(Text('${b.id}')),
-                DataCell(Text('Ȼ ${NumberFormat().format(AppUtils.amountPresented(b.amount))}')),
+                DataCell(Text(NumberFormat().format(AppUtils.amountPresented(b.amount)))),
                 DataCell(Text(b.formattedDate)),
               ]);
             }).toList()

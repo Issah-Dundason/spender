@@ -57,7 +57,7 @@ class Receipt extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 20),
-                child: Text('Amount:  Ȼ${NumberFormat().format(AppUtils.amountPresented(expenditure.price))}'),
+                child: Text('Amount:  ₵${NumberFormat().format(AppUtils.amountPresented(expenditure.price))}'),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 20),

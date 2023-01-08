@@ -61,7 +61,7 @@ class TotalBudgetCard extends StatelessWidget {
                         const SizedBox(
                           height: 9,
                         ),
-                        Text("Ȼ ${NumberFormat().format(AppUtils.amountPresented(financials.budget))}",
+                        Text("₵ ${NumberFormat().format(AppUtils.amountPresented(financials.budget))}",
                             style: const TextStyle(
                                 fontSize: 24,
                                 color: Colors.white,
@@ -80,7 +80,7 @@ class TotalBudgetCard extends StatelessWidget {
                         ),
                         //NumberFormat.currency(symbol: 'Ȼ', decimalDigits: AppUtils.amountPresented(financials.balance)).toString()
                         Text(
-                          "Ȼ ${NumberFormat().format(AppUtils.amountPresented(financials.balance))}",
+                          "₵ ${NumberFormat().format(AppUtils.amountPresented(financials.balance))}",
                           style: const TextStyle(
                               fontSize: 24,
                               color: Colors.white,
