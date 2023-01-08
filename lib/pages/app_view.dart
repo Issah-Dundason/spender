@@ -64,7 +64,7 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
         if (state.current != AppTab.bill) return;
         this.context.read<AppCubit>().currentState =
             AppState(current: state.previous);
-        var data = await showAddView(context);
+        var data = await showAddView();
         if (!mounted) return;
         if (data != true) return;
         this.context.read<HomeBloc>().add(const HomeInitializationEvent());
@@ -112,7 +112,7 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
     );
   }
 
-  Future<dynamic> showAddView(BuildContext context) async {
+  Future<dynamic> showAddView() async {
     var appRepo = context.read<AppRepository>();
     var billTypes = await appRepo.getBillTypes();
     return await showModalBottomSheet(
