@@ -27,15 +27,16 @@ class ExpensesPage extends StatelessWidget {
               width: size.width * 0.9,
               child: BlocBuilder<ExpensesBloc, ExpensesState>(
                 builder: (context, state) {
-                  var year = state.yearOfFirstInsert;
+                  print('first year: ${state.yearOfFirstInsert}');
                   return TransactionCalendar(
-                    selectedDay: state.selectedDate,
-                    firstDay: year == null ? DateTime.now() : DateTime.utc(year),
-                    onDateSelected: (date, focus) {
-                     //context.read<ExpensesBloc>().add(ChangeDateEvent(date));
-                      print('selected to back: $date');
-                    }
-                  );
+                      selectedDay: state.selectedDate,
+                      firstDay: state.yearOfFirstInsert == null
+                          ? DateTime.now().toUtc()
+                          : DateTime.utc(state.yearOfFirstInsert!, 1, 1),
+                      onDateSelected: (date, focus) {
+                        context.read<ExpensesBloc>().add(ChangeDateEvent(date));
+                        // print('selected to back: $date');
+                      });
                 },
               )),
         ),

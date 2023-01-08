@@ -19,12 +19,13 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     print('Expense me yaww');
     var date = DateFormat("yyyy-MM-dd").format(e.selectedDate);
     var expenditures = await appRepo.getAllExpenditure(date);
-    emitter(ExpensesState(
+
+    emitter(state.copyWith(
         selectedDate: e.selectedDate, transactions: expenditures));
   }
 
   void _onStart(OnStartEvent e, Emitter<ExpensesState> emitter) async {
-    int? year = await appRepo.getYearOfFirstBudget();
+    int? year = await appRepo.getYearOfFirstInsert();
     emitter(state.copyWith(yearOfFirstInsert: year));
   }
 }

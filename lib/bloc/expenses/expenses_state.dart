@@ -10,7 +10,7 @@ class ExpensesState extends Equatable {
   const ExpensesState(
       {this.transactions = const [],
       required this.selectedDate,
-      this.yearOfFirstInsert = 2023});
+      this.yearOfFirstInsert});
 
   ExpensesState copyWith(
       {List<Expenditure>? transactions,

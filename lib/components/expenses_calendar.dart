@@ -17,8 +17,14 @@ class TransactionCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var date = DateTime.now();
+    var q = DateTime.utc(date.year, date.month, date.day);
     print('first: ${firstDay}');
     print('selected: ${selectedDay}');
+    print('last: ${q}');
+    print('test: ${selectedDay.year}');
+    print('isSameday: ${DateUtils.isSameDay(selectedDay, q)}');
+    print('isBefore: ${selectedDay.isBefore(q)}');
     return Card(
       elevation: 0,
       color: Theme
@@ -30,12 +36,13 @@ class TransactionCalendar extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: TableCalendar(
           onDaySelected: onDateSelected,
-          focusedDay: DateTime.now(),
-          firstDay: firstDay,
-          lastDay: DateTime.now(),
+          focusedDay: selectedDay,
+          firstDay: DateTime(2022),
+          lastDay: q,
           calendarFormat: CalendarFormat.week,
           calendarBuilders: CalendarBuilders(
-              defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder, ),
+              defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder,
+          ),
           headerStyle: const HeaderStyle(
               formatButtonVisible: false, titleCentered: true),
           calendarStyle: const CalendarStyle(
@@ -51,11 +58,12 @@ class TransactionCalendar extends StatelessWidget {
       DateTime focusDate) {
     var appRepo = context.read<AppRepository>();
     String date = DateFormat('yyyy-MM-dd').format(actualDate);
-    //print('date: $date');
+    // print('actual date: ${actualDate}');
+    // print('date: $date');
     return FutureBuilder(
       future: appRepo.didTransactionsOnDay(date),
       builder: (context, snapshot) {
-        //print("data: ${snapshot.data!}");
+      //  print("data: ${snapshot.data}");
         return Container(
           width: 40,
           decoration: BoxDecoration(

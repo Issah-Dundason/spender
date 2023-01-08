@@ -30,11 +30,11 @@ void main() async {
   // var b = Budget(date.toIso8601String(), 323);
   //
   // appRepo.saveBudget(b);
-
+  //
   // var types = await dbClient.getProductTypes();
   //
   // var expenditure = Expenditure.withDate("First Insert", "For testing",
-  //     PaymentType.momo, types[0], DateTime.utc(2023, 01, 01).toIso8601String(), 100, Priority.want);
+  //     PaymentType.momo, types[0], DateTime.utc(2022, 05, 01).toIso8601String(), 100, Priority.want);
   //
   // await dbClient.saveExpenditure(expenditure.toJson());
 
@@ -73,7 +73,12 @@ class Spender extends StatelessWidget {
                     create: (_) => HomeBloc(appRepo: appRepo)
                       ..add(const HomeInitializationEvent())),
                 BlocProvider(create: (_) => AppCubit()),
-                BlocProvider(create: (_) => ExpensesBloc(appRepo: appRepo)..add(const OnStartEvent()))
+                BlocProvider(
+                    create: (_) {
+                      var a = ExpensesBloc(appRepo: appRepo)
+                      ..add(const OnStartEvent());
+                      return a;
+                    })
               ],
               child: const AppView(),
             )),
