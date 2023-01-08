@@ -24,6 +24,7 @@ class TransactionTile extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.grey[200],
+      clipBehavior: Clip.antiAlias,
       child: ListTile(
         leading: Container(
             width: 50,

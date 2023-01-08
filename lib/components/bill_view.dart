@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/bill/billing_event.dart';
 import 'package:spender/bloc/bill/billing_state.dart';
 import 'package:spender/util/app_utils.dart';
 
@@ -122,6 +123,7 @@ class _BillViewState extends State<BillView> {
                                   if (s != null && s.isEmpty) {
                                     return 'Field can not be empty';
                                   }
+                                  if(double.parse(s!) < 1) return '0 is not allowed';
                                   return null;
                                 },
                                 keyboardType:
@@ -204,9 +206,13 @@ class _BillViewState extends State<BillView> {
                                   showErrorDialog(context);
                                   return;
                                 }
+
+                                widget.expenditure == null ? save() : update();
                               },
                               style: getButtonStyle(context),
-                              child:  Text(widget.expenditure == null ? "ADD": "Update"))
+                              child: Text(widget.expenditure == null
+                                  ? "ADD"
+                                  : "Update"))
                     ],
                   ),
                 ),
@@ -221,12 +227,22 @@ class _BillViewState extends State<BillView> {
     );
   }
 
-  @override
-  void dispose() {
-    _amountController.dispose();
-    _descriptionController.dispose();
-    _billController.dispose();
-    super.dispose();
+  void save() {
+    var amount = AppUtils.getActualAmount(_amountController.value.text);
+    var description = _descriptionController.value.text;
+    var bill = _billController.value.text;
+    Expenditure ex = Expenditure.latest(
+        bill, description, _paymentType, _billType!, amount, _priority);
+    context.read<BillBloc>().add(BillSaveEvent(ex));
+  }
+
+  void update() {
+    var amount = AppUtils.getActualAmount(_amountController.value.text);
+    var description = _descriptionController.value.text;
+    var bill = _billController.value.text;
+    Expenditure ex = Expenditure(widget.expenditure!.id, bill, description,
+        _paymentType, _billType!, amount,widget.expenditure!.date,  _priority);
+    context.read<BillBloc>().add(BillUpdateEvent(ex));
   }
 
   ButtonStyle getButtonStyle(BuildContext context) {
@@ -250,6 +266,14 @@ class _BillViewState extends State<BillView> {
               content: const Text('Bill type must be set',
                   textAlign: TextAlign.center),
             ));
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _descriptionController.dispose();
+    _billController.dispose();
+    super.dispose();
   }
 }
 

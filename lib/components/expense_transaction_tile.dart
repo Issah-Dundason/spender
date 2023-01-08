@@ -18,9 +18,10 @@ class EditableTransactionTile extends StatefulWidget {
 class _EditableTransactionTileState extends State<EditableTransactionTile> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration:
-          BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer),
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

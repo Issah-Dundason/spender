@@ -65,10 +65,10 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
         if (state.current != AppTab.bill) return;
         this.context.read<AppCubit>().currentState =
             AppState(current: state.previous);
-        showAddView(context);
-        // if (!mounted) return;
-        // if (data != true) return;
-        // this.context.read<HomeBloc>().add(const HomeInitializationEvent());
+        var data = await showAddView(context);
+        if (!mounted) return;
+        if (data != true) return;
+        this.context.read<HomeBloc>().add(const HomeInitializationEvent());
       },
       builder: (context, state) {
         return Padding(
