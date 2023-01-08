@@ -7,3 +7,7 @@ class ChangeDateEvent extends ExpensesEvent {
 
   ChangeDateEvent(this.selectedDate);
 }
+
+class OnStartEvent extends ExpensesEvent {
+  const OnStartEvent();
+}

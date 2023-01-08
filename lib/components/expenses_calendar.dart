@@ -7,14 +7,18 @@ import '../repository/expenditure_repo.dart';
 
 class TransactionCalendar extends StatelessWidget {
   const TransactionCalendar(
-      {Key? key, required this.selectedDay, this.onDateSelected})
+      {Key? key, required this.selectedDay, this.onDateSelected, required this.firstDay})
       : super(key: key);
 
   final DateTime selectedDay;
+  final DateTime firstDay;
+
   final void Function(DateTime, DateTime)? onDateSelected;
 
   @override
   Widget build(BuildContext context) {
+    print('first: ${firstDay}');
+    print('selected: ${selectedDay}');
     return Card(
       elevation: 0,
       color: Theme
@@ -27,11 +31,11 @@ class TransactionCalendar extends StatelessWidget {
         child: TableCalendar(
           onDaySelected: onDateSelected,
           focusedDay: DateTime.now(),
-          firstDay: DateTime.utc(200),
-          lastDay: DateTime.utc(2030),
+          firstDay: firstDay,
+          lastDay: DateTime.now(),
           calendarFormat: CalendarFormat.week,
           calendarBuilders: CalendarBuilders(
-              defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder),
+              defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder, ),
           headerStyle: const HeaderStyle(
               formatButtonVisible: false, titleCentered: true),
           calendarStyle: const CalendarStyle(

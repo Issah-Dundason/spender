@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:spender/bloc/expenses/expenses_bloc.dart';
+import 'package:spender/bloc/expenses/expenses_event.dart';
+import 'package:spender/bloc/expenses/expenses_state.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -22,8 +25,18 @@ class ExpensesPage extends StatelessWidget {
           alignment: Alignment.center,
           child: SizedBox(
               width: size.width * 0.9,
-              child: TransactionCalendar(
-                selectedDay: DateTime.now(),
+              child: BlocBuilder<ExpensesBloc, ExpensesState>(
+                builder: (context, state) {
+                  var year = state.yearOfFirstInsert;
+                  return TransactionCalendar(
+                    selectedDay: state.selectedDate,
+                    firstDay: year == null ? DateTime.now() : DateTime.utc(year),
+                    onDateSelected: (date, focus) {
+                     //context.read<ExpensesBloc>().add(ChangeDateEvent(date));
+                      print('selected to back: $date');
+                    }
+                  );
+                },
               )),
         ),
         const SizedBox(
@@ -38,12 +51,16 @@ class ExpensesPage extends StatelessWidget {
         ),
         SizedBox(
           width: size.width * 0.9,
-        //  child: const Divider(),
+          //  child: const Divider(),
         ),
         SizedBox(
             width: size.width * 0.9,
-            child: const Text('Transactions on date',
-                style: TextStyle(fontSize: 16))),
+            child: BlocBuilder<ExpensesBloc, ExpensesState>(
+                builder: (context, state) {
+              var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
+              return Text('Transactions on $date',
+                  style: const TextStyle(fontSize: 16));
+            })),
         const SizedBox(
           height: 20,
         ),
@@ -87,35 +104,47 @@ class EditableTransactionTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text('Bill: Fufu'),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Text('Price: Necessity'),
                   ],
                 ),
-                const SizedBox(width: 20,),
+                const SizedBox(
+                  width: 20,
+                ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text('Bill: Fufu'),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Text('Price: Necessity'),
                   ],
                 )
               ],
             ),
-            const SizedBox(height: 15,),
+            const SizedBox(
+              height: 15,
+            ),
             Row(
               children: [
                 TextButton(
                     style: buildButtonStyle(),
                     onPressed: () {},
                     child: const Text('View')),
-                const SizedBox(width: 12,),
+                const SizedBox(
+                  width: 12,
+                ),
                 TextButton(
                     style: buildButtonStyle(),
                     onPressed: () {},
                     child: const Text('Delete')),
-                const SizedBox(width: 12,),
+                const SizedBox(
+                  width: 12,
+                ),
                 TextButton(
                     style: buildButtonStyle(),
                     onPressed: () {},
@@ -151,7 +180,7 @@ class ExpenseAnalysisSection extends StatelessWidget {
           'Statistics',
           style: TextStyle(fontSize: 18),
         ),
-       // const Divider(),
+        // const Divider(),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -170,7 +199,7 @@ class ExpenseAnalysisSection extends StatelessWidget {
             ),
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     minimumSize: const Size(0, 0),
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                     elevation: 0,

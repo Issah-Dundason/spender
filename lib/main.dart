@@ -1,9 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/expenses/expenses_bloc.dart';
+import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/bloc/profile/profile_event.dart';
+import 'package:spender/model/expenditure.dart';
 import 'package:spender/pages/app_view.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
@@ -11,6 +16,7 @@ import 'package:spender/theme/theme.dart';
 
 import 'bloc/app/app_cubit.dart';
 import 'bloc/profile/profile_bloc.dart';
+import 'model/budget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +24,19 @@ void main() async {
   DatabaseClient dbClient = await DatabaseClient().init();
 
   AppRepository appRepo = AppRepository(dbClient);
+
+  // DateTime date = DateTime.utc(2019, 02);
+  //
+  // var b = Budget(date.toIso8601String(), 323);
+  //
+  // appRepo.saveBudget(b);
+
+  // var types = await dbClient.getProductTypes();
+  //
+  // var expenditure = Expenditure.withDate("First Insert", "For testing",
+  //     PaymentType.momo, types[0], DateTime.utc(2023, 01, 01).toIso8601String(), 100, Priority.want);
+  //
+  // await dbClient.saveExpenditure(expenditure.toJson());
 
   //check shared preference
   //if avatar is not there
@@ -54,6 +73,7 @@ class Spender extends StatelessWidget {
                     create: (_) => HomeBloc(appRepo: appRepo)
                       ..add(const HomeInitializationEvent())),
                 BlocProvider(create: (_) => AppCubit()),
+                BlocProvider(create: (_) => ExpensesBloc(appRepo: appRepo)..add(const OnStartEvent()))
               ],
               child: const AppView(),
             )),
