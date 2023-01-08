@@ -24,7 +24,8 @@ class DatabaseClient {
   }
 
   Future<bool> didTransactionOccurOnDay(String day) async {
-    var results = await _db.query("expenditure", where: "strftime('%Y-%m-%d', date) = ?", whereArgs: [day], limit: 1);
+    var results = await _db.query("expenditure",
+        where: "strftime('%Y-%m-%d', date) = ?", whereArgs: [day], limit: 1);
     return results.isNotEmpty;
   }
 
@@ -129,7 +130,7 @@ class DatabaseClient {
             p.id as pid, p.name as pname
       FROM expenditure e 
       JOIN bill_type p 
-      ON e.bill_type_id = p.id WHERE date = ?;
+      ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC;
     ''', [date]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }

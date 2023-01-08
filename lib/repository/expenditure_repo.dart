@@ -9,6 +9,10 @@ class AppRepository {
 
   AppRepository(this._dbClient);
 
+  Future<List<Expenditure>> getAllExpenditure(String date) {
+    return _dbClient.getExpenditureByDate(date);
+  }
+
   Future<bool> budgetExist(String yearMonth) {
     return _dbClient.budgetExists(yearMonth);
   }
