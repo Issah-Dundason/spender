@@ -11,12 +11,12 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
       : super(ExpensesState(selectedDate: DateTime.now())) {
     on<ChangeDateEvent>(_onDateChange);
     on<OnStartEvent>(_onStart);
+    on<LoadEvent>(_onLoad);
   }
 
   void _onDateChange(ChangeDateEvent e, Emitter<ExpensesState> emitter) async {
     var date = DateFormat("yyyy-MM-dd").format(e.selectedDate);
     var expenditures = await appRepo.getAllExpenditure(date);
-
     emitter(state.copyWith(
         selectedDate: e.selectedDate, transactions: expenditures));
   }
@@ -24,5 +24,11 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   void _onStart(OnStartEvent e, Emitter<ExpensesState> emitter) async {
     int? year = await appRepo.getYearOfFirstInsert();
     emitter(state.copyWith(yearOfFirstInsert: year, initialized: true));
+  }
+
+  void _onLoad(ExpensesEvent e, Emitter<ExpensesState> emitter) async {
+    var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
+    var expenditures = await appRepo.getAllExpenditure(date);
+    emitter(state.copyWith(transactions: expenditures));
   }
 }

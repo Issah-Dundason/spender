@@ -11,3 +11,7 @@ class ChangeDateEvent extends ExpensesEvent {
 class OnStartEvent extends ExpensesEvent {
   const OnStartEvent();
 }
+
+class LoadEvent extends ExpensesEvent {
+  const LoadEvent();
+}

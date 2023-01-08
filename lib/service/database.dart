@@ -143,7 +143,7 @@ class DatabaseClient {
   }
 
   Future saveExpenditure(Map<String, dynamic> map) async {
-    int val = await _db.insert("expenditure", map);
+    await _db.insert("expenditure", map);
   }
 
   Future<int?> getYearOfFirstInsert() async {
