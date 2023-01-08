@@ -27,7 +27,7 @@ class HomeTransactions extends StatelessWidget {
                     children: [
                       const Text("Transactions",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
+                              fontSize: 16, fontWeight: FontWeight.w500)),
                       TextButton(
                           onPressed: () {},
                           child: Text(

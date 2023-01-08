@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bloc/bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
@@ -16,7 +14,6 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   }
 
   void _onDateChange(ChangeDateEvent e, Emitter<ExpensesState> emitter) async {
-    print('Expense me yaww');
     var date = DateFormat("yyyy-MM-dd").format(e.selectedDate);
     var expenditures = await appRepo.getAllExpenditure(date);
 

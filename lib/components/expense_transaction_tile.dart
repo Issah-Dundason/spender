@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart.';
 
@@ -58,11 +57,8 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
               ],
             ),
           ),
-          const SizedBox(
-            height: 15,
-          ),
           Padding(
-            padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 9, bottom: 12),
+            padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 14, bottom: 10),
             child: Row(
               children: [
                 TextButton(
@@ -95,8 +91,8 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                   width: 12,
                 ),
                 TextButton(
-                    style: buildButtonStyle(),
-                    onPressed: () {},
+                  style: buildButtonStyle(),
+                  onPressed: () {},
                     child: const Text('update')),
               ],
             ),
@@ -109,7 +105,8 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
 
   ButtonStyle buildButtonStyle() {
     return TextButton.styleFrom(
-        minimumSize: const Size(0, 0),
+      textStyle: const TextStyle(fontSize: 16),
+        minimumSize: const Size(0, 10),
         padding: EdgeInsets.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap);
   }

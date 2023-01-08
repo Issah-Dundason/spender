@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   const Text(
                     "Analytics (Amount Spent)",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   BlocBuilder<HomeBloc, HomeState>(
                     builder: (context, state) {

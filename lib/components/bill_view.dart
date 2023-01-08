@@ -2,32 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/bill/billing_state.dart';
+import 'package:spender/util/app_utils.dart';
 
 import '../bloc/bill/bill_bloc.dart';
-import '../bloc/bill/billing_event.dart';
 import '../model/bill_type.dart';
 import '../model/expenditure.dart';
-import '../repository/expenditure_repo.dart';
 
-class BillView extends StatelessWidget {
-  final AppRepository appRepo;
+class BillView extends StatefulWidget {
+  final List<BillType> billTypes;
+  final Expenditure? expenditure;
 
-  const BillView({Key? key, required this.appRepo}) : super(key: key);
+  const BillView({Key? key, required this.billTypes, this.expenditure})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider<BillBloc>(
-      create: (context) =>
-          BillBloc(appRepo: appRepo)..add(BillInitializationEvent()),
-      child: const _BillSheet(),
-    );
-  }
+  State<BillView> createState() => _BillViewState();
 }
 
-class _BillSheet extends StatelessWidget {
-  static final _formKey = GlobalKey<FormState>();
+class _BillViewState extends State<BillView> {
+  final _formKey = GlobalKey<FormState>();
 
-  const _BillSheet({Key? key}) : super(key: key);
+  late TextEditingController _billController;
+  late TextEditingController _amountController;
+  late TextEditingController _descriptionController;
+
+  BillType? _billType;
+  PaymentType _paymentType = PaymentType.cash;
+  Priority _priority = Priority.need;
+
+  @override
+  void initState() {
+    _billController = TextEditingController(text: widget.expenditure?.bill);
+    _descriptionController =
+        TextEditingController(text: widget.expenditure?.description);
+    _amountController = TextEditingController();
+
+    if (widget.expenditure != null) {
+      var amount = AppUtils.amountPresented(widget.expenditure!.price);
+      _amountController.text = '$amount';
+      _billType = widget.expenditure!.type;
+      _paymentType = widget.expenditure!.paymentType;
+      _priority = widget.expenditure!.priority;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +63,7 @@ class _BillSheet extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                //bar
                 Container(
                   margin: const EdgeInsets.only(top: 10),
                   width: 80,
@@ -64,16 +83,13 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                               flex: 4,
                               child: TextFormField(
-                                initialValue: state.bill,
+                                controller: _billController,
                                 validator: (s) {
                                   if (s != null && s.isEmpty) {
                                     return 'Field can not be empty';
                                   }
                                   return null;
                                 },
-                                onChanged: (s) => context
-                                    .read<BillBloc>()
-                                    .add(BillTitleChangeEvent(s)),
                                 decoration: const InputDecoration(
                                     hintText: "bill name"),
                               )),
@@ -83,12 +99,10 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                             flex: 2,
                             child: _ProductTypeDropDown<BillType>(
-                              onChange: (t) => context
-                                  .read<BillBloc>()
-                                  .add(BillTypeChangeEvent(t!)),
-                              value: state.billType,
+                              onChange: (t) => setState(() => _billType = t),
+                              value: _billType,
                               title: "Bill Type",
-                              items: state.billTypes,
+                              items: widget.billTypes,
                               menuItemBuilder: (t) => Text(t.name),
                             ),
                           )
@@ -103,16 +117,13 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                               flex: 4,
                               child: TextFormField(
-                                initialValue: state.amount,
+                                controller: _amountController,
                                 validator: (s) {
                                   if (s != null && s.isEmpty) {
                                     return 'Field can not be empty';
                                   }
                                   return null;
                                 },
-                                onChanged: (s) => context
-                                    .read<BillBloc>()
-                                    .add(BillAmountChangeEvent(s)),
                                 keyboardType:
                                     const TextInputType.numberWithOptions(
                                         decimal: true),
@@ -129,11 +140,10 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                             flex: 2,
                             child: _ProductTypeDropDown<PaymentType>(
-                              onChange: (t) => context
-                                  .read<BillBloc>()
-                                  .add(BillPaymentTypeEvent(t!)),
+                              value: _paymentType,
+                              onChange: (t) =>
+                                  setState(() => _paymentType = t!),
                               title: "Payment Type",
-                              value: state.paymentType,
                               menuItemBuilder: (t) => Text(
                                 t.name,
                                 softWrap: false,
@@ -153,14 +163,11 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                               flex: 4,
                               child: TextFormField(
-                                initialValue: state.description,
-                                onChanged: (s) => context
-                                    .read<BillBloc>()
-                                    .add(BillDescriptionEvent(s)),
                                 textCapitalization:
                                     TextCapitalization.sentences,
                                 minLines: 2,
                                 maxLines: 4,
+                                controller: _descriptionController,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(120),
                                 ],
@@ -174,10 +181,8 @@ class _BillSheet extends StatelessWidget {
                           Expanded(
                             flex: 2,
                             child: _ProductTypeDropDown<Priority>(
-                              onChange: (t) => context
-                                  .read<BillBloc>()
-                                  .add(BillPriorityChangeEvent(t!)),
-                              value: state.priority,
+                              value: _priority,
+                              onChange: (t) => setState(() => _priority = t!),
                               title: "Priority",
                               menuItemBuilder: (t) => Text(t.name),
                               items: Priority.values,
@@ -195,36 +200,13 @@ class _BillSheet extends StatelessWidget {
                                 bool? isValid =
                                     _formKey.currentState?.validate();
                                 if (isValid != null && !isValid) return;
-                                var type = state.billType;
-                                if (type == null) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (_) => AlertDialog(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20)),
-                                            title: const Text(
-                                              'Error',
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            content: const Text(
-                                                'Bill type must be set',
-                                                textAlign: TextAlign.center),
-                                          ));
+                                if (_billType == null) {
+                                  showErrorDialog(context);
                                   return;
                                 }
-                                context
-                                    .read<BillBloc>()
-                                    .add(const BillSaveEvent());
                               },
-                              style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(40),
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.secondary,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20))),
-                              child: const Text("ADD"))
+                              style: getButtonStyle(context),
+                              child:  Text(widget.expenditure == null ? "ADD": "Update"))
                     ],
                   ),
                 ),
@@ -237,6 +219,37 @@ class _BillSheet extends StatelessWidget {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _descriptionController.dispose();
+    _billController.dispose();
+    super.dispose();
+  }
+
+  ButtonStyle getButtonStyle(BuildContext context) {
+    return ElevatedButton.styleFrom(
+        minimumSize: const Size.fromHeight(40),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)));
+  }
+
+  void showErrorDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              title: const Text(
+                'Error',
+                textAlign: TextAlign.center,
+              ),
+              content: const Text('Bill type must be set',
+                  textAlign: TextAlign.center),
+            ));
   }
 }
 

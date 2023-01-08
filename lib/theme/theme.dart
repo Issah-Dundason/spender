@@ -6,9 +6,13 @@ const tertiaryColor = Color(0xFFB5A7B8);
 const backgroundColor = Color(0xFFF5F5F5);
 const cardColor = Color(0xFFE9E9EB);
 
+const appBottomSheetShape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(10), topRight: Radius.circular(10)));
+
 class AppTheme {
   static final lightTheme = ThemeData(
-    fontFamily: 'WorkSans',
+      fontFamily: 'WorkSans',
       brightness: Brightness.light,
       primaryColor: primaryColor,
       colorScheme: ColorScheme.fromSwatch().copyWith(

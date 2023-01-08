@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/bill/billing_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:spender/theme/theme.dart';
 
 import '../bloc/app/app_cubit.dart';
 import '../bloc/app/app_state.dart';
+import '../bloc/bill/bill_bloc.dart';
 import '../bloc/profile/profile_bloc.dart';
 import '../components/bill_view.dart';
 import 'expenses.dart';
@@ -60,22 +63,12 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
     return BlocConsumer<AppCubit, AppState>(
       listener: (context, state) async {
         if (state.current != AppTab.bill) return;
-        var appRepo = context.read<AppRepository>();
-        var data = await showModalBottomSheet(
-            isScrollControlled: true,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10))),
-            context: context,
-            builder: (_) => BillView(
-                  appRepo: appRepo,
-                ));
-        if (!mounted) return;
         this.context.read<AppCubit>().currentState =
             AppState(current: state.previous);
-        if (data != true) return;
-        this.context.read<HomeBloc>().add(const HomeInitializationEvent());
+        showAddView(context);
+        // if (!mounted) return;
+        // if (data != true) return;
+        // this.context.read<HomeBloc>().add(const HomeInitializationEvent());
       },
       builder: (context, state) {
         return Padding(
@@ -118,5 +111,22 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
         );
       },
     );
+  }
+
+  Future<dynamic> showAddView(BuildContext context) async {
+    var appRepo = context.read<AppRepository>();
+    var billTypes = await appRepo.getBillTypes();
+    return await showModalBottomSheet(
+        isScrollControlled: true,
+        shape: appBottomSheetShape,
+        context: context,
+        builder: (_) => BlocProvider(
+              create: (_) {
+                return BillBloc(appRepo: appRepo);
+              },
+              child: BillView(
+                billTypes: billTypes,
+              ),
+            ));
   }
 }

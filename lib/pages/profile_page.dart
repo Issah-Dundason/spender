@@ -65,7 +65,7 @@ class _ProfileViewState extends State<ProfileView> {
                 padding: EdgeInsets.only(left: 24),
                 child: Text(
                   'Change your avatar',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
                 ),
               ),
               const Padding(
@@ -77,7 +77,7 @@ class _ProfileViewState extends State<ProfileView> {
                 padding: EdgeInsets.only(left: 24, top: 24),
                 child: Text(
                   'Current Month Budget',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
                 ),
               ),
               const SizedBox(height: 20),
@@ -98,7 +98,7 @@ class _ProfileViewState extends State<ProfileView> {
                     const Text(
                       'Budget',
                       style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     BlocBuilder<BudgetReviewBloc, BudgetReviewState>(
                       builder: (context, state) {

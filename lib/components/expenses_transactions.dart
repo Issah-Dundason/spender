@@ -31,7 +31,10 @@ class ExpensesTransactions extends StatelessWidget {
           return ListView(
             children: [
               ...state.transactions.map((e) {
-                return EditableTransactionTile(expenditure: e);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: EditableTransactionTile(expenditure: e),
+                );
               }).toList()
             ],
           );
