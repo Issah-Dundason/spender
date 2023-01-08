@@ -77,10 +77,16 @@ class DatabaseClient {
   Future<Financials?> getFinancials(String date) async {
     var result = await _db.rawQuery('''
     SELECT b.amount as budget, 
-           (b.amount - t.amount_spent) as balance, 
-           t.amount_spent as amount_spent 
+          CASE 
+            WHEN  b.amount - t.amount_spent   ISNULL THEN b.amount
+            ELSE (b.amount - t.amount_spent) 
+            END as balance,
+          CASE
+            WHEN t.amount_spent ISNULL THEN 0 
+            ELSE t.amount_spent
+            END as amount_spent  
     FROM budget b 
-    JOIN 
+    LEFT JOIN 
     (SELECT SUM(price) as amount_spent, 
             strftime('%Y-%m', date) as date 
     FROM expenditure 

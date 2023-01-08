@@ -8,6 +8,7 @@ const cardColor = Color(0xFFE9E9EB);
 
 class AppTheme {
   static final lightTheme = ThemeData(
+    fontFamily: 'WorkSans',
       brightness: Brightness.light,
       primaryColor: primaryColor,
       colorScheme: ColorScheme.fromSwatch().copyWith(

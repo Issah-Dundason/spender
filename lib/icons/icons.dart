@@ -39,3 +39,11 @@ class Cart {
 
   static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
+
+class EditPen {
+  EditPen._();
+
+  static const String _fontFamily = 'editpen';
+
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
+}

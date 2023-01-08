@@ -52,6 +52,7 @@ class _NoBudgetWidgetState extends State<NoBudgetWidget> {
                     onPressed: () async {
                      await  Navigator.of(context).push(TopBar.createRoute());
                      if(!mounted) return;
+                     print('Yeah');
                      context.read<HomeBloc>().add(const HomeInitializationEvent());
                     },
                     style: TextButton.styleFrom(

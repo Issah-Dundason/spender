@@ -32,5 +32,6 @@ class HomeState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [currentFinancials, monthExpenditures];
+  List<Object?> get props =>
+      [currentFinancials, monthExpenditures, transactionsToday, analysisYear];
 }
