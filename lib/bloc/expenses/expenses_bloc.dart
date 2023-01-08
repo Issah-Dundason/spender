@@ -26,6 +26,6 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
 
   void _onStart(OnStartEvent e, Emitter<ExpensesState> emitter) async {
     int? year = await appRepo.getYearOfFirstInsert();
-    emitter(state.copyWith(yearOfFirstInsert: year));
+    emitter(state.copyWith(yearOfFirstInsert: year, initialized: true));
   }
 }

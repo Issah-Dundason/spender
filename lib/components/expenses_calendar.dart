@@ -7,11 +7,11 @@ import '../repository/expenditure_repo.dart';
 
 class TransactionCalendar extends StatelessWidget {
   const TransactionCalendar(
-      {Key? key, required this.selectedDay, this.onDateSelected, required this.firstDay})
+      {Key? key, required this.selectedDay, this.onDateSelected,this.firstYear})
       : super(key: key);
 
   final DateTime selectedDay;
-  final DateTime firstDay;
+  final int? firstYear;
 
   final void Function(DateTime, DateTime)? onDateSelected;
 
@@ -19,7 +19,7 @@ class TransactionCalendar extends StatelessWidget {
   Widget build(BuildContext context) {
     var date = DateTime.now();
     var q = DateTime.utc(date.year, date.month, date.day);
-    print('first: ${firstDay}');
+    //print('first: ${firstDay}');
     print('selected: ${selectedDay}');
     print('last: ${q}');
     print('test: ${selectedDay.year}');
@@ -37,7 +37,7 @@ class TransactionCalendar extends StatelessWidget {
         child: TableCalendar(
           onDaySelected: onDateSelected,
           focusedDay: selectedDay,
-          firstDay: DateTime(2022),
+          firstDay: firstYear == null ? DateTime.now() : DateTime(firstYear!),
           lastDay: q,
           calendarFormat: CalendarFormat.week,
           calendarBuilders: CalendarBuilders(

@@ -28,11 +28,12 @@ class ExpensesPage extends StatelessWidget {
               child: BlocBuilder<ExpensesBloc, ExpensesState>(
                 builder: (context, state) {
                   print('first year: ${state.yearOfFirstInsert}');
+                  if (state.yearOfFirstInsert == null && !state.initialized) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
                   return TransactionCalendar(
                       selectedDay: state.selectedDate,
-                      firstDay: state.yearOfFirstInsert == null
-                          ? DateTime.now().toUtc()
-                          : DateTime.utc(state.yearOfFirstInsert!, 1, 1),
+                      firstYear: state.yearOfFirstInsert,
                       onDateSelected: (date, focus) {
                         context.read<ExpensesBloc>().add(ChangeDateEvent(date));
                         // print('selected to back: $date');
