@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:spender/components/receipt.dart';
 import '../bloc/bill/bill_bloc.dart';
+import '../icons/icons.dart';
 import '../model/expenditure.dart';
 import '../repository/expenditure_repo.dart';
 import '../theme/theme.dart';
@@ -26,7 +27,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.grey[200],
+      color: Theme.of(context).colorScheme.primaryContainer,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
@@ -43,12 +44,16 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Bill: ${widget.expenditure.bill}'),
+                      Text(
+                        'Bill: ${widget.expenditure.bill}',
+                        style: const TextStyle(fontSize: 15),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
                       Text(
-                          'Price: ${NumberFormat().format(widget.expenditure.cash)}'),
+                          'Price: ${NumberFormat().format(widget.expenditure.cash)}',
+                          style: const TextStyle(fontSize: 15)),
                     ],
                   ),
                   const SizedBox(
@@ -59,12 +64,14 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                          'Priority: ${widget.expenditure.priority.name.toUpperCase()}'),
+                          'Priority: ${widget.expenditure.priority.name.toUpperCase()}',
+                          style: const TextStyle(fontSize: 15)),
                       const SizedBox(
                         height: 10,
                       ),
                       Text(
-                          'Payment Type: ${widget.expenditure.paymentType.name}'),
+                          'Payment Type: ${widget.expenditure.paymentType.name}',
+                          style: const TextStyle(fontSize: 15)),
                     ],
                   )
                 ],
@@ -75,7 +82,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                   left: 14.0, right: 14.0, top: 14, bottom: 10),
               child: Row(
                 children: [
-                  TextButton(
+                  IconButton(
                       style: buildButtonStyle(),
                       onPressed: () {
                         showDialog(
@@ -84,28 +91,28 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                                   expenditure: widget.expenditure,
                                 ));
                       },
-                      child: const Text('view')),
+                      icon: const Icon(ReceiptIcon.receipt)),
                   const SizedBox(
                     width: 12,
                   ),
-                  TextButton(
-                      style: buildButtonStyle(),
+                  IconButton(
+                       style: buildButtonStyle(),
                       onPressed: () async {
                         var result = await showDialog(
                             context: context,
                             builder: (_) => buildDeleteDialog(_));
                         if (result != true) return;
                       },
-                      child: const Text('delete')),
+                      icon: const Icon(Bin.bin)),
                   const SizedBox(
                     width: 12,
                   ),
-                  TextButton(
-                      style: buildButtonStyle(),
+                  IconButton(
+                     style: buildButtonStyle(),
                       onPressed: () {
                         showUpdate();
                       },
-                      child: const Text('update')),
+                      icon: const Icon(QuillPencil.quill2,)),
                 ],
               ),
             ),
@@ -159,8 +166,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
   }
 
   ButtonStyle buildButtonStyle() {
-    return TextButton.styleFrom(
-        textStyle: const TextStyle(fontSize: 16),
+    return IconButton.styleFrom(
         minimumSize: const Size(0, 10),
         padding: EdgeInsets.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap);

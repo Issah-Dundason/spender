@@ -47,3 +47,28 @@ class EditPen {
 
   static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
+
+class Bin {
+  Bin._();
+
+  static const String _fontFamily = 'Bin';
+
+  static const IconData bin = IconData(0xe900, fontFamily: _fontFamily);
+}
+
+
+class QuillPencil {
+  QuillPencil._();
+
+  static const String _fontFamily = 'QuillPencil';
+
+  static const IconData quill2 = IconData(0xe900, fontFamily: _fontFamily);
+}
+
+class ReceiptIcon {
+  ReceiptIcon._();
+
+  static const String _fontFamily = 'Receipt';
+
+  static const IconData receipt = IconData(0xe900, fontFamily: _fontFamily);
+}
