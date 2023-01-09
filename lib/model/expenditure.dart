@@ -72,7 +72,7 @@ class Expenditure extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, date, price, priority];
+  List<Object?> get props => [id, date, price, priority, description, paymentType];
 }
 
 enum PaymentType { cash, cheque, momo, vodafoneCash }

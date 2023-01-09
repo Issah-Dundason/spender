@@ -83,7 +83,6 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
               child: Row(
                 children: [
                   IconButton(
-                      style: buildButtonStyle(),
                       onPressed: () {
                         showDialog(
                             context: context,
@@ -96,7 +95,6 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     width: 12,
                   ),
                   IconButton(
-                       style: buildButtonStyle(),
                       onPressed: () async {
                         var result = await showDialog(
                             context: context,
@@ -108,11 +106,13 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     width: 12,
                   ),
                   IconButton(
-                     style: buildButtonStyle(),
                       onPressed: () {
                         showUpdate();
                       },
-                      icon: const Icon(QuillPencil.quill2, size: 23,)),
+                      icon: const Icon(
+                        QuillPencil.quill2,
+                        size: 23,
+                      )),
                 ],
               ),
             ),
@@ -163,12 +163,5 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                 expenditure: widget.expenditure,
               ),
             ));
-  }
-
-  ButtonStyle buildButtonStyle() {
-    return IconButton.styleFrom(
-        minimumSize: const Size(0, 10),
-        padding: EdgeInsets.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap);
   }
 }

@@ -70,7 +70,7 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
         if (!mounted) return;
         if (data != true) return;
         this.context.read<HomeBloc>().add(const HomeInitializationEvent());
-        this.context.read<ExpensesBloc>().add(const  LoadEvent());
+        this.context.read<ExpensesBloc>().add(const LoadEvent());
       },
       builder: (context, state) {
         return Padding(

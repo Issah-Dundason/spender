@@ -35,7 +35,7 @@ class ExpensesPage extends StatelessWidget {
                   }
                   return TransactionCalendar(
                       selectedDay: state.selectedDate,
-                      firstYear: state.yearOfFirstInsert!,
+                      firstYear: state.yearOfFirstInsert ?? DateTime.now().year,
                       onDateSelected: (date, focus) {
                         context.read<ExpensesBloc>().add(ChangeDateEvent(date));
                         // print('selected to back: $date');

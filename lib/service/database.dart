@@ -33,6 +33,13 @@ class DatabaseClient {
     await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
   }
 
+  Future updateExpenditure(Map<String, dynamic> json) async {
+    if(json['description'] == null) {
+      json.remove('description');
+    }
+    await _db.update("expenditure", json, where: "id = ?", whereArgs: [json['id']]);
+  }
+
   Future saveBudget(Budget budget) async {
     await _db.insert("budget", budget.toMap());
   }
@@ -92,9 +99,10 @@ class DatabaseClient {
             strftime('%Y-%m', date) as date 
     FROM expenditure 
     GROUP BY 2
-    HAVING strftime('%Y-%m', date) == ?) t 
-    on t.date = strftime('%Y-%m', b.date);
-    ''', [date]);
+    HAVING strftime('%Y-%m', date) = ?) t 
+    on t.date = strftime('%Y-%m', b.date) 
+    WHERE strftime('%Y-%m', b.date) = ?;
+    ''', [date, date]);
     if (result.isEmpty) {
       return null;
     }

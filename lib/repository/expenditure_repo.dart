@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:spender/model/expenditure.dart';
 import 'package:spender/service/database.dart';
 
@@ -55,6 +57,10 @@ class AppRepository {
 
   Future<List<Expenditure>> getExpenditureAt(String date, int limit) {
     return _dbClient.getExpenditureAtWithLimit(date, limit);
+  }
+
+  Future updateExpenditure(Expenditure expenditure) {
+    return _dbClient.updateExpenditure(expenditure.toJson());
   }
 
   Future<int?> getYearOfFirstInsert() {
