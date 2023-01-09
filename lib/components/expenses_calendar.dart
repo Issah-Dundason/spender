@@ -52,12 +52,11 @@ class TransactionCalendar extends StatelessWidget {
       DateTime focusDate) {
     var appRepo = context.read<AppRepository>();
     String date = DateFormat('yyyy-MM-dd').format(actualDate);
-    // print('actual date: ${actualDate}');
-    // print('date: $date');
+
     return FutureBuilder(
       future: appRepo.didTransactionsOnDay(date),
       builder: (context, snapshot) {
-      //  print("data: ${snapshot.data}");
+
         return Container(
           width: 40,
           decoration: BoxDecoration(

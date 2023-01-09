@@ -91,7 +91,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                                   expenditure: widget.expenditure,
                                 ));
                       },
-                      icon: const Icon(ReceiptIcon.receipt)),
+                      icon: const Icon(ReceiptIcon.receipt, size: 23)),
                   const SizedBox(
                     width: 12,
                   ),
@@ -103,7 +103,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                             builder: (_) => buildDeleteDialog(_));
                         if (result != true) return;
                       },
-                      icon: const Icon(Bin.bin)),
+                      icon: const Icon(Bin.bin, size: 23)),
                   const SizedBox(
                     width: 12,
                   ),
@@ -112,7 +112,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                       onPressed: () {
                         showUpdate();
                       },
-                      icon: const Icon(QuillPencil.quill2,)),
+                      icon: const Icon(QuillPencil.quill2, size: 23,)),
                 ],
               ),
             ),

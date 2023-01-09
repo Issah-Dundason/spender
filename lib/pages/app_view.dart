@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/expenses/expenses_bloc.dart';
+import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
@@ -68,6 +70,7 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
         if (!mounted) return;
         if (data != true) return;
         this.context.read<HomeBloc>().add(const HomeInitializationEvent());
+        this.context.read<ExpensesBloc>().add(const  LoadEvent());
       },
       builder: (context, state) {
         return Padding(

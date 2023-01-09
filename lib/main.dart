@@ -75,7 +75,7 @@ class Spender extends StatelessWidget {
                 BlocProvider(create: (_) => AppCubit()),
                 BlocProvider(
                     create: (_) => ExpensesBloc(appRepo: appRepo)
-                      ..add(const OnStartEvent()))
+                      ..add(const OnStartEvent())..add(const LoadEvent()))
               ],
               child: const AppView(),
             )),
