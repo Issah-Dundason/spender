@@ -47,12 +47,10 @@ class _ProfileViewState extends State<ProfileView> {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocListener<BudgetReviewBloc, BudgetReviewState>(
         listener: (context, state) {
-          if (state.budgetingState == BudgetingStat.done) {
-            _handleDone("Done");
-          }
-          if (state.budgetingState == BudgetingStat.error) {
-            _handleDone("error");
-          }
+          var stat = state.budgetingState;
+          if (stat == BudgetingStat.done) _handleDone("Done");
+
+          if (stat == BudgetingStat.error) _handleDone("error");
         },
         child: SingleChildScrollView(
           child: Column(
@@ -132,9 +130,7 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   void _handleDone(String s) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-        content: Text(s)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
   }
 
   void _onYearChange() async {

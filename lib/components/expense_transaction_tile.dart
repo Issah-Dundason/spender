@@ -4,6 +4,10 @@ import 'package:flutter/material.dart.';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:intl/intl.dart';
+import 'package:spender/bloc/expenses/expenses_bloc.dart';
+import 'package:spender/bloc/expenses/expenses_event.dart';
+import 'package:spender/bloc/home/home_bloc.dart';
+import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/receipt.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../icons/icons.dart';
@@ -83,6 +87,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
               child: Row(
                 children: [
                   IconButton(
+                      color: Theme.of(context).colorScheme.primary,
                       onPressed: () {
                         showDialog(
                             context: context,
@@ -90,27 +95,33 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                                   expenditure: widget.expenditure,
                                 ));
                       },
-                      icon: const Icon(ReceiptIcon.receipt, size: 23)),
+                      icon: const Icon(ReceiptIcon.icon, size: 23)),
                   const SizedBox(
                     width: 12,
                   ),
                   IconButton(
+                    color: Theme.of(context).colorScheme.primary,
                       onPressed: () async {
                         var result = await showDialog(
                             context: context,
                             builder: (_) => buildDeleteDialog(_));
                         if (result != true) return;
                       },
-                      icon: const Icon(Bin.bin, size: 23)),
+                      icon: const Icon(Bin.icon, size: 23)),
                   const SizedBox(
                     width: 12,
                   ),
                   IconButton(
-                      onPressed: () {
-                        showUpdate();
+                      color: Theme.of(context).colorScheme.primary,
+                      onPressed: () async {
+                        var data = await showUpdate();
+                        if(data != true) return;
+                        if(!mounted) return;
+                        context.read<ExpensesBloc>().add(const LoadEvent());
+                        context.read<HomeBloc>().add(const HomeInitializationEvent());
                       },
                       icon: const Icon(
-                        QuillPencil.quill2,
+                        QuillPencil.icon,
                         size: 23,
                       )),
                 ],

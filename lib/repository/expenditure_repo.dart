@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:spender/model/expenditure.dart';
 import 'package:spender/service/database.dart';
 
@@ -10,10 +8,6 @@ class AppRepository {
   final DatabaseClient _dbClient;
 
   AppRepository(this._dbClient);
-
-  Future<List<Expenditure>> getAllExpenditure(String date) {
-    return _dbClient.getExpenditureByDate(date);
-  }
 
   Future<bool> budgetExist(String yearMonth) {
     return _dbClient.budgetExists(yearMonth);
@@ -60,7 +54,11 @@ class AppRepository {
   }
 
   Future updateExpenditure(Expenditure expenditure) {
-    return _dbClient.updateExpenditure(expenditure.toJson());
+    return _dbClient.updateExpenditure(expenditure);
+  }
+
+  Future<List<Expenditure>> getAllExpenditure(String date) {
+    return _dbClient.getExpenditureByDate(date);
   }
 
   Future<int?> getYearOfFirstInsert() {

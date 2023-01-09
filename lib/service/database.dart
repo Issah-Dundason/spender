@@ -33,11 +33,9 @@ class DatabaseClient {
     await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
   }
 
-  Future updateExpenditure(Map<String, dynamic> json) async {
-    if(json['description'] == null) {
-      json.remove('description');
-    }
-    await _db.update("expenditure", json, where: "id = ?", whereArgs: [json['id']]);
+  Future updateExpenditure(Expenditure expenditure) async {
+    await _db.update("expenditure", expenditure.toJson(),
+        where: "id = ?", whereArgs: [expenditure.id]);
   }
 
   Future saveBudget(Budget budget) async {
@@ -46,7 +44,8 @@ class DatabaseClient {
 
   Future<int?> getYearOfFirstBudget() async {
     var result = await _db.rawQuery(
-        "SELECT CAST(strftime('%Y', date) as int) as year FROM budget ORDER BY date LIMIT 1");
+        '''SELECT CAST(strftime('%Y', date) as int) as year 
+           FROM budget ORDER BY date LIMIT 1''');
     if (result.isNotEmpty) return Sqflite.firstIntValue(result);
     return null;
   }
@@ -142,6 +141,7 @@ class DatabaseClient {
     ''', [date]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }
+
 
   Future<List<BillType>> getProductTypes() async {
     var result = await _db.query("bill_type");

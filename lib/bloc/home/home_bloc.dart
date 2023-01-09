@@ -15,6 +15,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   void _onStartHandler(HomeEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(transactions: []));
     DateTime date = DateTime.now();
     var yearAndMonth = DateFormat("yyyy-MM").format(date);
     var yearMonthDay = DateFormat("yyyy-MM-dd").format(date);

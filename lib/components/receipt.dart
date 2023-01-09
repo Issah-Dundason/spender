@@ -69,12 +69,12 @@ class Receipt extends StatelessWidget {
                 child: Text(
                     'Priority of service: ${expenditure.priority.name.toUpperCase()}'),
               ),
-              if (expenditure.description != null)
+              if (expenditure.description != null && expenditure.description!.isNotEmpty)
                 const Padding(
                   padding: EdgeInsets.only(top: 20.0, left: 8),
                   child: Text('Description'),
                 ),
-              if (expenditure.description != null)
+              if (expenditure.description != null && expenditure.description!.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0, top: 6, right: 8.0),
                   child: Text(expenditure.description!),

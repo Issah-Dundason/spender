@@ -53,7 +53,7 @@ class Bin {
 
   static const String _fontFamily = 'Bin';
 
-  static const IconData bin = IconData(0xe900, fontFamily: _fontFamily);
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
 
 
@@ -62,7 +62,7 @@ class QuillPencil {
 
   static const String _fontFamily = 'QuillPencil';
 
-  static const IconData quill2 = IconData(0xe900, fontFamily: _fontFamily);
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
 
 class ReceiptIcon {
@@ -70,5 +70,5 @@ class ReceiptIcon {
 
   static const String _fontFamily = 'Receipt';
 
-  static const IconData receipt = IconData(0xe900, fontFamily: _fontFamily);
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }

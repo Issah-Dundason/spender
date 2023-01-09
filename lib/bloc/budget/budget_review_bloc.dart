@@ -41,7 +41,7 @@ class BudgetReviewBloc extends Bloc<BudgetReviewEvent, BudgetReviewState> {
     emitter(state.copyWith(stat: BudgetingStat.done));
     if(date.year != state.selectedYear) return;
     var budgets = await appRepo.getBudgetsForYear('${state.selectedYear}');
-    emitter(state.copyWith(budgets: budgets));
+    emitter(state.copyWith(budgets: budgets, stat: BudgetingStat.none));
   }
 
   Future<void> _saveBudgetForCurrentMonth(SaveBudgetEvent e) async {
