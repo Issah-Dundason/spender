@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 
-class ExpenseAnalysisSection extends StatelessWidget {
+const optionsRep = ['Current Month', 'Current Year', 'Last Year', 'Overall'];
+
+enum FilterOptions { currentMonth, currentYear, lastYear, overall }
+
+extension on FilterOptions {
+  get name => optionsRep[index];
+}
+
+class ExpenseAnalysisSection extends StatefulWidget {
   const ExpenseAnalysisSection({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<ExpenseAnalysisSection> createState() => _ExpenseAnalysisSectionState();
+}
+
+class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
+
+  FilterOptions _options = FilterOptions.currentMonth;
 
   @override
   Widget build(BuildContext context) {
@@ -19,19 +35,15 @@ class ExpenseAnalysisSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    padding: const EdgeInsets.all(8),
-                    minimumSize: const Size(0, 0),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20))),
-                onPressed: () {},
-                child: const Text('Current Month')),
-            const SizedBox(
-              width: 10,
-            ),
+            DropdownButton<FilterOptions>(
+              value: _options,
+                items: FilterOptions.values
+                    .map((e) => DropdownMenuItem<FilterOptions>(
+                          value: e,
+                          child: Text(e.name),
+                        ))
+                    .toList(),
+                onChanged: showChart),
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.all(8),
@@ -41,10 +53,24 @@ class ExpenseAnalysisSection extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20))),
                 onPressed: () {},
-                child: const Text('Overall'))
+                child: const Text('Look up'))
           ],
-        ),
+        )
       ],
     );
+  }
+
+  void showChart(FilterOptions? options) {
+    if(options == null) return;
+    setState(() => _options = options);
+  }
+}
+
+class PieChartDialog extends StatelessWidget {
+  const PieChartDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
