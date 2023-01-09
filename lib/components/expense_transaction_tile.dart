@@ -100,12 +100,14 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     width: 12,
                   ),
                   IconButton(
-                    color: Theme.of(context).colorScheme.primary,
+                      color: Theme.of(context).colorScheme.primary,
                       onPressed: () async {
                         var result = await showDialog(
                             context: context,
                             builder: (_) => buildDeleteDialog(_));
                         if (result != true) return;
+                        if (!mounted) return;
+                        selfDestruct();
                       },
                       icon: const Icon(Bin.icon, size: 23)),
                   const SizedBox(
@@ -115,10 +117,9 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                       color: Theme.of(context).colorScheme.primary,
                       onPressed: () async {
                         var data = await showUpdate();
-                        if(data != true) return;
-                        if(!mounted) return;
-                        context.read<ExpensesBloc>().add(const LoadEvent());
-                        context.read<HomeBloc>().add(const HomeInitializationEvent());
+                        if (data != true) return;
+                        if (!mounted) return;
+                        notifyBlocs();
                       },
                       icon: const Icon(
                         QuillPencil.icon,
@@ -135,6 +136,13 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
         ),
       ),
     );
+  }
+
+  void notifyBlocs() {
+    context.read<ExpensesBloc>().add(const LoadEvent());
+    context
+        .read<HomeBloc>()
+        .add(const HomeInitializationEvent());
   }
 
   AlertDialog buildDeleteDialog(BuildContext _) {
@@ -174,5 +182,14 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                 expenditure: widget.expenditure,
               ),
             ));
+  }
+
+  void selfDestruct() async {
+    var appRepository = context.read<AppRepository>();
+    await appRepository.deleteRepository(widget.expenditure.id!);
+    if(!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Deleted')));
+    notifyBlocs();
   }
 }
