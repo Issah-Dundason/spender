@@ -56,7 +56,6 @@ class TransactionCalendar extends StatelessWidget {
     return FutureBuilder(
       future: appRepo.didTransactionsOnDay(date),
       builder: (context, snapshot) {
-
         return Container(
           width: 40,
           decoration: BoxDecoration(

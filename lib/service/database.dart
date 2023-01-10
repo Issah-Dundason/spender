@@ -143,15 +143,20 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getPieData(String format, String date) async {
+
+
     var records = await _db.rawQuery('''
     SELECT SUM(e.price) as amount,
             p.id as pid, p.name as pname,
             strftime($format, e.date) as date
-       FROM expenditure e 
-       JOIN bill_type p ON
-       e.bill_type_id = p.id
-       GROUP BY 4, 2 HAVING strftime($format, e.date) = '$date';
+     FROM expenditure e 
+     JOIN bill_type p ON
+     e.bill_type_id = p.id
+     GROUP BY 4, 2 HAVING strftime($format, e.date) = '$date';
     ''');
+
+    print('records : $records');
+
     return records
         .map((record) =>
             PieData(record['amount'] as int, BillType.fromMap(record)))
@@ -188,7 +193,7 @@ class DatabaseClient {
             p.id as pid, p.name as pname
       FROM expenditure e 
       JOIN bill_type p 
-      ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC LIMIT ?;
+      ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.id DESC LIMIT ?;
     ''', [date, limit]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }

@@ -38,7 +38,6 @@ class ExpensesPage extends StatelessWidget {
                       firstYear: state.yearOfFirstInsert ?? DateTime.now().year,
                       onDateSelected: (date, focus) {
                         context.read<ExpensesBloc>().add(ChangeDateEvent(date));
-                        // print('selected to back: $date');
                       });
                 },
               )),

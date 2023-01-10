@@ -1,8 +1,10 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../repository/expenditure_repo.dart';
+import '../service/database.dart';
 
 const optionsRep = ['Current Month', 'Current Year', 'Last Year', 'Overall'];
 
@@ -22,7 +24,6 @@ class ExpenseAnalysisSection extends StatefulWidget {
 }
 
 class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
-
   FilterOptions _options = FilterOptions.currentMonth;
 
   @override
@@ -40,7 +41,7 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             DropdownButton<FilterOptions>(
-              value: _options,
+                value: _options,
                 items: FilterOptions.values
                     .map((e) => DropdownMenuItem<FilterOptions>(
                           value: e,
@@ -65,24 +66,89 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
   }
 
   void showPieChart() async {
-    var date = DateFormat('yyyy-MM').format(DateTime.now().subtract(Duration(hours: 10)));
-    print('date: $date');
     var repo = context.read<AppRepository>();
-    var data = await repo.getPieData('\'%Y-%m\'', date);
-    print('${data.length}');
+    late List<PieData> pieData;
+
+    if (_options == FilterOptions.currentMonth) {
+      String dbFormat = '\'%Y-%m\'';
+      String date = DateFormat('yyyy-MM').format(DateTime.now());
+      pieData = await repo.getPieData(dbFormat, date);
+    }
+
+    if (_options == FilterOptions.currentYear) {
+      String dbFormat = '\'%Y\'';
+      String date = '${DateTime.now().year}';
+      pieData = await repo.getPieData(dbFormat, date);
+    }
+
+    if (_options == FilterOptions.lastYear) {
+      String dbFormat = '\'%Y\'';
+      String date = '${DateTime.now().year - 1}';
+      pieData = await repo.getPieData(dbFormat, date);
+    }
+
+    if (_options == FilterOptions.overall) {}
+
+    await showDialog(
+        context: context,
+        builder: (_) => PieChartDialog(
+              pieData: pieData,
+            ));
   }
 
   void showChart(FilterOptions? options) {
-    if(options == null) return;
+    if (options == null) return;
     setState(() => _options = options);
   }
 }
 
 class PieChartDialog extends StatelessWidget {
-  const PieChartDialog({Key? key}) : super(key: key);
+  final List<PieData> pieData;
+
+  const PieChartDialog({Key? key, required this.pieData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    var prime = Theme.of(context).colorScheme.primary;
+    int i = 0;
+    var colors = [const Color(0xFF524F5F), prime, const Color(0xFFF45737)];
+    var size = MediaQuery.of(context).size;
+    var sum = pieData.fold(
+        0, (previousValue, element) => previousValue + element.amount);
+    return GestureDetector(
+      onTap: () => Navigator.pop(context),
+      child: Container(
+        child: pieData.isEmpty
+            ? Center(
+                child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white,
+                    ),
+                    padding: const EdgeInsets.all(25),
+                    child: const Text(
+                      'No Available data',
+                      style: TextStyle(fontSize: 20),
+                    )))
+            : PieChart(PieChartData(
+                centerSpaceRadius: 0,
+                centerSpaceColor: Colors.white,
+                sectionsSpace: 0,
+                sections: [
+                    ...pieData.map(
+                      (e) => PieChartSectionData(
+                          title:
+                              '${e.billType.name} (${(e.amount / sum) * 100}%)',
+                          value: e.amount.toDouble(),
+                          radius: size.width * 0.4,
+                          titleStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700),
+                          color: colors[++i % 2]),
+                    )
+                  ])),
+      ),
+    );
   }
 }

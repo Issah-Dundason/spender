@@ -27,7 +27,7 @@ class Expenditure extends Equatable {
 
   static String _generateDate() {
     var d = DateTime.now();
-    d = DateTime.utc(d.year, d.month, d.day, d.hour, d.minute, d.second);
+    d = DateTime.utc(d.year, d.month, d.day);
     return d.toIso8601String();
   }
 
