@@ -131,12 +131,13 @@ class PieChartDialog extends StatelessWidget {
                       style: TextStyle(fontSize: 20),
                     )))
             : PieChart(PieChartData(
-                centerSpaceRadius: 0,
+                centerSpaceRadius: 4,
                 centerSpaceColor: Colors.white,
-                sectionsSpace: 0,
+                sectionsSpace: 4,
                 sections: [
                     ...pieData.map(
-                      (e) => PieChartSectionData(
+                      (e) =>
+                        PieChartSectionData(
                           title:
                               '${e.billType.name} (${(e.amount / sum) * 100}%)',
                           value: e.amount.toDouble(),
@@ -145,7 +146,7 @@ class PieChartDialog extends StatelessWidget {
                               color: Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.w700),
-                          color: colors[++i % 2]),
+                          color: colors[i++ % 2]),
                     )
                   ])),
       ),
