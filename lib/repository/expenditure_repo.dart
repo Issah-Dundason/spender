@@ -57,6 +57,11 @@ class AppRepository {
     return _dbClient.updateExpenditure(expenditure);
   }
 
+  Future<List<PieData>> getPieData(String format, String date) {
+    return _dbClient.getPieData(format, date);
+  }
+
+
   Future deleteRepository(int id) {
     return _dbClient.deleteExpenditure(id);
   }

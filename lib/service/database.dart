@@ -43,8 +43,8 @@ class DatabaseClient {
   }
 
   Future<int?> getYearOfFirstBudget() async {
-    var result = await _db.rawQuery(
-        '''SELECT CAST(strftime('%Y', date) as int) as year 
+    var result =
+        await _db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year 
            FROM budget ORDER BY date LIMIT 1''');
     if (result.isNotEmpty) return Sqflite.firstIntValue(result);
     return null;
@@ -142,6 +142,21 @@ class DatabaseClient {
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }
 
+  Future<List<PieData>> getPieData(String format, String date) async {
+    var records = await _db.rawQuery('''
+    SELECT SUM(e.price) as amount,
+            p.id as pid, p.name as pname,
+            strftime($format, e.date) as date
+       FROM expenditure e 
+       JOIN bill_type p ON
+       e.bill_type_id = p.id
+       GROUP BY 4, 2 HAVING strftime($format, e.date) = '$date';
+    ''');
+    return records
+        .map((record) =>
+            PieData(record['amount'] as int, BillType.fromMap(record)))
+        .toList();
+  }
 
   Future<List<BillType>> getProductTypes() async {
     var result = await _db.query("bill_type");
@@ -219,6 +234,16 @@ class DatabaseClient {
     await db.insert("bill_type", {"name": "Food"});
     await db.insert("bill_type", {"name": "Shoe"});
   }
+}
+
+class PieData extends Equatable {
+  final int amount;
+  final BillType billType;
+
+  const PieData(this.amount, this.billType);
+
+  @override
+  List<Object?> get props => [amount, billType];
 }
 
 class Financials extends Equatable {
