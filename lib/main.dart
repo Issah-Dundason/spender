@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spender/bloc/expenses/expenses_bloc.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
@@ -39,21 +40,24 @@ void main() async {
   // await dbClient.saveExpenditure(expenditure.toJson());
 
   //check shared preference
+  final prefs = await SharedPreferences.getInstance();
+  String? avatar = prefs.getString("profile/avatar");
   //if avatar is not there
   //set it with 'tracker.svg'
-  //if it is there
-  //just get it
-  //pass the new or old on to profile bloc
+  avatar ??= 'tracker.svg';
+
 
   runApp(Spender(
     appRepo: appRepo,
+    avatar: avatar,
   ));
 }
 
 class Spender extends StatelessWidget {
+  final String avatar;
   final AppRepository appRepo;
 
-  const Spender({super.key, required this.appRepo});
+  const Spender({super.key, required this.appRepo, required this.avatar});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +67,7 @@ class Spender extends StatelessWidget {
         providers: [
           BlocProvider(
               create: (_) => ProfileBloc()
-                ..add(ProfileAvatarChangeEvent(assetName: 'tracker.svg'))),
+                ..add(ProfileAvatarChangeEvent(assetName: avatar))),
         ],
         child: MaterialApp(
             theme: AppTheme.lightTheme,
