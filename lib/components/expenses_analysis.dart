@@ -49,6 +49,9 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
                         ))
                     .toList(),
                 onChanged: showChart),
+            const SizedBox(
+              width: 20,
+            ),
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.all(8),
@@ -89,7 +92,12 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
 
     if (_options == FilterOptions.overall) {}
 
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => PieChartDialog(pieData: pieData,)));
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => PieChartDialog(
+                  pieData: pieData,
+                )));
   }
 
   void showChart(FilterOptions? options) {
@@ -111,40 +119,61 @@ class PieChartDialog extends StatelessWidget {
     var size = MediaQuery.of(context).size;
     var sum = pieData.fold(
         0, (previousValue, element) => previousValue + element.amount);
-    return GestureDetector(
-      onTap: () => Navigator.pop(context),
-      child: Container(
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Analysis'),
+        foregroundColor: Colors.black,
+        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.background,
+      ),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: Container(
         child: pieData.isEmpty
-            ? Center(
-                child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white,
-                    ),
-                    padding: const EdgeInsets.all(25),
-                    child: const Text(
-                      'No Available data',
-                      style: TextStyle(fontSize: 20),
-                    )))
-            : PieChart(PieChartData(
-                centerSpaceRadius: 4,
-               // centerSpaceColor: Colors.transparent,
-                sectionsSpace: 0,
-                sections: [
-                    ...pieData.map(
-                      (e) =>
-                        PieChartSectionData(
-                          title:
-                              '${e.billType.name} (${(e.amount / sum) * 100}%)',
-                          value: e.amount.toDouble(),
-                          radius: size.width * 0.35,
-                          titleStyle: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700),
-                          color: colors[i++ % 2]),
-                    )
-                  ])),
+            ? const Center(
+                child: Text(
+                'No Available data',
+                style: TextStyle(fontSize: 20),
+              ))
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(
+                    height: 124,
+                  ),
+                  SizedBox(
+                    width: size.width * 0.35,
+                    height: size.width * 0.35,
+                    child: PieChart(PieChartData(
+                        centerSpaceRadius: 60,
+                     // centerSpaceColor: Colors.yellow,
+                        sectionsSpace: 0,
+                        sections: [
+                          ...pieData.map(
+                            (e) => PieChartSectionData(
+                                // title:
+                                //     '${e.billType.name} (${((e.amount / sum) * 100).floor()}%)',
+                                value: e.amount.toDouble(),
+                                showTitle: false,
+                                badgePositionPercentageOffset: 1.7,
+                                badgeWidget: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('${((e.amount / sum) * 100).round()}%', style: TextStyle(),),
+                                    Text(e.billType.name)
+                                  ],
+                                ),
+                                radius: size.width * 0.15,
+                                // titleStyle: const TextStyle(
+                                //     color: Colors.white,
+                                //     fontSize: 20,
+                                //     fontWeight: FontWeight.w700),
+                                color: colors[i++ % 2]),
+                          )
+                        ])),
+                  ),
+                ],
+              ),
       ),
     );
   }

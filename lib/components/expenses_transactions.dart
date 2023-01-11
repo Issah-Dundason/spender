@@ -6,7 +6,6 @@ import '../bloc/expenses/expenses_state.dart';
 import '../icons/icons.dart';
 import 'expense_transaction_tile.dart';
 
-
 class ExpensesTransactions extends StatelessWidget {
   const ExpensesTransactions({Key? key}) : super(key: key);
 
@@ -20,15 +19,18 @@ class ExpensesTransactions extends StatelessWidget {
       child: BlocBuilder<ExpensesBloc, ExpensesState>(
         builder: (context, state) {
           if (state.transactions.isEmpty) {
-            return Stack(
-              alignment: Alignment.center,
-              children: const [
-                Text("No Data"),
-                Icon(
-                  Whiteboard.icon,
-                  size: 150,
-                )
-              ],
+            return Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: const [
+                  Text("No Data"),
+                  Icon(
+                    Whiteboard.icon,
+                    size: 150,
+                  )
+                ],
+              ),
             );
           }
           return ListView(
@@ -38,7 +40,9 @@ class ExpensesTransactions extends StatelessWidget {
               ...state.transactions.map((e) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
-                  child: EditableTransactionTile(expenditure: e, tileColor: colors[i++ % 3],),
+                  child: EditableTransactionTile(
+                    expenditure: e,
+                  ),
                 );
               }).toList()
             ],

@@ -42,45 +42,48 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
     return Card(
       color: widget.tileColor ?? Theme.of(context).colorScheme.primaryContainer,
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.antiAlias,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 14.0, left: 14.0),
-              child: Row(
-                children: [
-                  Column(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(top: 14.0, left: 14.0, right: 14.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
+                        overflow: TextOverflow.ellipsis,
                         'Bill: ${widget.expenditure.bill}',
-                        style: TextStyle(fontSize: 15, color: widget.textColor),
+                        style:
+                            TextStyle(fontSize: 16, color: widget.textColor),
                       ),
                       const SizedBox(
                         height: 10,
                       ),
                       Text(
                           'Price: ${NumberFormat().format(widget.expenditure.cash)}',
-                          style:
-                              TextStyle(fontSize: 15, color: widget.textColor)),
+                          style: TextStyle(
+                              fontSize: 16, color: widget.textColor)),
                     ],
                   ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Column(
+                ),
+                Expanded(
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                           'Priority: ${widget.expenditure.priority.name.toUpperCase()}',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 16,
                             color: widget.textColor,
                           )),
                       const SizedBox(
@@ -88,20 +91,27 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                       ),
                       Text(
                           'Payment Type: ${widget.expenditure.paymentType.name}',
-                          style:
-                              TextStyle(fontSize: 15, color: widget.textColor)),
+                          style: TextStyle(
+                              fontSize: 16, color: widget.textColor)),
                     ],
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
-            Padding(
+          ),
+          Container(
+            color: Colors.transparent,
+            child: Padding(
               padding: const EdgeInsets.only(
-                  left: 14.0, right: 14.0, top: 14, bottom: 10),
+                left: 14.0,
+                right: 14.0,
+                top: 4,
+              ),
               child: Row(
                 children: [
                   IconButton(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: widget.iconColor ??
+                          Theme.of(context).colorScheme.primary,
                       onPressed: () {
                         showDialog(
                             context: context,
@@ -114,7 +124,8 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     width: 12,
                   ),
                   IconButton(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: widget.iconColor ??
+                          Theme.of(context).colorScheme.primary,
                       onPressed: () async {
                         var result = await showDialog(
                             context: context,
@@ -128,7 +139,8 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     width: 12,
                   ),
                   IconButton(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: widget.iconColor ??
+                          Theme.of(context).colorScheme.primary,
                       onPressed: () async {
                         var data = await showUpdate();
                         if (data != true) return;
@@ -142,12 +154,12 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                 ],
               ),
             ),
-            Container(
-              height: 10,
-              color: Colors.black12,
-            )
-          ],
-        ),
+          ),
+          Container(
+            height: 10,
+            color: Colors.black12,
+          )
+        ],
       ),
     );
   }
