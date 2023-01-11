@@ -91,6 +91,9 @@ class _BillViewState extends State<BillView> {
                                   }
                                   return null;
                                 },
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(30),
+                                ],
                                 decoration: const InputDecoration(
                                     hintText: "bill name"),
                               )),

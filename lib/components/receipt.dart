@@ -52,25 +52,25 @@ class Receipt extends StatelessWidget {
                 height: 20,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0),
+                padding: const EdgeInsets.only(left: 15.0, right: 15),
                 child: Text('Bill: ${expenditure.bill}'),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 20),
+                padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
                 child: Text('Amount:  ₵${NumberFormat().format(AppUtils.amountPresented(expenditure.price))}'),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 20),
+                padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
                 child: Text(
                     'Payment type: ${expenditure.paymentType.name.toUpperCase()}'),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 20),
+                padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
                 child: Text(
                     'Priority of service: ${expenditure.priority.name.toUpperCase()}'),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 20),
+                padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
                 child: Text(
                     'Bill Type: ${expenditure.type.name.toUpperCase()}'),
               ),
