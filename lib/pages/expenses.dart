@@ -15,7 +15,7 @@ class ExpensesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return ListView(
+    return Column(
       children: [
         const SizedBox(
           height: 24,
@@ -69,7 +69,9 @@ class ExpensesPage extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        const Align(alignment: Alignment.center, child: ExpensesTransactions())
+        const Expanded(
+            child: Align(
+                alignment: Alignment.center, child: ExpensesTransactions()))
       ],
     );
   }

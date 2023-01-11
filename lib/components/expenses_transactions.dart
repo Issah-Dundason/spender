@@ -34,14 +34,17 @@ class ExpensesTransactions extends StatelessWidget {
             );
           }
           return ListView(
-            shrinkWrap: true,
-            physics: const ClampingScrollPhysics(),
+
+            physics:const BouncingScrollPhysics(),
             children: [
               ...state.transactions.map((e) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: EditableTransactionTile(
                     expenditure: e,
+                    // tileColor: colors[i++ % 3],
+                    // iconColor: Colors.white,
+                   // textColor: Colors.white,
                   ),
                 );
               }).toList()

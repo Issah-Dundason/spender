@@ -36,9 +36,12 @@ class TransactionTile extends StatelessWidget {
               size: 35,
               color: Colors.black,
             )),
-        title: Text(
-          store,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+        title: SizedBox(
+          height: 25,
+          child: Text(
+            store,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, overflow: TextOverflow.ellipsis),
+          ),
         ),
         subtitle: Text(type,
             style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),

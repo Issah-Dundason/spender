@@ -1,8 +1,8 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../pages/pie_chart_page.dart';
 import '../repository/expenditure_repo.dart';
 import '../service/database.dart';
 
@@ -95,7 +95,7 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
     await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (_) => PieChartDialog(
+            builder: (_) => PieChartPage(
                   pieData: pieData,
                 )));
   }
@@ -103,78 +103,5 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
   void showChart(FilterOptions? options) {
     if (options == null) return;
     setState(() => _options = options);
-  }
-}
-
-class PieChartDialog extends StatelessWidget {
-  final List<PieData> pieData;
-
-  const PieChartDialog({Key? key, required this.pieData}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var prime = Theme.of(context).colorScheme.primary;
-    int i = 0;
-    var colors = [const Color(0xFF524F5F), prime, const Color(0xFFF45737)];
-    var size = MediaQuery.of(context).size;
-    var sum = pieData.fold(
-        0, (previousValue, element) => previousValue + element.amount);
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Analysis'),
-        foregroundColor: Colors.black,
-        elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.background,
-      ),
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Container(
-        child: pieData.isEmpty
-            ? const Center(
-                child: Text(
-                'No Available data',
-                style: TextStyle(fontSize: 20),
-              ))
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(
-                    height: 124,
-                  ),
-                  SizedBox(
-                    width: size.width * 0.35,
-                    height: size.width * 0.35,
-                    child: PieChart(PieChartData(
-                        centerSpaceRadius: 60,
-                     // centerSpaceColor: Colors.yellow,
-                        sectionsSpace: 0,
-                        sections: [
-                          ...pieData.map(
-                            (e) => PieChartSectionData(
-                                // title:
-                                //     '${e.billType.name} (${((e.amount / sum) * 100).floor()}%)',
-                                value: e.amount.toDouble(),
-                                showTitle: false,
-                                badgePositionPercentageOffset: 1.7,
-                                badgeWidget: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text('${((e.amount / sum) * 100).round()}%', style: TextStyle(),),
-                                    Text(e.billType.name)
-                                  ],
-                                ),
-                                radius: size.width * 0.15,
-                                // titleStyle: const TextStyle(
-                                //     color: Colors.white,
-                                //     fontSize: 20,
-                                //     fontWeight: FontWeight.w700),
-                                color: colors[i++ % 2]),
-                          )
-                        ])),
-                  ),
-                ],
-              ),
-      ),
-    );
   }
 }

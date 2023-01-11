@@ -69,7 +69,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                         height: 10,
                       ),
                       Text(
-                          'Price: ${NumberFormat().format(widget.expenditure.cash)}',
+                          'Price: ₵${NumberFormat().format(widget.expenditure.cash)}',
                           style: TextStyle(
                               fontSize: 16, color: widget.textColor)),
                     ],
