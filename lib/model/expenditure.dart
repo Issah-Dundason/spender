@@ -26,8 +26,7 @@ class Expenditure extends Equatable {
       ): id = null;
 
   static String _generateDate() {
-    var d = DateTime.now();
-    d = DateTime.utc(d.year, d.month, d.day);
+    var d = DateTime.now()..toUtc()..toIso8601String();
     return d.toIso8601String();
   }
 
@@ -51,7 +50,7 @@ class Expenditure extends Equatable {
   }
 
   String get formattedDate {
-    return DateFormat('EEE,dd MMM yyyy').format(DateTime.parse(date));
+    return DateFormat('EEE,dd MMM yyyy').format(DateTime.parse(date).toLocal());
   }
 
   double get cash {

@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
               firstDate: firstYear,
               lastDate: DateTime.now(),
               onChange: (t) {
-                Navigator.pop(context, t.year);
+                Navigator.pop(context, t.toUtc().year);
               },
             ));
     if (!mounted || result == null) return;

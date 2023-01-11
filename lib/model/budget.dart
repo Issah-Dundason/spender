@@ -25,7 +25,7 @@ class Budget extends Equatable {
   }
 
   String get formattedDate {
-    return DateFormat("yyyy - MM").format(DateTime.parse(date));
+    return DateFormat("yyyy - MM").format(DateTime.parse(date).toLocal());
   }
 
   Budget.fromMap(Map<String, dynamic> map)
