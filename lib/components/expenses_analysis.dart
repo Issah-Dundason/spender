@@ -89,11 +89,7 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
 
     if (_options == FilterOptions.overall) {}
 
-    await showDialog(
-        context: context,
-        builder: (_) => PieChartDialog(
-              pieData: pieData,
-            ));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => PieChartDialog(pieData: pieData,)));
   }
 
   void showChart(FilterOptions? options) {
@@ -132,8 +128,8 @@ class PieChartDialog extends StatelessWidget {
                     )))
             : PieChart(PieChartData(
                 centerSpaceRadius: 4,
-                centerSpaceColor: Colors.white,
-                sectionsSpace: 4,
+               // centerSpaceColor: Colors.transparent,
+                sectionsSpace: 0,
                 sections: [
                     ...pieData.map(
                       (e) =>
@@ -141,7 +137,7 @@ class PieChartDialog extends StatelessWidget {
                           title:
                               '${e.billType.name} (${(e.amount / sum) * 100}%)',
                           value: e.amount.toDouble(),
-                          radius: size.width * 0.4,
+                          radius: size.width * 0.35,
                           titleStyle: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,

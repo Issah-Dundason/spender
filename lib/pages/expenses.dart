@@ -4,10 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:spender/bloc/expenses/expenses_bloc.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/expenses/expenses_state.dart';
-import 'package:spender/icons/icons.dart';
-import 'package:spender/model/expenditure.dart';
-import 'package:spender/repository/expenditure_repo.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 import '../components/expenses_analysis.dart';
 import '../components/expenses_calendar.dart';
@@ -19,7 +15,7 @@ class ExpensesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Column(
+    return ListView(
       children: [
         const SizedBox(
           height: 24,
@@ -45,9 +41,12 @@ class ExpensesPage extends StatelessWidget {
         const SizedBox(
           height: 30,
         ),
-        SizedBox(
-          width: size.width * 0.9,
-          child: const ExpenseAnalysisSection(),
+        Align(
+          alignment: Alignment.center,
+          child: SizedBox(
+            width: size.width * 0.9,
+            child: const ExpenseAnalysisSection(),
+          ),
         ),
         const SizedBox(
           height: 10,
@@ -56,18 +55,21 @@ class ExpensesPage extends StatelessWidget {
           width: size.width * 0.9,
           //  child: const Divider(),
         ),
-        SizedBox(
-            width: size.width * 0.9,
-            child: BlocBuilder<ExpensesBloc, ExpensesState>(
-                builder: (context, state) {
-              var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
-              return Text('Transactions on $date',
-                  style: const TextStyle(fontSize: 16));
-            })),
+        Align(
+          alignment: Alignment.center,
+          child: SizedBox(
+              width: size.width * 0.9,
+              child: BlocBuilder<ExpensesBloc, ExpensesState>(
+                  builder: (context, state) {
+                var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
+                return Text('Transactions on $date',
+                    style: const TextStyle(fontSize: 16));
+              })),
+        ),
         const SizedBox(
           height: 20,
         ),
-        const Expanded(child: ExpensesTransactions())
+        const Align(alignment: Alignment.center, child: ExpensesTransactions())
       ],
     );
   }

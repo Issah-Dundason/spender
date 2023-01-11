@@ -17,7 +17,16 @@ import '../theme/theme.dart';
 import 'bill_view.dart';
 
 class EditableTransactionTile extends StatefulWidget {
-  const EditableTransactionTile({Key? key, required this.expenditure})
+  final Color? tileColor;
+  final Color? textColor;
+  final Color? iconColor;
+
+  const EditableTransactionTile(
+      {Key? key,
+      required this.expenditure,
+      this.tileColor,
+      this.textColor,
+      this.iconColor})
       : super(key: key);
 
   final Expenditure expenditure;
@@ -31,12 +40,12 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: widget.tileColor ?? Theme.of(context).colorScheme.primaryContainer,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15),
+        filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -50,14 +59,15 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     children: [
                       Text(
                         'Bill: ${widget.expenditure.bill}',
-                        style: const TextStyle(fontSize: 15),
+                        style: TextStyle(fontSize: 15, color: widget.textColor),
                       ),
                       const SizedBox(
                         height: 10,
                       ),
                       Text(
                           'Price: ${NumberFormat().format(widget.expenditure.cash)}',
-                          style: const TextStyle(fontSize: 15)),
+                          style:
+                              TextStyle(fontSize: 15, color: widget.textColor)),
                     ],
                   ),
                   const SizedBox(
@@ -69,13 +79,17 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     children: [
                       Text(
                           'Priority: ${widget.expenditure.priority.name.toUpperCase()}',
-                          style: const TextStyle(fontSize: 15)),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: widget.textColor,
+                          )),
                       const SizedBox(
                         height: 10,
                       ),
                       Text(
                           'Payment Type: ${widget.expenditure.paymentType.name}',
-                          style: const TextStyle(fontSize: 15)),
+                          style:
+                              TextStyle(fontSize: 15, color: widget.textColor)),
                     ],
                   )
                 ],
@@ -140,9 +154,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
 
   void notifyBlocs() {
     context.read<ExpensesBloc>().add(const LoadEvent());
-    context
-        .read<HomeBloc>()
-        .add(const HomeInitializationEvent());
+    context.read<HomeBloc>().add(const HomeInitializationEvent());
   }
 
   AlertDialog buildDeleteDialog(BuildContext _) {
@@ -187,7 +199,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
   void selfDestruct() async {
     var appRepository = context.read<AppRepository>();
     await appRepository.deleteRepository(widget.expenditure.id!);
-    if(!mounted) return;
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text('Deleted')));
     notifyBlocs();

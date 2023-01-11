@@ -69,6 +69,11 @@ class Receipt extends StatelessWidget {
                 child: Text(
                     'Priority of service: ${expenditure.priority.name.toUpperCase()}'),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 20),
+                child: Text(
+                    'Bill Type: ${expenditure.type.name.toUpperCase()}'),
+              ),
               if (expenditure.description != null && expenditure.description!.isNotEmpty)
                 const Padding(
                   padding: EdgeInsets.only(top: 20.0, left: 8),

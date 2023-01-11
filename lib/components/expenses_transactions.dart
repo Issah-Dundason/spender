@@ -12,6 +12,9 @@ class ExpensesTransactions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var prime = Theme.of(context).colorScheme.primary;
+    int i = 0;
+    var colors = [const Color(0xFF524F5F), prime, const Color(0xFFF45737)];
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9,
       child: BlocBuilder<ExpensesBloc, ExpensesState>(
@@ -29,11 +32,13 @@ class ExpensesTransactions extends StatelessWidget {
             );
           }
           return ListView(
+            shrinkWrap: true,
+            physics: const ClampingScrollPhysics(),
             children: [
               ...state.transactions.map((e) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
-                  child: EditableTransactionTile(expenditure: e),
+                  child: EditableTransactionTile(expenditure: e, tileColor: colors[i++ % 3],),
                 );
               }).toList()
             ],
