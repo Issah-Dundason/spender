@@ -23,8 +23,9 @@ dependencies:
   equatable: ^2.0.5
   decimal: ^2.3.2
   fl_chart: ^0.55.2
-  datepicker_dropdown: ^0.0.7+2
   flutter_svg: ^1.1.6
+  table_calendar: ^3.0.9
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:
@@ -38,7 +39,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/no_budget.png
     - assets/images/avatar/
 
 
@@ -58,4 +58,34 @@ flutter:
     - family: cart
       fonts:
         - asset: assets/fonts/cart.ttf
+    - family: editpen
+      fonts:
+        - asset: assets/fonts/editpen.ttf
+    - family: Bin
+      fonts:
+        - asset: assets/fonts/Bin.ttf
+    - family: QuillPencil
+      fonts:
+        - asset: assets/fonts/QuillPencil.ttf
+    - family: Receipt
+      fonts:
+        - asset: assets/fonts/Receipt.ttf
+    - family: Back
+      fonts:
+        - asset: assets/fonts/Back.ttf
+    - family: Divider
+      fonts:
+        - asset: assets/fonts/Divider.ttf
+    - family: Equal
+      fonts:
+        - asset: assets/fonts/Equal.ttf
+    - family: Multiply
+      fonts:
+        - asset: assets/fonts/Multiply.ttf
+    - family: WorkSans
+      fonts:
+        - asset: assets/fonts/WorkSans-Regular.ttf
+        - asset: assets/fonts/WorkSans-Medium.ttf
+        - asset: assets/fonts/WorkSans-Thin.ttf
+        - asset: assets/fonts/WorkSans-Bold.ttf
 

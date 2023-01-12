@@ -72,3 +72,38 @@ class ReceiptIcon {
 
   static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
+
+class Back {
+  Back._();
+
+  static const String _fontFamily = 'Back';
+
+  static const IconData icon = IconData(0xe901, fontFamily: _fontFamily);
+}
+
+class Equal {
+  Equal._();
+
+  static const String _fontFamily = 'Equal';
+
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
+}
+
+
+class Multiply {
+  Multiply._();
+
+  static const String _fontFamily = 'Multiply';
+
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
+}
+
+
+class MathDivider {
+  MathDivider._();
+
+  static const String _fontFamily = 'Divider';
+
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
+}
+
