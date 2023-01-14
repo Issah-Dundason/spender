@@ -209,22 +209,25 @@ class _BillViewState extends State<BillView> {
                         const Spacer(),
                         state.processingState == ProcessingState.pending
                             ? const CircularProgressIndicator()
-                            : ElevatedButton(
-                                onPressed: () {
-                                  bool? isValid =
-                                      _formKey.currentState?.validate();
-                                  if (isValid != null && !isValid) return;
-                                  if (_billType == null) {
-                                    _showErrorDialog(context);
-                                    return;
-                                  }
+                            : Visibility(
+                              visible: !_showKeypad,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    bool? isValid =
+                                        _formKey.currentState?.validate();
+                                    if (isValid != null && !isValid) return;
+                                    if (_billType == null) {
+                                      _showErrorDialog(context);
+                                      return;
+                                    }
 
-                                  widget.expenditure == null ? _save() : _update();
-                                },
-                                style: _getButtonStyle(context),
-                                child: Text(widget.expenditure == null
-                                    ? "ADD"
-                                    : "Update")),
+                                    widget.expenditure == null ? _save() : _update();
+                                  },
+                                  style: _getButtonStyle(context),
+                                  child: Text(widget.expenditure == null
+                                      ? "ADD"
+                                      : "Update")),
+                            ),
                       ],
                     ),
                   ),
@@ -238,7 +241,7 @@ class _BillViewState extends State<BillView> {
               alignment: Alignment.bottomCenter,
               child: Container(
                 color: Theme.of(context).colorScheme.background,
-                  child: CustomKeys(height: height, width: width, onKeyTapped: _onAmountChanged,)),
+                  child: CustomKeys(height: height, width: width * 0.7, onKeyTapped: _onAmountChanged,)),
             ),
           )
         ],

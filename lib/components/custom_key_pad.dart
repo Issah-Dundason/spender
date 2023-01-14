@@ -25,6 +25,7 @@ class CustomKeys extends StatelessWidget {
 
     return SizedBox(
       height: height,
+      width: width,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
