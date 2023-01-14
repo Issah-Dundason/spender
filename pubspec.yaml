@@ -32,6 +32,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  test: ^1.21.4
 
 flutter:
 
@@ -82,6 +83,15 @@ flutter:
     - family: Multiply
       fonts:
         - asset: assets/fonts/Multiply.ttf
+    - family: Dot
+      fonts:
+        - asset: assets/fonts/Dot.ttf
+    - family: minus
+      fonts:
+        - asset: assets/fonts/minus.ttf
+    - family: Plus
+      fonts:
+        - asset: assets/fonts/Plus.ttf
     - family: WorkSans
       fonts:
         - asset: assets/fonts/WorkSans-Regular.ttf

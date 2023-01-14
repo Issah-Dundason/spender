@@ -14,6 +14,7 @@ import 'package:spender/pages/app_view.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
 import 'package:spender/theme/theme.dart';
+import 'package:spender/util/calculation.dart';
 
 import 'bloc/app/app_cubit.dart';
 import 'bloc/profile/profile_bloc.dart';
@@ -48,7 +49,7 @@ void main() async {
   avatar ??= 'tracker.svg';
 
   runApp(const MaterialApp(
-    home: Calculator(),
+    home: CalculatorWidget(),
   ));
 
   // runApp(Spender(
@@ -95,18 +96,39 @@ class Spender extends StatelessWidget {
 }
 
 //testing calculator
-class Calculator extends StatefulWidget {
-  const Calculator({Key? key}) : super(key: key);
+class CalculatorWidget extends StatefulWidget {
+  const CalculatorWidget({Key? key}) : super(key: key);
 
   @override
-  State<Calculator> createState() => _CalculatorState();
+  State<CalculatorWidget> createState() => _CalculatorWidgetState();
 }
 
-class _CalculatorState extends State<Calculator> {
+class _CalculatorWidgetState extends State<CalculatorWidget> {
   final TextEditingController controller = TextEditingController();
+  final calculator = Calculator();
+
+  @override
+  void initState() {
+    controller.text = calculator.getString();
+    super.initState();
+  }
+
+  void onKeyPressed(String input) {
+    if(input == "=") {
+      calculator.calculate();
+    }
+    else if(input == "<") {
+      calculator.remove();
+    }
+    else {
+      calculator.add(input);
+    }
+    controller.text = calculator.getString();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -118,13 +140,16 @@ class _CalculatorState extends State<Calculator> {
             TextField(
               controller: controller,
               showCursor: true,
+              textAlign: TextAlign.end,
+              style: TextStyle(fontSize: 35),
               onTap: () {
                 showModalBottomSheet(
                     barrierColor: Colors.transparent,
-                    // anchorPoint: Offset(20, 0),
                     context: context,
                     builder: (_) => CustomKeys(
-                          controller: controller,
+                          onKeyTapped: onKeyPressed,
+                          width: size.width,
+                          height: size.height * 0.4,
                         ));
               },
               readOnly: true,
@@ -137,111 +162,172 @@ class _CalculatorState extends State<Calculator> {
 }
 
 class CustomKeys extends StatelessWidget {
-  const CustomKeys({Key? key, required this.controller}) : super(key: key);
-  final TextEditingController controller;
+  const CustomKeys(
+      {Key? key,
+      this.onKeyTapped,
+      required this.height,
+      required this.width,
+      this.spacesAlongWidth = 8,
+      this.spacesAlongHeight = 8})
+      : super(key: key);
+  final double height;
+  final double width;
+  final double spacesAlongWidth;
+  final double spacesAlongHeight;
+  final Function(String)? onKeyTapped;
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    //var color = Theme.of(context).colorScheme.primary;
+    var w1 = (width - spacesAlongWidth * 5) / 4;
+    var h1 = (height - spacesAlongHeight * 6) / 5;
 
-    var r = 5;
-    var k = 5;
-    var w1 = (size.width - r * 5) / 4;
-    var l = (size.height * 0.4) / 5;
-    var h1 = ((size.height * 0.4) - k * 6) / 5;
-
-    return Container(
-      height: size.height * 0.4,
+    return SizedBox(
+      height: height,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Expanded(
               flex: 3,
-              child: Container(
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Row(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      NumPad(
+                        width: w1,
+                        height: h1,
+                        value: const Icon(
+                          Back.icon,
+                          size: 35,
+                        ),
+                        onTap: () {
+                          onKeyTapped?.call('<');
+                        },
+                      ),
+                      NumPad(
+                        width: w1,
+                        height: h1,
+                        value: const Icon(MathDivider.icon),
+                        onTap: () {
+                          onKeyTapped?.call('/');
+                        },
+                      ),
+                      NumPad(
+                        width: w1,
+                        height: h1,
+                        value: const Icon(Multiply.icon),
+                        onTap: () {
+                          onKeyTapped?.call('x');
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         NumPad(
-                            width: w1,
-                            height: h1,
-                            value: const Icon(Back.icon, size: 35,)),
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText('7'),
+                          onTap: () {
+                            onKeyTapped?.call('7');
+                          },
+                        ),
                         NumPad(
-                            width: w1,
-                            height: h1,
-                            value: const Icon(MathDivider.icon)),
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText('8'),
+                          onTap: () {
+                            onKeyTapped?.call('8');
+                          },
+                        ),
                         NumPad(
-                            width: w1,
-                            height: h1,
-                            value: const Icon(Multiply.icon)),
-                      ],
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText('7')),
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText('8')),
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText('9')),
-                        ]),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText('4')),
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText('5')),
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText('6')),
-                        ]),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText("3")),
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText("2")),
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText("1")),
-                        ]),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          NumPad(
-                              width: w1 * 2.1,
-                              height: h1,
-                              value: buildNumPadText("0")),
-                          NumPad(
-                              width: w1,
-                              height: h1,
-                              value: buildNumPadText(".")),
-                        ])
-                  ],
-                ),
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText('9'),
+                          onTap: () {
+                            onKeyTapped?.call('9');
+                          },
+                        ),
+                      ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        NumPad(
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText('4'),
+                          onTap: () {
+                            onKeyTapped?.call('4');
+                          },
+                        ),
+                        NumPad(
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText('5'),
+                          onTap: () {
+                            onKeyTapped?.call('5');
+                          },
+                        ),
+                        NumPad(
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText('6'),
+                          onTap: () {
+                            onKeyTapped?.call('6');
+                          },
+                        ),
+                      ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        NumPad(
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText("3"),
+                          onTap: () {
+                            onKeyTapped?.call('3');
+                          },
+                        ),
+                        NumPad(
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText("2"),
+                          onTap: () {
+                            onKeyTapped?.call('2');
+                          },
+                        ),
+                        NumPad(
+                          width: w1,
+                          height: h1,
+                          value: buildNumPadText("1"),
+                          onTap: () {
+                            onKeyTapped?.call('1');
+                          },
+                        ),
+                      ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        NumPad(
+                          width: w1 * 2.1,
+                          height: h1,
+                          value: buildNumPadText("0"),
+                          onTap: () {
+                            onKeyTapped?.call('0');
+                          },
+                        ),
+                        NumPad(
+                          width: w1,
+                          height: h1,
+                          value: const Icon(Dot.icon),
+                          onTap: () {
+                            onKeyTapped?.call('.');
+                          },
+                        ),
+                      ])
+                ],
               )),
           Expanded(
             flex: 1,
@@ -249,15 +335,36 @@ class CustomKeys extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                NumPad(width: w1, height: h1, value: buildNumPadText("-")),
-                NumPad(width: w1, height: h1 * 2.13, value: buildNumPadText("+")),
                 NumPad(
-                    width: w1,
-                    height: h1 * 2.13,
-                    value: const Icon(
-                      Equal.icon,
-                      size: 15,
-                    )),
+                  width: w1,
+                  height: h1,
+                  value: const Icon(
+                    Minus.icon,
+                    size: 6,
+                  ),
+                  onTap: () {
+                    onKeyTapped?.call('-');
+                  },
+                ),
+                NumPad(
+                  width: w1,
+                  height: h1 * 2.13,
+                  value: const Icon(Plus.icon),
+                  onTap: () {
+                    onKeyTapped?.call('+');
+                  },
+                ),
+                NumPad(
+                  width: w1,
+                  height: h1 * 2.13,
+                  value: const Icon(
+                    Equal.icon,
+                    size: 15,
+                  ),
+                  onTap: () {
+                    onKeyTapped?.call('=');
+                  },
+                ),
               ],
             ),
           )
@@ -267,8 +374,8 @@ class CustomKeys extends StatelessWidget {
   }
 
   Widget buildNumPadText(String text) {
-    return  Center(
-      child:  Text(
+    return Center(
+      child: Text(
         text,
         style: const TextStyle(fontSize: 29),
       ),
@@ -305,9 +412,12 @@ class NumPad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: color,
       width: width,
       height: height,
+      padding: padding,
+      margin: margin,
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(25)),
       child: InkWell(
         onTap: onTap,
         child: value,

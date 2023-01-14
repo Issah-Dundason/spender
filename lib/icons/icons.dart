@@ -107,3 +107,26 @@ class MathDivider {
   static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
 
+class Dot {
+  Dot._();
+
+  static const String _fontFamily = 'Dot';
+
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
+}
+
+class Minus {
+  Minus._();
+
+  static const String _fontFamily = 'minus';
+
+  static const IconData icon = IconData(0xe901, fontFamily: _fontFamily);
+}
+
+class Plus {
+  Plus._();
+
+  static const String _fontFamily = 'Plus';
+
+  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
+}
