@@ -87,7 +87,7 @@ void main() {
       calc.add('7');
       calc.add('.');
       calc.calculate();
-      expect(true, equals(calc.getString().contains(RegExp(r'^60\.\d+'))));
+      expect(true, equals(calc.getString().contains(RegExp(r'^60'))));
     });
 
     test('second test', () {
@@ -121,6 +121,14 @@ void main() {
       expect(true, equals(calc.getString().contains(RegExp(r'^2\.?'))));
     });
 
+    test('only dot is removed', () {
+      var calc = Calculator();
+      calc.add('6');
+      calc.add('.');
+      calc.calculate();
+      expect(calc.getString(), equals('6'));
+    });
+
   });
 
   group('adding successive operators will make sure only the first one is returned', () {
@@ -151,5 +159,17 @@ void main() {
       calc.add('8');
       expect(calc.getString(), '567 - 98');
     });
+  });
+
+
+
+  test('negative values are not deleted', () {
+    var calc = Calculator();
+    calc.add('5');
+    calc.add('-');
+    calc.add('6');
+    calc.calculate();
+    calc.add('-');
+    expect(calc.getString(), equals('-1 -'));
   });
 }

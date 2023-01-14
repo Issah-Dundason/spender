@@ -118,17 +118,28 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
   Future<dynamic> showAddView() async {
     var appRepo = context.read<AppRepository>();
     var billTypes = await appRepo.getBillTypes();
-    return await showModalBottomSheet(
-        isScrollControlled: true,
-        shape: appBottomSheetShape,
-        context: context,
+    // return await showModalBottomSheet(
+    //     isScrollControlled: true,
+    //     shape: appBottomSheetShape,
+    //     context: context,
+    //     builder: (_) => BlocProvider(
+    //           create: (_) {
+    //             return BillBloc(appRepo: appRepo);
+    //           },
+    //           child: BillView(
+    //             billTypes: billTypes,
+    //           ),
+    //         ));
+
+    if(!mounted) return;
+
+    return Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => BlocProvider(
-              create: (_) {
-                return BillBloc(appRepo: appRepo);
-              },
-              child: BillView(
-                billTypes: billTypes,
-              ),
-            ));
+            create: (_) {
+              return BillBloc(appRepo: appRepo);
+            },
+            child: BillView(
+              billTypes: billTypes,
+            ))));
   }
 }

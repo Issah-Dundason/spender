@@ -8,6 +8,7 @@ import 'package:spender/util/app_utils.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../model/bill_type.dart';
 import '../model/expenditure.dart';
+import 'custom_key_pad.dart';
 
 class BillView extends StatefulWidget {
   final List<BillType> billTypes;
@@ -31,6 +32,8 @@ class _BillViewState extends State<BillView> {
   PaymentType _paymentType = PaymentType.cash;
   Priority _priority = Priority.need;
 
+  bool _showKeypad = false;
+
   @override
   void initState() {
     _billController = TextEditingController(text: widget.expenditure?.bill);
@@ -50,182 +53,190 @@ class _BillViewState extends State<BillView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: MediaQuery.of(context).viewInsets,
-      child: BlocConsumer<BillBloc, BillingState>(
-        listener: (bloc, state) {
-          if (state.processingState == ProcessingState.done) {
-            Navigator.pop(context, true);
-          }
-        },
-        builder: (context, state) {
-          return Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                //bar
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  width: 80,
-                  height: 10,
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 20, left: 24, right: 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                              flex: 4,
-                              child: TextFormField(
-                                controller: _billController,
-                                validator: (s) {
-                                  if (s != null && s.isEmpty) {
-                                    return 'Field can not be empty';
-                                  }
-                                  return null;
-                                },
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(30),
-                                ],
-                                decoration: const InputDecoration(
-                                    hintText: "bill name"),
-                              )),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: _ProductTypeDropDown<BillType>(
-                              onChange: (t) => setState(() => _billType = t),
-                              value: _billType,
-                              title: "Bill Type",
-                              items: widget.billTypes,
-                              menuItemBuilder: (t) => Text(t.name),
+    var height = MediaQuery.of(context).size.height * 0.4;
+    var width = MediaQuery.of(context).size.width;
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Bill'),
+        foregroundColor: Colors.black,
+        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.background,
+      ),
+      body: Stack(
+        children: [
+          BlocConsumer<BillBloc, BillingState>(
+            listener: (bloc, state) {
+              if (state.processingState == ProcessingState.done) {
+                Navigator.pop(context, true);
+              }
+            },
+            builder: (context, state) {
+              return GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _toggleVisibilityOfKeyPad,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                flex: 4,
+                                child: TextFormField(
+                                  controller: _billController,
+                                  onTap: _toggleVisibilityOfKeyPad,
+                                  validator: (s) {
+                                    if (s != null && s.isEmpty) {
+                                      return 'Field can not be empty';
+                                    }
+                                    return null;
+                                  },
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(30),
+                                  ],
+                                  decoration: const InputDecoration(
+                                      hintText: "bill name"),
+                                )),
+                            const SizedBox(
+                              width: 10,
                             ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                              flex: 4,
-                              child: TextFormField(
-                                controller: _amountController,
-                                validator: (s) {
-                                  if (s != null && s.isEmpty) {
-                                    return 'Field can not be empty';
-                                  }
-                                  if(double.parse(s!) < 1) return '0 is not allowed';
-                                  return null;
-                                },
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                        decimal: true),
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'^(\d+)?\.?\d{0,2}'))
-                                ],
-                                decoration: const InputDecoration(
-                                    hintText: "amount paid"),
-                              )),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: _ProductTypeDropDown<PaymentType>(
-                              value: _paymentType,
-                              onChange: (t) =>
-                                  setState(() => _paymentType = t!),
-                              title: "Payment Type",
-                              menuItemBuilder: (t) => Text(
-                                t.name,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
+                            Expanded(
+                              flex: 2,
+                              child: _ProductTypeDropDown<BillType>(
+                                onChange: (t) => setState(() => _billType = t),
+                                value: _billType,
+                                onTapped: _toggleVisibilityOfKeyPad,
+                                title: "Bill Type",
+                                items: widget.billTypes,
+                                menuItemBuilder: (t) => Text(t.name),
                               ),
-                              items: PaymentType.values,
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 35,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                flex: 4,
+                                child: TextFormField(
+                                  controller: _amountController,
+                                  onTap: () => setState(() => _showKeypad = true),
+                                  readOnly: true,
+                                  validator: (s) {
+                                    if (s != null && s.isEmpty) {
+                                      return 'Field can not be empty';
+                                    }
+                                    if (double.parse(s!) < 1) {
+                                      return '0 is not allowed';
+                                    }
+                                    return null;
+                                  },
+                                  decoration: const InputDecoration(
+                                      hintText: "amount paid"),
+                                )),
+                            const SizedBox(
+                              width: 10,
                             ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                              flex: 4,
-                              child: TextFormField(
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                minLines: 2,
-                                maxLines: 4,
-                                controller: _descriptionController,
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(120),
-                                ],
-                                keyboardType: TextInputType.multiline,
-                                decoration: const InputDecoration(
-                                    hintText: "description"),
-                              )),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: _ProductTypeDropDown<Priority>(
-                              value: _priority,
-                              onChange: (t) => setState(() => _priority = t!),
-                              title: "Priority",
-                              menuItemBuilder: (t) => Text(t.name),
-                              items: Priority.values,
+                            Expanded(
+                              flex: 2,
+                              child: _ProductTypeDropDown<PaymentType>(
+                                value: _paymentType,
+                                onTapped: _toggleVisibilityOfKeyPad,
+                                onChange: (t) =>
+                                    setState(() => _paymentType = t!),
+                                title: "Payment Type",
+                                menuItemBuilder: (t) => Text(
+                                  t.name,
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                items: PaymentType.values,
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 35,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                flex: 4,
+                                child: TextFormField(
+                                  onTap: _toggleVisibilityOfKeyPad,
+                                  textCapitalization:
+                                      TextCapitalization.sentences,
+                                  minLines: 2,
+                                  maxLines: 4,
+                                  controller: _descriptionController,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(120),
+                                  ],
+                                  keyboardType: TextInputType.multiline,
+                                  decoration: const InputDecoration(
+                                      hintText: "description"),
+                                )),
+                            const SizedBox(
+                              width: 10,
                             ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      state.processingState == ProcessingState.pending
-                          ? const CircularProgressIndicator()
-                          : ElevatedButton(
-                              onPressed: () {
-                                bool? isValid =
-                                    _formKey.currentState?.validate();
-                                if (isValid != null && !isValid) return;
-                                if (_billType == null) {
-                                  showErrorDialog(context);
-                                  return;
-                                }
+                            Expanded(
+                              flex: 2,
+                              child: _ProductTypeDropDown<Priority>(
+                                onTapped: _toggleVisibilityOfKeyPad,
+                                value: _priority,
+                                onChange: (t) => setState(() => _priority = t!),
+                                title: "Priority",
+                                menuItemBuilder: (t) => Text(t.name),
+                                items: Priority.values,
+                              ),
+                            )
+                          ],
+                        ),
+                        const Spacer(),
+                        state.processingState == ProcessingState.pending
+                            ? const CircularProgressIndicator()
+                            : ElevatedButton(
+                                onPressed: () {
+                                  bool? isValid =
+                                      _formKey.currentState?.validate();
+                                  if (isValid != null && !isValid) return;
+                                  if (_billType == null) {
+                                    showErrorDialog(context);
+                                    return;
+                                  }
 
-                                widget.expenditure == null ? save() : update();
-                              },
-                              style: getButtonStyle(context),
-                              child: Text(widget.expenditure == null
-                                  ? "ADD"
-                                  : "Update"))
-                    ],
+                                  widget.expenditure == null ? save() : update();
+                                },
+                                style: getButtonStyle(context),
+                                child: Text(widget.expenditure == null
+                                    ? "ADD"
+                                    : "Update")),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(
-                  height: 30,
-                )
-              ],
+              );
+            },
+          ),
+          Visibility(
+            visible: _showKeypad,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                color: Theme.of(context).colorScheme.background,
+                  child: CustomKeys(height: height, width: width,)),
             ),
-          );
-        },
+          )
+        ],
       ),
     );
   }
@@ -244,7 +255,7 @@ class _BillViewState extends State<BillView> {
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
     Expenditure ex = Expenditure(widget.expenditure!.id, bill, description,
-        _paymentType, _billType!, amount,widget.expenditure!.date,  _priority);
+        _paymentType, _billType!, amount, widget.expenditure!.date, _priority);
     context.read<BillBloc>().add(BillUpdateEvent(ex));
   }
 
@@ -271,6 +282,11 @@ class _BillViewState extends State<BillView> {
             ));
   }
 
+  void _toggleVisibilityOfKeyPad() {
+    print('tapped');
+    if(_showKeypad) setState(() => _showKeypad = false);
+  }
+
   @override
   void dispose() {
     _amountController.dispose();
@@ -280,12 +296,15 @@ class _BillViewState extends State<BillView> {
   }
 }
 
+
+
 class _ProductTypeDropDown<T> extends StatelessWidget {
   final String title;
   final List<T> items;
   final T? value;
   final Widget Function(T) menuItemBuilder;
   final void Function(T?)? onChange;
+  final Function()? onTapped;
 
   const _ProductTypeDropDown(
       {Key? key,
@@ -293,7 +312,7 @@ class _ProductTypeDropDown<T> extends StatelessWidget {
       this.items = const [],
       required this.menuItemBuilder,
       this.value,
-      this.onChange})
+      this.onChange, this.onTapped})
       : super(key: key);
 
   @override
@@ -303,6 +322,7 @@ class _ProductTypeDropDown<T> extends StatelessWidget {
       children: [
         Text(title),
         DropdownButton<T>(
+          onTap: onTapped,
           isExpanded: true,
           onChanged: (s) {
             if (onChange != null) onChange!(s);
