@@ -8,6 +8,7 @@ import 'package:spender/util/app_utils.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../model/bill_type.dart';
 import '../model/expenditure.dart';
+import '../util/calculation.dart';
 import 'custom_key_pad.dart';
 
 class BillView extends StatefulWidget {
@@ -28,6 +29,8 @@ class _BillViewState extends State<BillView> {
   late TextEditingController _amountController;
   late TextEditingController _descriptionController;
 
+  var calculator = Calculator();
+
   BillType? _billType;
   PaymentType _paymentType = PaymentType.cash;
   Priority _priority = Priority.need;
@@ -44,6 +47,7 @@ class _BillViewState extends State<BillView> {
     if (widget.expenditure != null) {
       var amount = AppUtils.amountPresented(widget.expenditure!.price);
       _amountController.text = '$amount';
+      calculator.add('$amount');
       _billType = widget.expenditure!.type;
       _paymentType = widget.expenditure!.paymentType;
       _priority = widget.expenditure!.priority;
@@ -130,6 +134,7 @@ class _BillViewState extends State<BillView> {
                                   controller: _amountController,
                                   onTap: () => setState(() => _showKeypad = true),
                                   readOnly: true,
+                                  style: const TextStyle(fontSize: 18),
                                   validator: (s) {
                                     if (s != null && s.isEmpty) {
                                       return 'Field can not be empty';
@@ -210,13 +215,13 @@ class _BillViewState extends State<BillView> {
                                       _formKey.currentState?.validate();
                                   if (isValid != null && !isValid) return;
                                   if (_billType == null) {
-                                    showErrorDialog(context);
+                                    _showErrorDialog(context);
                                     return;
                                   }
 
-                                  widget.expenditure == null ? save() : update();
+                                  widget.expenditure == null ? _save() : _update();
                                 },
-                                style: getButtonStyle(context),
+                                style: _getButtonStyle(context),
                                 child: Text(widget.expenditure == null
                                     ? "ADD"
                                     : "Update")),
@@ -233,7 +238,7 @@ class _BillViewState extends State<BillView> {
               alignment: Alignment.bottomCenter,
               child: Container(
                 color: Theme.of(context).colorScheme.background,
-                  child: CustomKeys(height: height, width: width,)),
+                  child: CustomKeys(height: height, width: width, onKeyTapped: _onAmountChanged,)),
             ),
           )
         ],
@@ -241,7 +246,20 @@ class _BillViewState extends State<BillView> {
     );
   }
 
-  void save() {
+  void _onAmountChanged(String input) {
+    if(input == "=") {
+      calculator.calculate();
+    } else if(input == "<") {
+      calculator.remove();
+    } else if(input == "c") {
+      calculator.clear();
+    } else {
+      calculator.add(input);
+    }
+    _amountController.text = calculator.getString();
+  }
+
+  void _save() {
     var amount = AppUtils.getActualAmount(_amountController.value.text);
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
@@ -250,7 +268,7 @@ class _BillViewState extends State<BillView> {
     context.read<BillBloc>().add(BillSaveEvent(ex));
   }
 
-  void update() {
+  void _update() {
     var amount = AppUtils.getActualAmount(_amountController.value.text);
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
@@ -259,7 +277,7 @@ class _BillViewState extends State<BillView> {
     context.read<BillBloc>().add(BillUpdateEvent(ex));
   }
 
-  ButtonStyle getButtonStyle(BuildContext context) {
+  ButtonStyle _getButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
         minimumSize: const Size.fromHeight(40),
         backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -267,7 +285,7 @@ class _BillViewState extends State<BillView> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)));
   }
 
-  void showErrorDialog(BuildContext context) {
+  void _showErrorDialog(BuildContext context) {
     showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -283,7 +301,6 @@ class _BillViewState extends State<BillView> {
   }
 
   void _toggleVisibilityOfKeyPad() {
-    print('tapped');
     if(_showKeypad) setState(() => _showKeypad = false);
   }
 
@@ -295,7 +312,6 @@ class _BillViewState extends State<BillView> {
     super.dispose();
   }
 }
-
 
 
 class _ProductTypeDropDown<T> extends StatelessWidget {
