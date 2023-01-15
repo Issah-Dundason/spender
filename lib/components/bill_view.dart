@@ -341,6 +341,7 @@ class _BillViewState extends State<BillView> {
     _hideKeypad();
     var time =
         await showTimePicker(context: context, initialTime: _selectedTime);
+    setState(() => _selectedTime = time ?? _selectedTime);
   }
 
   void _onDate() async {
@@ -350,6 +351,7 @@ class _BillViewState extends State<BillView> {
         initialDate: _selectedDate,
         firstDate: DateTime(199),
         lastDate: DateTime.now());
+    setState(() => _selectedDate = date ?? _selectedDate);
   }
 
   void _onAmountChanged(String input) {
