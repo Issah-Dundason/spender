@@ -1,4 +1,3 @@
-import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:spender/util/app_utils.dart';
@@ -26,7 +25,7 @@ class Expenditure extends Equatable {
       ): id = null;
 
   static String _generateDate() {
-    var d = DateTime.now()..toUtc()..toIso8601String();
+    var d = DateTime.now()..toUtc();
     return d.toIso8601String();
   }
 

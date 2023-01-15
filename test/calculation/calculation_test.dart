@@ -172,4 +172,13 @@ void main() {
     calc.add('-');
     expect(calc.getString(), equals('-1 -'));
   });
+
+  test('adding a second operator get calculate called', () {
+    var calc = Calculator();
+    calc.add('5');
+    calc.add('+');
+    calc.add('2');
+    calc.add('-');
+    expect(calc.getString(), equals('7 -'));
+  });
 }

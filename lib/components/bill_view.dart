@@ -373,7 +373,10 @@ class _BillViewState extends State<BillView> {
     var bill = _billController.value.text;
     Expenditure ex = Expenditure.latest(
         bill, description, _paymentType, _billType!, amount, _priority);
-    context.read<BillBloc>().add(BillSaveEvent(ex));
+    //print('is utc: ${_selectedDate.isUtc}: date: ${_selectedDate.toUtc()}');
+    //var date = DateUtils.dateOnly(_selectedDate);
+    //print('is utc: ${date.isUtc}');
+    //context.read<BillBloc>().add(BillSaveEvent(ex));
   }
 
   void _update() {

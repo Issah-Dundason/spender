@@ -16,6 +16,7 @@ class Calculator {
       _data.add(char);
     } else {
       if (_isOperator(char)) {
+        if(_data.length == 3) calculate();
         _data.add(char);
         return;
       }
