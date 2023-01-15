@@ -14,6 +14,7 @@ class Expenditure extends Equatable {
   final int price;
   final String date;
 
+
   const Expenditure.withDate(
       this.bill,
       this.description,
@@ -23,14 +24,6 @@ class Expenditure extends Equatable {
       this.price,
       this.priority,
       ): id = null;
-
-  static String _generateDate() {
-    var d = DateTime.now()..toUtc();
-    return d.toIso8601String();
-  }
-
-  Expenditure.latest(this.bill, this.description, this.paymentType,
-      this.type, this.price, this.priority): id = null, date = _generateDate();
 
   const Expenditure(this.id, this.bill, this.description, this.paymentType,
       this.type, this.price, this.date, this.priority);

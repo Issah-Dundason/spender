@@ -141,12 +141,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                   IconButton(
                       color: widget.iconColor ??
                           Theme.of(context).colorScheme.primary,
-                      onPressed: () async {
-                        var data = await showUpdate();
-                        if (data != true) return;
-                        if (!mounted) return;
-                        notifyBlocs();
-                      },
+                      onPressed: showUpdate,
                       icon: const Icon(
                         QuillPencil.icon,
                         size: 23,
@@ -190,22 +185,26 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
     );
   }
 
-  Future<dynamic> showUpdate() async {
+  void showUpdate() async {
+    await _showAddBillView();
+    notifyBlocs();
+  }
+
+  Future<dynamic> _showAddBillView() async {
     var appRepo = context.read<AppRepository>();
     var billTypes = await appRepo.getBillTypes();
-    return await showModalBottomSheet(
-        isScrollControlled: true,
-        shape: appBottomSheetShape,
-        context: context,
+
+    if (!mounted) return;
+
+    return Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => BlocProvider(
-              create: (_) {
-                return BillBloc(appRepo: appRepo);
-              },
-              child: BillView(
-                billTypes: billTypes,
-                expenditure: widget.expenditure,
-              ),
-            ));
+            create: (_) {
+              return BillBloc(appRepo: appRepo);
+            },
+            child: BillView(
+              expenditure: widget.expenditure,
+              billTypes: billTypes,
+            ))));
   }
 
   void selfDestruct() async {

@@ -172,9 +172,10 @@ class DatabaseClient {
 
   Future<int?> getYearOfFirstInsert() async {
     var result = await _db.rawQuery(
-        "SELECT CAST(strftime('%Y', date) as int) as year FROM expenditure ORDER BY date LIMIT 1");
-    if (result.isNotEmpty) return Sqflite.firstIntValue(result);
-    return null;
+        "SELECT date as edate FROM expenditure ORDER BY date ASC LIMIT 1");
+    if(result.isEmpty) return null;
+    var date = DateTime.parse(result[0]['edate'] as String).toLocal();
+    return date.year;
   }
 
   Future<List<Expenditure>> getExpenditureAtWithLimit(
@@ -189,15 +190,17 @@ class DatabaseClient {
             p.id as pid, p.name as pname
       FROM expenditure e 
       JOIN bill_type p 
-      ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.id DESC LIMIT ?;
+      ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC LIMIT ?;
     ''', [date, limit]);
     return result.map((e) => Expenditure.fromMap(e)).toList();
   }
 
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
-    var result = await _db.rawQuery('''SELECT strftime('%m',date) as month, 
-          SUM(price) as amount FROM expenditure GROUP BY 1 HAVING strftime('%Y',date) = ?
-          ORDER BY strftime('%m',date) ASC
+    var result = await _db.rawQuery('''
+    SELECT strftime('%m',date) as month, 
+          SUM(price) as amount FROM expenditure 
+    GROUP BY 1 HAVING strftime('%Y',date) = ?
+    ORDER BY strftime('%m',date) ASC
           ''', [year]);
     return result
         .map((q) =>

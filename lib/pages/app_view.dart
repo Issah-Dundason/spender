@@ -6,7 +6,6 @@ import 'package:spender/components/appbar.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
-
 import '../bloc/app/app_cubit.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../bloc/expenses/expenses_bloc.dart';
