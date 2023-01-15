@@ -9,6 +9,8 @@ import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 import '../bloc/app/app_cubit.dart';
 import '../bloc/bill/bill_bloc.dart';
+import '../bloc/expenses/expenses_bloc.dart';
+import '../bloc/expenses/expenses_event.dart';
 import '../bloc/profile/profile_bloc.dart';
 import '../components/bill_view.dart';
 import 'expenses.dart';
@@ -97,8 +99,10 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
   }
 
   void _addBill() async {
-    var data = await _showAddBillView();
-    if(data != true) return;
+    await _showAddBillView();
+    if(!mounted) return;
+    context.read<ExpensesBloc>().add(const LoadEvent());
+    context.read<HomeBloc>().add(const HomeInitializationEvent());
   }
 
   Future<dynamic> _showAddBillView() async {
