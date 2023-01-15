@@ -87,6 +87,80 @@ class _BillViewState extends State<BillView> {
                     child: Column(
                       children: [
                         Row(
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Date'),
+                                GestureDetector(
+                                  onTap: _onDate,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '08/11/21',
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 5),
+                                        decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            borderRadius:
+                                                BorderRadius.circular(7)),
+                                        padding: const EdgeInsets.all(5),
+                                        child: const Icon(
+                                          Icons.calendar_month,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Time'),
+                                GestureDetector(
+                                  onTap: _onTime,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '09:00 am',
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 5),
+                                        decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            borderRadius:
+                                                BorderRadius.circular(7)),
+                                        padding: const EdgeInsets.all(5),
+                                        child: const Icon(
+                                          Icons.access_time_outlined,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Expanded(
@@ -132,7 +206,8 @@ class _BillViewState extends State<BillView> {
                                 flex: 4,
                                 child: TextFormField(
                                   controller: _amountController,
-                                  onTap: () => setState(() => _showKeypad = true),
+                                  onTap: () =>
+                                      setState(() => _showKeypad = true),
                                   readOnly: true,
                                   style: const TextStyle(fontSize: 18),
                                   validator: (s) {
@@ -210,24 +285,26 @@ class _BillViewState extends State<BillView> {
                         state.processingState == ProcessingState.pending
                             ? const CircularProgressIndicator()
                             : Visibility(
-                              visible: !_showKeypad,
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    bool? isValid =
-                                        _formKey.currentState?.validate();
-                                    if (isValid != null && !isValid) return;
-                                    if (_billType == null) {
-                                      _showErrorDialog(context);
-                                      return;
-                                    }
+                                visible: !_showKeypad,
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      bool? isValid =
+                                          _formKey.currentState?.validate();
+                                      if (isValid != null && !isValid) return;
+                                      if (_billType == null) {
+                                        _showErrorDialog(context);
+                                        return;
+                                      }
 
-                                    widget.expenditure == null ? _save() : _update();
-                                  },
-                                  style: _getButtonStyle(context),
-                                  child: Text(widget.expenditure == null
-                                      ? "ADD"
-                                      : "Update")),
-                            ),
+                                      widget.expenditure == null
+                                          ? _save()
+                                          : _update();
+                                    },
+                                    style: _getButtonStyle(context),
+                                    child: Text(widget.expenditure == null
+                                        ? "ADD"
+                                        : "Update")),
+                              ),
                       ],
                     ),
                   ),
@@ -240,8 +317,12 @@ class _BillViewState extends State<BillView> {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                color: Theme.of(context).colorScheme.background,
-                  child: CustomKeys(height: height, width: width * 0.7, onKeyTapped: _onAmountChanged,)),
+                  color: Theme.of(context).colorScheme.background,
+                  child: CustomKeys(
+                    height: height,
+                    width: width * 0.7,
+                    onKeyTapped: _onAmountChanged,
+                  )),
             ),
           )
         ],
@@ -249,12 +330,26 @@ class _BillViewState extends State<BillView> {
     );
   }
 
+  void _onTime() async {
+    var time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now());
+  }
+
+  void _onDate() async {
+    var date = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(199),
+        lastDate: DateTime.now());
+  }
+
   void _onAmountChanged(String input) {
-    if(input == "=") {
+    if (input == "=") {
       calculator.calculate();
-    } else if(input == "<") {
+    } else if (input == "<") {
       calculator.remove();
-    } else if(input == "c") {
+    } else if (input == "c") {
       calculator.clear();
     } else {
       calculator.add(input);
@@ -304,7 +399,7 @@ class _BillViewState extends State<BillView> {
   }
 
   void _hideKeypad() {
-    if(_showKeypad) setState(() => _showKeypad = false);
+    if (_showKeypad) setState(() => _showKeypad = false);
   }
 
   @override
@@ -315,7 +410,6 @@ class _BillViewState extends State<BillView> {
     super.dispose();
   }
 }
-
 
 class _ProductTypeDropDown<T> extends StatelessWidget {
   final String title;
@@ -331,7 +425,8 @@ class _ProductTypeDropDown<T> extends StatelessWidget {
       this.items = const [],
       required this.menuItemBuilder,
       this.value,
-      this.onChange, this.onTapped})
+      this.onChange,
+      this.onTapped})
       : super(key: key);
 
   @override
