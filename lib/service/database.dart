@@ -143,8 +143,6 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getPieData(String format, String date) async {
-
-
     var records = await _db.rawQuery('''
     SELECT SUM(e.price) as amount,
             p.id as pid, p.name as pname,
@@ -154,8 +152,6 @@ class DatabaseClient {
      e.bill_type_id = p.id
      GROUP BY 4, 2 HAVING strftime($format, e.date) = '$date';
     ''');
-
-    print('records : $records');
 
     return records
         .map((record) =>
