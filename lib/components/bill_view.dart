@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:spender/bloc/bill/billing_event.dart';
 import 'package:spender/bloc/bill/billing_state.dart';
 import 'package:spender/util/app_utils.dart';
@@ -28,6 +29,9 @@ class _BillViewState extends State<BillView> {
   late TextEditingController _billController;
   late TextEditingController _amountController;
   late TextEditingController _descriptionController;
+
+  var _selectedDate = DateTime.now();
+  var _selectedTime = TimeOfDay.now();
 
   var calculator = Calculator();
 
@@ -99,7 +103,8 @@ class _BillViewState extends State<BillView> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        '08/11/21',
+                                        DateFormat('dd/MM/yy')
+                                            .format(_selectedDate),
                                         style: const TextStyle(fontSize: 20),
                                       ),
                                       Container(
@@ -133,7 +138,9 @@ class _BillViewState extends State<BillView> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        '09:00 am',
+                                        _selectedTime
+                                            .format(context)
+                                            .toLowerCase(),
                                         style: const TextStyle(fontSize: 20),
                                       ),
                                       Container(
@@ -331,15 +338,16 @@ class _BillViewState extends State<BillView> {
   }
 
   void _onTime() async {
-    var time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now());
+    _hideKeypad();
+    var time =
+        await showTimePicker(context: context, initialTime: _selectedTime);
   }
 
   void _onDate() async {
+    _hideKeypad();
     var date = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: _selectedDate,
         firstDate: DateTime(199),
         lastDate: DateTime.now());
   }
@@ -383,8 +391,8 @@ class _BillViewState extends State<BillView> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)));
   }
 
-  void _showErrorDialog(BuildContext context) {
-    showDialog(
+  void _showErrorDialog(BuildContext context) async {
+    await showDialog(
         context: context,
         builder: (_) => AlertDialog(
               shape: RoundedRectangleBorder(
