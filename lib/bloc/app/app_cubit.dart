@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 
-import 'app_state.dart';
+enum AppTab { home, expenses}
 
-class AppCubit extends Cubit<AppState> {
-  AppCubit() : super(const AppState());
+class AppCubit extends Cubit<AppTab> {
+  AppCubit() : super(AppTab.home);
 
-  set currentState(AppState state) => emit(state);
+  set currentState(AppTab tab) => emit(tab);
 }

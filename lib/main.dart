@@ -14,12 +14,9 @@ import 'package:spender/pages/app_view.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
 import 'package:spender/theme/theme.dart';
-import 'package:spender/util/calculation.dart';
 
 import 'bloc/app/app_cubit.dart';
 import 'bloc/profile/profile_bloc.dart';
-import 'components/custom_key_pad.dart';
-import 'icons/icons.dart';
 import 'model/budget.dart';
 
 void main() async {
@@ -48,10 +45,6 @@ void main() async {
   //if avatar is not there
   //set it with 'tracker.svg'
   avatar ??= 'tracker.svg';
-
-  // runApp(const MaterialApp(
-  //   home: CalculatorWidget(),
-  // ));
 
   runApp(Spender(
     appRepo: appRepo,
@@ -95,74 +88,3 @@ class Spender extends StatelessWidget {
     );
   }
 }
-
-// //testing calculator
-// class CalculatorWidget extends StatefulWidget {
-//   const CalculatorWidget({Key? key}) : super(key: key);
-//
-//   @override
-//   State<CalculatorWidget> createState() => _CalculatorWidgetState();
-// }
-//
-// class _CalculatorWidgetState extends State<CalculatorWidget> {
-//   final TextEditingController controller = TextEditingController();
-//   final calculator = Calculator();
-//
-//   @override
-//   void initState() {
-//     controller.text = calculator.getString();
-//     super.initState();
-//   }
-//
-//   void onKeyPressed(String input) {
-//
-//     if(input == "c") {
-//       calculator.clear();
-//     }
-//     else if(input == "=") {
-//       calculator.calculate();
-//     }
-//     else if(input == "<") {
-//       calculator.remove();
-//     }
-//     else {
-//       calculator.add(input);
-//     }
-//
-//     controller.text = calculator.getString();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     var size = MediaQuery.of(context).size;
-//     return Scaffold(
-//       body: Padding(
-//         padding: const EdgeInsets.all(24.0),
-//         child: Column(
-//           children: [
-//             const SizedBox(
-//               height: 200,
-//             ),
-//             TextField(
-//               controller: controller,
-//               showCursor: true,
-//               textAlign: TextAlign.end,
-//               style: const TextStyle(fontSize: 35),
-//               onTap: () {
-//                 showModalBottomSheet(
-//                     barrierColor: Colors.transparent,
-//                     context: context,
-//                     builder: (_) => CustomKeys(
-//                           onKeyTapped: onKeyPressed,
-//                           width: size.width,
-//                           height: size.height * 0.4,
-//                         ));
-//               },
-//               readOnly: true,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

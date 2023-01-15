@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spender/bloc/expenses/expenses_bloc.dart';
-import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
-import 'package:spender/theme/theme.dart';
 
 import '../bloc/app/app_cubit.dart';
-import '../bloc/app/app_state.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../bloc/profile/profile_bloc.dart';
 import '../components/bill_view.dart';
@@ -33,7 +29,7 @@ class _AppViewState extends State<AppView> {
     return Scaffold(
       appBar: TopBar.getAppBar(
           context,
-          toBeginningOfSentenceCase(selectedTab.current.name) as String,
+          toBeginningOfSentenceCase(selectedTab.name) as String,
           profileState.currentAvatar, () async {
         await Navigator.of(context).push(TopBar.createRoute());
         if (!mounted) return;
@@ -41,9 +37,7 @@ class _AppViewState extends State<AppView> {
       }),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: IndexedStack(
-        index: selectedTab.current == AppTab.bill
-            ? selectedTab.previous.index
-            : selectedTab.current.index,
+        index: selectedTab.index,
         children: const [HomePage(), ExpensesPage()],
       ),
       bottomNavigationBar: const _MainBottomAppBar(),
@@ -61,17 +55,7 @@ class _MainBottomAppBar extends StatefulWidget {
 class _MainBottomAppBarState extends State<_MainBottomAppBar> {
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit, AppState>(
-      listener: (context, state) async {
-        if (state.current != AppTab.bill) return;
-        this.context.read<AppCubit>().currentState =
-            AppState(current: state.previous);
-        var data = await showAddView();
-        if (!mounted) return;
-        if (data != true) return;
-        this.context.read<HomeBloc>().add(const HomeInitializationEvent());
-        this.context.read<ExpensesBloc>().add(const LoadEvent());
-      },
+    return BlocBuilder<AppCubit, AppTab>(
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
@@ -79,32 +63,29 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               IconButton(
-                  color: state.current == AppTab.home
+                  color: state == AppTab.home
                       ? Theme.of(context).colorScheme.secondary
                       : null,
                   iconSize: 40,
                   alignment: Alignment.center,
                   splashRadius: 30,
-                  onPressed: () => context.read<AppCubit>().currentState =
-                      AppState(previous: state.current, current: AppTab.home),
+                  onPressed: () =>
+                      context.read<AppCubit>().currentState = AppTab.home,
                   icon: const Icon(HomeIcon.icon)),
               CircleAvatar(
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   child: IconButton(
                       splashRadius: 30,
-                      onPressed: () => context.read<AppCubit>().currentState =
-                          AppState(
-                              previous: state.current, current: AppTab.bill),
+                      onPressed: _addBill,
                       icon: const Icon(AddIcon.icon))),
               IconButton(
-                  color: state.current == AppTab.expenses
+                  color: state == AppTab.expenses
                       ? Theme.of(context).colorScheme.secondary
                       : null,
                   iconSize: 40,
                   splashRadius: 30,
-                  onPressed: () => context.read<AppCubit>().currentState =
-                      AppState(
-                          previous: state.current, current: AppTab.expenses),
+                  onPressed: () =>
+                      context.read<AppCubit>().currentState = AppTab.expenses,
                   icon: const Icon(
                     CardIcon.icon,
                   )),
@@ -115,23 +96,16 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
     );
   }
 
-  Future<dynamic> showAddView() async {
+  void _addBill() async {
+    var data = await _showAddBillView();
+    if(data != true) return;
+  }
+
+  Future<dynamic> _showAddBillView() async {
     var appRepo = context.read<AppRepository>();
     var billTypes = await appRepo.getBillTypes();
-    // return await showModalBottomSheet(
-    //     isScrollControlled: true,
-    //     shape: appBottomSheetShape,
-    //     context: context,
-    //     builder: (_) => BlocProvider(
-    //           create: (_) {
-    //             return BillBloc(appRepo: appRepo);
-    //           },
-    //           child: BillView(
-    //             billTypes: billTypes,
-    //           ),
-    //         ));
 
-    if(!mounted) return;
+    if (!mounted) return;
 
     return Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => BlocProvider(

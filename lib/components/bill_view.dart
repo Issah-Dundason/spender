@@ -79,7 +79,7 @@ class _BillViewState extends State<BillView> {
             builder: (context, state) {
               return GestureDetector(
                 behavior: HitTestBehavior.translucent,
-                onTap: _toggleVisibilityOfKeyPad,
+                onTap: _hideKeypad,
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Form(
@@ -93,7 +93,7 @@ class _BillViewState extends State<BillView> {
                                 flex: 4,
                                 child: TextFormField(
                                   controller: _billController,
-                                  onTap: _toggleVisibilityOfKeyPad,
+                                  onTap: _hideKeypad,
                                   validator: (s) {
                                     if (s != null && s.isEmpty) {
                                       return 'Field can not be empty';
@@ -114,7 +114,7 @@ class _BillViewState extends State<BillView> {
                               child: _ProductTypeDropDown<BillType>(
                                 onChange: (t) => setState(() => _billType = t),
                                 value: _billType,
-                                onTapped: _toggleVisibilityOfKeyPad,
+                                onTapped: _hideKeypad,
                                 title: "Bill Type",
                                 items: widget.billTypes,
                                 menuItemBuilder: (t) => Text(t.name),
@@ -154,7 +154,7 @@ class _BillViewState extends State<BillView> {
                               flex: 2,
                               child: _ProductTypeDropDown<PaymentType>(
                                 value: _paymentType,
-                                onTapped: _toggleVisibilityOfKeyPad,
+                                onTapped: _hideKeypad,
                                 onChange: (t) =>
                                     setState(() => _paymentType = t!),
                                 title: "Payment Type",
@@ -177,7 +177,7 @@ class _BillViewState extends State<BillView> {
                             Expanded(
                                 flex: 4,
                                 child: TextFormField(
-                                  onTap: _toggleVisibilityOfKeyPad,
+                                  onTap: _hideKeypad,
                                   textCapitalization:
                                       TextCapitalization.sentences,
                                   minLines: 2,
@@ -196,7 +196,7 @@ class _BillViewState extends State<BillView> {
                             Expanded(
                               flex: 2,
                               child: _ProductTypeDropDown<Priority>(
-                                onTapped: _toggleVisibilityOfKeyPad,
+                                onTapped: _hideKeypad,
                                 value: _priority,
                                 onChange: (t) => setState(() => _priority = t!),
                                 title: "Priority",
@@ -303,7 +303,7 @@ class _BillViewState extends State<BillView> {
             ));
   }
 
-  void _toggleVisibilityOfKeyPad() {
+  void _hideKeypad() {
     if(_showKeypad) setState(() => _showKeypad = false);
   }
 

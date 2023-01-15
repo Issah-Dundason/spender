@@ -6,9 +6,6 @@ import 'package:spender/bloc/budget/amount_cubit.dart';
 import '../bloc/budget/budget_review_bloc.dart';
 import '../bloc/budget/budget_review_event.dart';
 
-import '../icons/icons.dart';
-
-
 class BudgetUpdate extends StatefulWidget {
   const BudgetUpdate({Key? key}) : super(key: key);
   @override
@@ -62,7 +59,7 @@ class _BudgetUpdateState extends State<BudgetUpdate> {
                             .secondary,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12))),
-                    child: const Icon(EditPen.icon),
+                    child: const Text('Set'),
                   ),
                 ),
               ),
