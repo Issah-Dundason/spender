@@ -32,6 +32,9 @@ class _HomePageState extends State<HomePage> {
               child: BlocBuilder<HomeBloc, HomeState>(
                 builder: (context, state) {
                   var width = MediaQuery.of(context).size.width;
+                  if(state.loadingState == DataLoading.pending) {
+                    return const CircularProgressIndicator();
+                  }
                   if (state.currentFinancials != null) {
                     return Align(
                         child: SizedBox(
