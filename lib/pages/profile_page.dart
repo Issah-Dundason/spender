@@ -140,8 +140,8 @@ class _ProfileViewState extends State<ProfileView> {
     var year = await showDialog(
         context: context,
         builder: (_) => YearPickerDialog(
-            selectedDate: DateTime.utc(selectedDate),
-            firstDate: first == null ? DateTime.now() : DateTime.utc(first),
+            selectedDate: DateTime(selectedDate),
+            firstDate: first == null ? DateTime.now() : DateTime(first),
             onChange: (s) => Navigator.pop(_, s.year),
             lastDate: DateTime.now()));
 

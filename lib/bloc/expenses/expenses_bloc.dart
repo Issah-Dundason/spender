@@ -28,7 +28,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
 
   void _onLoad(ExpensesEvent e, Emitter<ExpensesState> emitter) async {
     emitter(state.copyWith(transactions: []));
-    var date = DateFormat("yyyy-MM-dd").format(state.selectedDate.toUtc());
+    var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
     var expenditures = await appRepo.getAllExpenditure(date);
     emitter(state.copyWith(transactions: expenditures));
   }

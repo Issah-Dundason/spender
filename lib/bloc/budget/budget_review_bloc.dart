@@ -47,7 +47,7 @@ class BudgetReviewBloc extends Bloc<BudgetReviewEvent, BudgetReviewState> {
   Future<void> _saveBudgetForCurrentMonth(SaveBudgetEvent e) async {
     int r = AppUtils.getActualAmount(e.amount);
     var date = DateTime.now();
-    var s = DateTime.utc(date.year, date.month);
+    var s = DateTime(date.year, date.month);
     var budget = Budget(s.toIso8601String(), r);
     await appRepo.saveBudget(budget);
   }

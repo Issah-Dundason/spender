@@ -17,8 +17,7 @@ class TransactionCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var date = DateTime.now();
-    var last = DateTime.utc(date.year, date.month, date.day);
+    var last = DateTime.now();
     return Card(
       elevation: 0,
       color: Theme

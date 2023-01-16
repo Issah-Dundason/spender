@@ -91,16 +91,16 @@ class _HomePageState extends State<HomePage> {
   void _handleDialogPressed() async {
     var state = context.read<HomeBloc>().state;
     DateTime firstYear = state.firstEverRecordYear != null
-        ? DateTime.utc(state.firstEverRecordYear!)
+        ? DateTime(state.firstEverRecordYear!)
         : DateTime.now();
     var result = await showDialog(
         context: context,
         builder: (_) => YearPickerDialog(
-              selectedDate: DateTime.utc(state.analysisYear),
+              selectedDate: DateTime(state.analysisYear),
               firstDate: firstYear,
               lastDate: DateTime.now(),
               onChange: (t) {
-                Navigator.pop(context, t.toUtc().year);
+                Navigator.pop(context, t.year);
               },
             ));
     if (!mounted || result == null) return;

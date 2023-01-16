@@ -42,7 +42,7 @@ class Expenditure extends Equatable {
   }
 
   String get formattedDate {
-    return DateFormat('EEE,dd MMM yyyy').format(DateTime.parse(date).toLocal());
+    return DateFormat('EEE,dd MMM yyyy').format(DateTime.parse(date));
   }
 
   double get cash {

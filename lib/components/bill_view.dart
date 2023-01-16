@@ -55,9 +55,8 @@ class _BillViewState extends State<BillView> {
       _billType = widget.expenditure!.type;
       _paymentType = widget.expenditure!.paymentType;
       _priority = widget.expenditure!.priority;
-      var date = DateTime.parse(widget.expenditure!.date).toLocal();
-      _selectedDate = date;
-      _selectedTime = TimeOfDay(hour: date.hour, minute: date.minute);
+      _selectedDate = DateTime.parse(widget.expenditure!.date);
+      _selectedTime = TimeOfDay.fromDateTime(_selectedDate);
     }
     super.initState();
   }
@@ -386,10 +385,8 @@ class _BillViewState extends State<BillView> {
     var amount = AppUtils.getActualAmount(_amountController.value.text);
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
-    var date = DateUtils.dateOnly(_selectedDate);
-    date = date
-        .add(Duration(hours: _selectedTime.hour, minutes: _selectedTime.minute))
-        .toUtc();
+    var date = DateTime(_selectedDate.year, _selectedDate.month,
+        _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
     var ex = Expenditure.withDate(bill, description, _paymentType, _billType!,
         date.toIso8601String(), amount, _priority);
     context.read<BillBloc>().add(BillSaveEvent(ex));
@@ -399,10 +396,8 @@ class _BillViewState extends State<BillView> {
     var amount = AppUtils.getActualAmount(_amountController.value.text);
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
-    var date = DateUtils.dateOnly(_selectedDate);
-    date = date
-        .add(Duration(hours: _selectedTime.hour, minutes: _selectedTime.minute))
-        .toUtc();
+    var date = DateTime(_selectedDate.year, _selectedDate.month,
+        _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
     Expenditure ex = Expenditure(widget.expenditure!.id, bill, description,
         _paymentType, _billType!, amount, date.toIso8601String(), _priority);
     context.read<BillBloc>().add(BillUpdateEvent(ex));

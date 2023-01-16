@@ -1,4 +1,3 @@
-import '../../model/bill_type.dart';
 import '../../model/expenditure.dart';
 
 abstract class BillEvent {
