@@ -33,7 +33,7 @@ class _BillViewState extends State<BillView> {
   var _selectedDate = DateTime.now();
   var _selectedTime = TimeOfDay.now();
 
-  var calculator = Calculator();
+  final _calculator = Calculator();
 
   BillType? _billType;
   PaymentType _paymentType = PaymentType.cash;
@@ -51,7 +51,7 @@ class _BillViewState extends State<BillView> {
     if (widget.expenditure != null) {
       var amount = AppUtils.amountPresented(widget.expenditure!.price);
       _amountController.text = '$amount';
-      calculator.add('$amount');
+      _calculator.add('$amount');
       _billType = widget.expenditure!.type;
       _paymentType = widget.expenditure!.paymentType;
       _priority = widget.expenditure!.priority;
@@ -370,15 +370,15 @@ class _BillViewState extends State<BillView> {
 
   void _onAmountChanged(String input) {
     if (input == "=") {
-      calculator.calculate();
+      _calculator.calculate();
     } else if (input == "<") {
-      calculator.remove();
+      _calculator.remove();
     } else if (input == "c") {
-      calculator.clear();
+      _calculator.clear();
     } else {
-      calculator.add(input);
+      _calculator.add(input);
     }
-    _amountController.text = calculator.getString();
+    _amountController.text = _calculator.getString();
   }
 
   void _save() {
@@ -443,7 +443,10 @@ class _BillViewState extends State<BillView> {
   }
 
   void _hideKeypad() {
-    if (_showKeypad) setState(() => _showKeypad = false);
+    if (!_showKeypad) return;
+    _calculator.calculate();
+    _amountController.text = _calculator.getString();
+    setState(() => _showKeypad = false);
   }
 
   @override
