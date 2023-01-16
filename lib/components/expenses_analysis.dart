@@ -90,7 +90,13 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
       pieData = await repo.getPieData(dbFormat, date);
     }
 
-    if (_options == FilterOptions.overall) {}
+    if (_options == FilterOptions.overall) {
+      pieData = await repo.getOverallPieData();
+    }
+
+    if(!mounted) return;
+
+    print('Hello');
 
     await Navigator.push(
         context,

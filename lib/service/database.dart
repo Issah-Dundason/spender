@@ -159,6 +159,21 @@ class DatabaseClient {
         .toList();
   }
 
+  Future<List<PieData>> getOverallPieData() async {
+    var records = await _db.rawQuery('''
+      SELECT SUM(e.price) as amount,
+        p.id as pid, p.name as pname
+      FROM expenditure e
+      JOIN bill_type p ON
+      e.bill_type_id = p.id
+      GROUP BY 2;
+    ''');
+    return records
+        .map((record) =>
+            PieData(record['amount'] as int, BillType.fromMap(record)))
+        .toList();
+  }
+
   Future<List<BillType>> getProductTypes() async {
     var result = await _db.query("bill_type");
     return result
@@ -173,7 +188,7 @@ class DatabaseClient {
   Future<int?> getYearOfFirstInsert() async {
     var result = await _db.rawQuery(
         "SELECT date as edate FROM expenditure ORDER BY date ASC LIMIT 1");
-    if(result.isEmpty) return null;
+    if (result.isEmpty) return null;
     var date = DateTime.parse(result[0]['edate'] as String).toLocal();
     return date.year;
   }

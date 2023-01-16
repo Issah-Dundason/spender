@@ -26,16 +26,16 @@ void main() async {
 
   AppRepository appRepo = AppRepository(dbClient);
 
-  // DateTime date = DateTime.utc(2019, 02);
+  // DateTime date = DateTime(2019, 02);
   //
   // var b = Budget(date.toIso8601String(), 323);
   //
   // appRepo.saveBudget(b);
-  //
+
   // var types = await dbClient.getProductTypes();
   //
   // var expenditure = Expenditure.withDate("First Insert", "For testing",
-  //     PaymentType.momo, types[0], DateTime.utc(2022, 05, 01).toIso8601String(), 100, Priority.want);
+  //     PaymentType.momo, types[0], DateTime.utc(2019, 05, 01).toIso8601String(), 100, Priority.want);
   //
   // await dbClient.saveExpenditure(expenditure.toJson());
 
