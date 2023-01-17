@@ -67,6 +67,7 @@ class _BillViewState extends State<BillView> {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Bill'),
@@ -479,7 +480,6 @@ class _ProductTypeDropDown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      //  mainAxisSize: MainAxisSize.min,
       children: [
         Text(title),
         DropdownButton<T>(
