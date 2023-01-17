@@ -16,6 +16,7 @@ class AppTheme {
       brightness: Brightness.light,
       primaryColor: primaryColor,
       colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: Colors.blue,
           secondary: secondaryColor,
           onSecondary: Colors.white,
           background: backgroundColor,

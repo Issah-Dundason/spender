@@ -70,6 +70,7 @@ class Spender extends StatelessWidget {
         ],
         child: MaterialApp(
             theme: AppTheme.lightTheme,
+            debugShowCheckedModeBanner: false,
             home: MultiBlocProvider(
               providers: [
                 BlocProvider(

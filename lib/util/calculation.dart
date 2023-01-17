@@ -45,14 +45,14 @@ class Calculator {
   }
 
   void calculate() {
-    if (_data.last == '.') {
+    if (_data.isNotEmpty && _data.last == '.') {
       _data.removeLast();
     }
-    if (_isOperator(_data.last)) {
+    if (_data.isNotEmpty && _isOperator(_data.last)) {
       _data.removeLast();
     }
 
-    if (_data.last.lastIndexOf('.') == _data.last.length - 1) {
+    if (_data.isNotEmpty && _data.last.lastIndexOf('.') == _data.last.length - 1) {
       _data.last = _data.last.substring(0, _data.last.length - 1);
     }
 
