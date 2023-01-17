@@ -14,48 +14,43 @@ class HomeTransactions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-        alignment: Alignment.center,
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8,
-          child: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              return Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Transactions",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500)),
-                      TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            "View All",
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.tertiary),
-                          )),
-                    ],
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        return Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Transactions",
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w500)),
+                TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "View All",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary),
+                    )),
+              ],
+            ),
+            if (state.transactionsToday.isEmpty)
+              const _NoTransaction()
+            else
+              ...state.transactionsToday.map((t) {
+                return GestureDetector(
+                  onTap: () => _onTransactionTap(context, t),
+                  child: TransactionTile(
+                    store: t.bill,
+                    type: t.paymentType.name,
+                    amount: AppUtils.amountPresented(t.price),
+                    date: t.formattedDate,
                   ),
-                  if (state.transactionsToday.isEmpty)
-                    const _NoTransaction()
-                  else
-                    ...state.transactionsToday.map((t) {
-                      return GestureDetector(
-                        onTap: () => _onTransactionTap(context, t),
-                        child: TransactionTile(
-                          store: t.bill,
-                          type: t.paymentType.name,
-                          amount: AppUtils.amountPresented(t.price),
-                          date: t.formattedDate,
-                        ),
-                      );
-                    }).toList()
-                ],
-              );
-            },
-          ),
-        ));
+                );
+              }).toList()
+          ],
+        );
+      },
+    );
   }
 
   void _onTransactionTap(BuildContext context, Expenditure e) async {

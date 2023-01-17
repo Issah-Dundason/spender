@@ -19,74 +19,70 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    //var padding = MediaQuery.of(context)
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          const SizedBox(
-            height: 40,
-          ),
-          Align(
-              alignment: Alignment.center,
-              child: BlocBuilder<HomeBloc, HomeState>(
-                builder: (context, state) {
-                  var width = MediaQuery.of(context).size.width;
-                  if(state.loadingState == DataLoading.pending) {
-                    return const CircularProgressIndicator();
-                  }
-                  if (state.currentFinancials != null) {
-                    return Align(
-                        child: SizedBox(
-                            width: width * 0.8,
-                            child: TotalBudgetCard(
-                              financials: state.currentFinancials!,
-                              backgroundImageWidth: width * 0.68,
-                            )));
-                  }
-                  return const NoBudgetWidget();
-                },
-              )),
-          const SizedBox(
-            height: 60,
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Analytics (Amount Spent)",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  BlocBuilder<HomeBloc, HomeState>(
-                    builder: (context, state) {
-                      return ElevatedButton(
-                        onPressed: _handleDialogPressed,
-                        style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12))),
-                        child: Text("Year-${state.analysisYear}"),
-                      );
-                    },
-                  )
-                ],
-              ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-          ),
-          const SizedBox(height: 20),
-          BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) => ChartWidget(
-                    state: state,
-                  )),
-          const SizedBox(height: 20),
-          const HomeTransactions()
-        ],
+            BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                var width = MediaQuery.of(context).size.width;
+                if(state.loadingState == DataLoading.pending) {
+                  return const CircularProgressIndicator();
+                }
+                if (state.currentFinancials != null) {
+                  return Align(
+                      child: SizedBox(
+                          width: width * 0.8,
+                          child: TotalBudgetCard(
+                            financials: state.currentFinancials!,
+                            backgroundImageWidth: width * 0.68,
+                          )));
+                }
+                return const NoBudgetWidget();
+              },
+            ),
+            const SizedBox(
+              height: 60,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Analytics (Amount Spent)",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                BlocBuilder<HomeBloc, HomeState>(
+                  builder: (context, state) {
+                    return ElevatedButton(
+                      onPressed: _handleDialogPressed,
+                      style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondary,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12))),
+                      child: Text("Year-${state.analysisYear}"),
+                    );
+                  },
+                )
+              ],
+            ),
+            const SizedBox(height: 20),
+            BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) => ChartWidget(
+                      state: state,
+                    )),
+            const SizedBox(height: 20),
+            const HomeTransactions()
+          ],
+        ),
       ),
     );
   }

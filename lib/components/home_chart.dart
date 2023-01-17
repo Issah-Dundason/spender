@@ -37,34 +37,30 @@ class _ChartWidgetState extends State<ChartWidget> {
   @override
   Widget build(BuildContext context) {
     _scrollToRightPosition();
-    return Align(
-      alignment: Alignment.center,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.7,
-        height: 200,
-        child: SingleChildScrollView(
-          controller: scrollController,
-          scrollDirection: Axis.horizontal,
-          child: AspectRatio(
-            aspectRatio: 5,
-            child: BarChart(BarChartData(
-                gridData: FlGridData(show: false),
-                borderData: FlBorderData(
-                  border: null,
-                  show: false,
-                ),
-                titlesData: FlTitlesData(
-                    leftTitles:
-                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: AxisTitles(),
-                    topTitles: AxisTitles(
-                        sideTitles: _topTitle(context,
-                            _displayList(widget.state.monthExpenditures))),
-                    bottomTitles:
-                        AxisTitles(sideTitles: _getBottomTitle(context))),
-                barGroups: _chartGroups(
-                    _displayList(widget.state.monthExpenditures), context))),
-          ),
+    return SizedBox(
+      height: 200,
+      child: SingleChildScrollView(
+        controller: scrollController,
+        scrollDirection: Axis.horizontal,
+        child: AspectRatio(
+          aspectRatio: 3.5,
+          child: BarChart(BarChartData(
+              gridData: FlGridData(show: false),
+              borderData: FlBorderData(
+                border: null,
+                show: false,
+              ),
+              titlesData: FlTitlesData(
+                  leftTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(),
+                  topTitles: AxisTitles(
+                      sideTitles: _topTitle(context,
+                          _displayList(widget.state.monthExpenditures))),
+                  bottomTitles:
+                      AxisTitles(sideTitles: _getBottomTitle(context))),
+              barGroups: _chartGroups(
+                  _displayList(widget.state.monthExpenditures), context))),
         ),
       ),
     );
