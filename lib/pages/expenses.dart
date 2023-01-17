@@ -17,9 +17,6 @@ class ExpensesPage extends StatelessWidget {
     var size = MediaQuery.of(context).size;
     return Column(
       children: [
-        const SizedBox(
-          height: 24,
-        ),
         Align(
           alignment: Alignment.center,
           child: SizedBox(
@@ -38,22 +35,14 @@ class ExpensesPage extends StatelessWidget {
                 },
               )),
         ),
-        const SizedBox(
-          height: 30,
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: SizedBox(
-            width: size.width * 0.9,
-            child: const ExpenseAnalysisSection(),
-          ),
+        const ExpansionTile(
+          title: Text('Statistics'),
+          children:  [
+            ExpenseAnalysisSection()
+          ],
         ),
         const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          width: size.width * 0.9,
-          //  child: const Divider(),
+          height: 5,
         ),
         Align(
           alignment: Alignment.center,
@@ -67,7 +56,7 @@ class ExpensesPage extends StatelessWidget {
               })),
         ),
         const SizedBox(
-          height: 20,
+          height: 10,
         ),
         const Expanded(
             child: Align(

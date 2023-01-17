@@ -28,43 +28,42 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Statistics',
-          style: TextStyle(fontSize: 18),
-        ),
-        // const Divider(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            DropdownButton<FilterOptions>(
-                value: _options,
-                items: FilterOptions.values
-                    .map((e) => DropdownMenuItem<FilterOptions>(
-                          value: e,
-                          child: Text(e.name),
-                        ))
-                    .toList(),
-                onChanged: showChart),
-            const SizedBox(
-              width: 20,
-            ),
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(8),
-                    minimumSize: const Size(0, 0),
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20))),
-                onPressed: showPieChart,
-                child: const Text('Look up'))
-          ],
-        )
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              DropdownButton<FilterOptions>(
+                  value: _options,
+                  underline: Container(),
+                  items: FilterOptions.values
+                      .map((e) => DropdownMenuItem<FilterOptions>(
+                            value: e,
+                            child: Text(e.name),
+                          ))
+                      .toList(),
+                  onChanged: showChart),
+              const SizedBox(
+                width: 20,
+              ),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(8),
+                      minimumSize: const Size(0, 0),
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                  onPressed: showPieChart,
+                  child: const Text('Look up'))
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -95,8 +94,6 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
     }
 
     if(!mounted) return;
-
-    print('Hello');
 
     await Navigator.push(
         context,

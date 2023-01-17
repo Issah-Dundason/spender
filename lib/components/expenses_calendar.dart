@@ -18,31 +18,20 @@ class TransactionCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var last = DateTime.now();
-    return Card(
-      elevation: 0,
-      color: Theme
-          .of(context)
-          .colorScheme
-          .primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: TableCalendar(
-          onDaySelected: onDateSelected,
-          focusedDay: selectedDay,
-          firstDay:DateTime(firstYear),
-          lastDay: last,
-          calendarFormat: CalendarFormat.week,
-          calendarBuilders: CalendarBuilders(
-              defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder,
-          ),
-          headerStyle: const HeaderStyle(
-              formatButtonVisible: false, titleCentered: true),
-          calendarStyle: const CalendarStyle(
-            isTodayHighlighted: false,
-            //outsideDaysVisible: false,
-          ),
-        ),
+    return TableCalendar(
+      onDaySelected: onDateSelected,
+      focusedDay: selectedDay,
+      firstDay:DateTime(firstYear),
+      lastDay: last,
+      calendarFormat: CalendarFormat.week,
+      calendarBuilders: CalendarBuilders(
+          defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder,
+      ),
+      headerStyle: const HeaderStyle(
+          formatButtonVisible: false, titleCentered: true),
+      calendarStyle: const CalendarStyle(
+        isTodayHighlighted: false,
+        //outsideDaysVisible: false,
       ),
     );
   }

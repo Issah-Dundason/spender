@@ -19,7 +19,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    //var padding = MediaQuery.of(context)
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Padding(
