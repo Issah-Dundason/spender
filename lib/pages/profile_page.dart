@@ -87,7 +87,7 @@ class _ProfileViewState extends State<ProfileView> {
                   child: const BudgetUpdate(),
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Row(

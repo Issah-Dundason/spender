@@ -66,11 +66,18 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  SvgPicture.asset(
-                    'assets/images/bills/${widget.expenditure.type.image}',
-                    fit: BoxFit.scaleDown,
-                    width: 40,
-                    height: 40,
+                  Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/images/bills/${widget.expenditure.type.image}',
+                      fit: BoxFit.scaleDown,
+                      width: 40,
+                      height: 40,
+                    ),
                   ),
                   const SizedBox(
                     width: 20,
@@ -82,10 +89,13 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          overflow: TextOverflow.clip,
-                          'Bill: ${widget.expenditure.bill}',
-                          style: TextStyle(fontSize: 16, color: widget.textColor),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          child: Text(
+                            overflow: TextOverflow.clip,
+                            'Bill: ${widget.expenditure.bill}',
+                            style: TextStyle(fontSize: 16, color: widget.textColor),
+                          ),
                         ),
                         const SizedBox(
                           height: 15,

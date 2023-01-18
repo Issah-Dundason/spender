@@ -29,7 +29,7 @@ class _BudgetUpdateState extends State<BudgetUpdate> {
           child: Row(
             children: [
               Expanded(
-                  flex: 5,
+                  flex: 4,
                   child: TextFormField(
                    controller: amountController,
                     validator: (s) {
