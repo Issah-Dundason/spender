@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 import '../icons/icons.dart';
@@ -10,13 +11,14 @@ class TransactionTile extends StatelessWidget {
       this.store = "Puma Store",
       this.type = "Bank Amount",
       this.amount = 954,
-      this.date = "Fri, 05 April 2022"});
+      this.date = "Fri, 05 April 2022", required this.image});
 
   final IconData icon;
   final String store;
   final String type;
   final double amount;
   final String date;
+  final String image;
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +29,9 @@ class TransactionTile extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: ListTile(
         leading: Container(
-            width: 50,
-            height: 50,
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(12)),
-            child: Icon(
-              icon,
-              size: 35,
-              color: Colors.black,
-            )),
+            child: SvgPicture.asset('assets/images/bills/$image', width: 35, height: 35, fit: BoxFit.scaleDown,)),
         title: SizedBox(
           height: 25,
           child: Text(

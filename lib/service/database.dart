@@ -118,7 +118,7 @@ class DatabaseClient {
             e.payment_type as epay, 
             e.price as eprice, e.date as edate, 
             e.priority as epri, 
-            p.id as pid, p.name as pname
+            p.id as pid, p.name as pname, p.image as pimage
       FROM expenditure e 
       JOIN bill_type p 
       ON e.bill_type_id = p.id WHERE strftime('%Y-%m', e.date) = ?;
@@ -134,7 +134,7 @@ class DatabaseClient {
             e.payment_type as epay, 
             e.price as eprice, e.date as edate, 
             e.priority as epri, 
-            p.id as pid, p.name as pname
+            p.id as pid, p.name as pname, p.image as pimage
       FROM expenditure e 
       JOIN bill_type p 
       ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC;
@@ -145,7 +145,7 @@ class DatabaseClient {
   Future<List<PieData>> getPieData(String format, String date) async {
     var records = await _db.rawQuery('''
     SELECT SUM(e.price) as amount,
-            p.id as pid, p.name as pname,
+            p.id as pid, p.name as pname, p.image as pimage,
             strftime($format, e.date) as date
      FROM expenditure e 
      JOIN bill_type p ON
@@ -162,7 +162,7 @@ class DatabaseClient {
   Future<List<PieData>> getOverallPieData() async {
     var records = await _db.rawQuery('''
       SELECT SUM(e.price) as amount,
-        p.id as pid, p.name as pname
+        p.id as pid, p.name as pname, p.image as pimage
       FROM expenditure e
       JOIN bill_type p ON
       e.bill_type_id = p.id
@@ -177,7 +177,7 @@ class DatabaseClient {
   Future<List<BillType>> getProductTypes() async {
     var result = await _db.query("bill_type");
     return result
-        .map((e) => BillType(e["id"] as int, e["name"] as String))
+        .map((e) => BillType(e["id"] as int, e["name"] as String, e["image"] as String))
         .toList();
   }
 
@@ -202,7 +202,7 @@ class DatabaseClient {
             e.payment_type as epay, 
             e.price as eprice, e.date as edate, 
             e.priority as epri, 
-            p.id as pid, p.name as pname
+            p.id as pid, p.name as pname, p.image as pimage
       FROM expenditure e 
       JOIN bill_type p 
       ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC LIMIT ?;
@@ -227,7 +227,8 @@ class DatabaseClient {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS bill_type (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        name TEXT  NOT NULL
+        name TEXT  NOT NULL,
+        image TEXT NOT NULL
       );
     ''');
     await db.execute('''
@@ -250,8 +251,13 @@ class DatabaseClient {
           amount INTEGER NOT NULL
        );
     ''');
-    await db.insert("bill_type", {"name": "Food"});
-    await db.insert("bill_type", {"name": "Shoe"});
+    await db.insert("bill_type", {"name": "Food", "image": "food.svg"});
+    await db.insert("bill_type", {"name": "Clothing & beauty", "image": "clothing.svg"});
+    await db.insert("bill_type", {"name": "Investment", "image": "investment.svg"});
+    await db.insert("bill_type", {"name": "Health", "image": "medicine.svg"});
+    await db.insert("bill_type", {"name": "Electricity", "image": "electricity.svg"});
+    await db.insert("bill_type", {"name": "Transportation", "image": "transportation.svg"});
+    await db.insert("bill_type", {"name": "Other", "image": "other.svg"});
   }
 }
 

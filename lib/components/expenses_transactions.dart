@@ -35,12 +35,8 @@ class ExpensesTransactions extends StatelessWidget {
             physics:const BouncingScrollPhysics(),
             children: [
               ...state.transactions.map((e) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: EditableTransactionTile(
-                    expenditure: e,
-                    tileColor: const Color(0xffefefef),
-                  ),
+                return EditableTransactionTile(
+                  expenditure: e,
                 );
               }).toList()
             ],

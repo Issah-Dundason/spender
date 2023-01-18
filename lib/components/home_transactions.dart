@@ -40,6 +40,7 @@ class HomeTransactions extends StatelessWidget {
                 return GestureDetector(
                   onTap: () => _onTransactionTap(context, t),
                   child: TransactionTile(
+                    image: t.type.image,
                     store: t.bill,
                     type: t.paymentType.name,
                     amount: AppUtils.amountPresented(t.price),

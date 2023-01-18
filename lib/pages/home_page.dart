@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
               builder: (context, state) {
                 var width = MediaQuery.of(context).size.width;
                 if(state.loadingState == DataLoading.pending) {
-                  return const CircularProgressIndicator();
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (state.currentFinancials != null) {
                   return Align(

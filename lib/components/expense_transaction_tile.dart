@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart.';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:intl/intl.dart';
 import 'package:spender/bloc/expenses/expenses_bloc.dart';
@@ -24,9 +25,9 @@ class EditableTransactionTile extends StatefulWidget {
   const EditableTransactionTile(
       {Key? key,
       required this.expenditure,
-      this.tileColor,
-      this.textColor,
-      this.iconColor})
+      this.tileColor = const Color(0xFFB5A7B8),
+      this.textColor = const Color(0xFFFFFFFF),
+      this.iconColor = const Color(0xFFFFFFFF)})
       : super(key: key);
 
   final Expenditure expenditure;
@@ -40,121 +41,89 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: widget.tileColor ?? Theme.of(context).colorScheme.primaryContainer,
+      color: widget.tileColor,
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 14.0, left: 14.0, right: 14.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        overflow: TextOverflow.ellipsis,
-                        'Bill: ${widget.expenditure.bill}',
-                        style:
-                            TextStyle(fontSize: 16, color: widget.textColor),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                          'Price: ₵${NumberFormat().format(widget.expenditure.cash)}',
-                          style: TextStyle(
-                              fontSize: 16, color: widget.textColor)),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          'Priority: ${widget.expenditure.priority.name.toUpperCase()}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: widget.textColor,
-                          )),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                          'Payment Type: ${widget.expenditure.paymentType.name}',
-                          style: TextStyle(
-                              fontSize: 16, color: widget.textColor)),
-                    ],
-                  ),
-                )
-              ],
-            ),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(09),
           ),
-          Container(
-            color: Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 14.0,
-                right: 14.0,
-                top: 4,
-              ),
+      clipBehavior: Clip.antiAlias,
+      child: GestureDetector(
+        onTap: showUpdate,
+        behavior: HitTestBehavior.translucent,
+        child: Stack(
+          children: [
+            Positioned(
+              right: 3,
+                child: IconButton(icon:  Icon(Icons.close, color: widget.iconColor,), onPressed: () async {
+              var result = await showDialog(
+                  context: context,
+                  builder: (_) => buildDeleteDialog(_));
+              if (result != true) return;
+              if (!mounted) return;
+              selfDestruct();
+            },)),
+            Padding(
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  IconButton(
-                      color: widget.iconColor ??
-                          Theme.of(context).colorScheme.primary,
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (_) => Receipt(
-                                  expenditure: widget.expenditure,
-                                ));
-                      },
-                      icon: const Icon(ReceiptIcon.icon, size: 23)),
-                  const SizedBox(
-                    width: 12,
+                  SvgPicture.asset(
+                    'assets/images/bills/${widget.expenditure.type.image}',
+                    fit: BoxFit.scaleDown,
+                    width: 40,
+                    height: 40,
                   ),
-                  IconButton(
-                      color: widget.iconColor ??
-                          Theme.of(context).colorScheme.primary,
-                      onPressed: () async {
-                        var result = await showDialog(
-                            context: context,
-                            builder: (_) => buildDeleteDialog(_));
-                        if (result != true) return;
-                        if (!mounted) return;
-                        selfDestruct();
-                      },
-                      icon: const Icon(Bin.icon, size: 23)),
                   const SizedBox(
-                    width: 12,
+                    width: 20,
                   ),
-                  IconButton(
-                      color: widget.iconColor ??
-                          Theme.of(context).colorScheme.primary,
-                      onPressed: showUpdate,
-                      icon: const Icon(
-                        QuillPencil.icon,
-                        size: 23,
-                      )),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          overflow: TextOverflow.clip,
+                          'Bill: ${widget.expenditure.bill}',
+                          style: TextStyle(fontSize: 16, color: widget.textColor),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                overflow: TextOverflow.clip,
+                                widget.expenditure.formattedDate,
+                                style:
+                                    TextStyle(fontSize: 16, color: widget.textColor),
+                              ),
+                            ),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  '₵${NumberFormat().format(widget.expenditure.cash)}',
+                                  overflow: TextOverflow.clip,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: widget.textColor),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
-          Container(
-            height: 10,
-            color: Colors.black12,
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -167,7 +136,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
   AlertDialog buildDeleteDialog(BuildContext _) {
     return AlertDialog(
       content: const Text(
-        'Are you sure?',
+        'Do you want to delete it?',
         textAlign: TextAlign.center,
       ),
       actions: [
