@@ -65,6 +65,10 @@ class _BillViewState extends State<BillView> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var keysHeight = MediaQuery.of(context).size.height * 0.4;
+    var bodyHeight = height - 82;
+    if(height >= 617) {
+      bodyHeight = height - 110;
+    }
     if(height < 617) {
       keysHeight = MediaQuery.of(context).size.height * 0.35;
     }
@@ -103,7 +107,7 @@ class _BillViewState extends State<BillView> {
                       key: _formKey,
                       child: SingleChildScrollView(
                         child: SizedBox(
-                          height: MediaQuery.of(context).size.height - 82,
+                          height: bodyHeight,
                           child: Column(
                             children: [
                               const SizedBox(
