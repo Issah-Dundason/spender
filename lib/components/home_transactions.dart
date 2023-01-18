@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_state.dart';
 import 'package:spender/components/receipt.dart';
 import 'package:spender/components/transaction_tile.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/model/expenditure.dart';
 
+import '../bloc/app/app_cubit.dart';
+import '../bloc/expenses/expenses_bloc.dart';
 import '../bloc/home/home_bloc.dart';
 import '../util/app_utils.dart';
 
@@ -25,7 +28,10 @@ class HomeTransactions extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w500)),
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.read<AppCubit>().currentState = AppTab.expenses;
+                      context.read<ExpensesBloc>().add(ChangeDateEvent(DateTime.now()));
+                    },
                     child: Text(
                       "View All",
                       style: TextStyle(
