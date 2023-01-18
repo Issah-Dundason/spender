@@ -63,11 +63,14 @@ class _BillViewState extends State<BillView> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height * 0.4;
+    var height = MediaQuery.of(context).size.height;
+    var keysHeight = MediaQuery.of(context).size.height * 0.4;
+    if(height < 617) {
+      keysHeight = MediaQuery.of(context).size.height * 0.35;
+    }
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Bill'),
@@ -95,238 +98,247 @@ class _BillViewState extends State<BillView> {
                   behavior: HitTestBehavior.translucent,
                   onTap: _hideKeypad,
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Form(
                       key: _formKey,
-                      child: Column(
-                        children: [
-                          Row(
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height - 82,
+                          child: Column(
                             children: [
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
                                 children: [
-                                  const Text('Date'),
-                                  GestureDetector(
-                                    onTap: _onDate,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          DateFormat('dd/MM/yy')
-                                              .format(_selectedDate),
-                                          style: const TextStyle(fontSize: 20),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('Date'),
+                                      GestureDetector(
+                                        onTap: _onDate,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              DateFormat('dd/MM/yy')
+                                                  .format(_selectedDate),
+                                              style: const TextStyle(fontSize: 20),
+                                            ),
+                                            Container(
+                                              margin:
+                                                  const EdgeInsets.only(left: 5),
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  borderRadius:
+                                                      BorderRadius.circular(7)),
+                                              padding: const EdgeInsets.all(5),
+                                              child: const Icon(
+                                                Icons.calendar_month,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(left: 5),
-                                          decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                              borderRadius:
-                                                  BorderRadius.circular(7)),
-                                          padding: const EdgeInsets.all(5),
-                                          child: const Icon(
-                                            Icons.calendar_month,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
+                                  const Spacer(),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('Time'),
+                                      GestureDetector(
+                                        onTap: _onTime,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              _selectedTime
+                                                  .format(context)
+                                                  .toLowerCase(),
+                                              style: const TextStyle(fontSize: 20),
+                                            ),
+                                            Container(
+                                              margin:
+                                                  const EdgeInsets.only(left: 5),
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  borderRadius:
+                                                      BorderRadius.circular(7)),
+                                              padding: const EdgeInsets.all(5),
+                                              child: const Icon(
+                                                Icons.access_time_outlined,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
                                 ],
                               ),
-                              const Spacer(),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              const SizedBox(
+                                height: 50,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  const Text('Time'),
-                                  GestureDetector(
-                                    onTap: _onTime,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          _selectedTime
-                                              .format(context)
-                                              .toLowerCase(),
-                                          style: const TextStyle(fontSize: 20),
-                                        ),
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(left: 5),
-                                          decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                              borderRadius:
-                                                  BorderRadius.circular(7)),
-                                          padding: const EdgeInsets.all(5),
-                                          child: const Icon(
-                                            Icons.access_time_outlined,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
+                                  Expanded(
+                                      flex: 4,
+                                      child: TextFormField(
+                                        controller: _billController,
+                                        onTap: _hideKeypad,
+                                        validator: (s) {
+                                          if (s != null && s.isEmpty) {
+                                            return 'Field can not be empty';
+                                          }
+                                          return null;
+                                        },
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(30),
+                                        ],
+                                        decoration: const InputDecoration(
+                                            hintText: "bill name"),
+                                      )),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _ProductTypeDropDown<BillType>(
+                                      onChange: (t) =>
+                                          setState(() => _billType = t),
+                                      value: _billType,
+                                      onTapped: _hideKeypad,
+                                      title: "Bill Type",
+                                      items: widget.billTypes,
+                                      menuItemBuilder: (t) => Text(t.name),
                                     ),
-                                  ),
+                                  )
                                 ],
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                  flex: 4,
-                                  child: TextFormField(
-                                    controller: _billController,
-                                    onTap: _hideKeypad,
-                                    validator: (s) {
-                                      if (s != null && s.isEmpty) {
-                                        return 'Field can not be empty';
-                                      }
-                                      return null;
-                                    },
-                                    inputFormatters: [
-                                      LengthLimitingTextInputFormatter(30),
-                                    ],
-                                    decoration: const InputDecoration(
-                                        hintText: "bill name"),
-                                  )),
-                              const SizedBox(
-                                width: 10,
                               ),
-                              Expanded(
-                                flex: 2,
-                                child: _ProductTypeDropDown<BillType>(
-                                  onChange: (t) =>
-                                      setState(() => _billType = t),
-                                  value: _billType,
-                                  onTapped: _hideKeypad,
-                                  title: "Bill Type",
-                                  items: widget.billTypes,
-                                  menuItemBuilder: (t) => Text(t.name),
-                                ),
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 35,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                  flex: 4,
-                                  child: TextFormField(
-                                    controller: _amountController,
-                                    onTap: () =>
-                                        setState(() => _showKeypad = true),
-                                    readOnly: true,
-                                    style: const TextStyle(fontSize: 18),
-                                    validator: (s) {
-                                      if (s != null && s.isEmpty) {
-                                        return 'Field can not be empty';
-                                      }
-                                      if (double.parse(s!) < 1) {
-                                        return '0 is not allowed';
-                                      }
-                                      return null;
-                                    },
-                                    decoration: const InputDecoration(
-                                        hintText: "amount paid"),
-                                  )),
                               const SizedBox(
-                                width: 10,
+                                height: 35,
                               ),
-                              Expanded(
-                                flex: 2,
-                                child: _ProductTypeDropDown<PaymentType>(
-                                  value: _paymentType,
-                                  onTapped: _hideKeypad,
-                                  onChange: (t) =>
-                                      setState(() => _paymentType = t!),
-                                  title: "Payment Type",
-                                  menuItemBuilder: (t) => Text(
-                                    t.name,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                      flex: 4,
+                                      child: TextFormField(
+                                        controller: _amountController,
+                                        onTap: () =>
+                                            setState(() =>
+                                              _showKeypad = true),
+                                        readOnly: true,
+                                        style: const TextStyle(fontSize: 18),
+                                        validator: (s) {
+                                          if (s != null && s.isEmpty) {
+                                            return 'Field can not be empty';
+                                          }
+                                          if (double.parse(s!) < 1) {
+                                            return '0 is not allowed';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: const InputDecoration(
+                                            hintText: "amount paid"),
+                                      )),
+                                  const SizedBox(
+                                    width: 10,
                                   ),
-                                  items: PaymentType.values,
-                                ),
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 35,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                  flex: 4,
-                                  child: TextFormField(
-                                    onTap: _hideKeypad,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    minLines: 2,
-                                    maxLines: 4,
-                                    controller: _descriptionController,
-                                    inputFormatters: [
-                                      LengthLimitingTextInputFormatter(120),
-                                    ],
-                                    keyboardType: TextInputType.multiline,
-                                    decoration: const InputDecoration(
-                                        hintText: "description"),
-                                  )),
-                              const SizedBox(
-                                width: 10,
+                                  Expanded(
+                                    flex: 2,
+                                    child: _ProductTypeDropDown<PaymentType>(
+                                      value: _paymentType,
+                                      onTapped: _hideKeypad,
+                                      onChange: (t) =>
+                                          setState(() => _paymentType = t!),
+                                      title: "Payment Type",
+                                      menuItemBuilder: (t) => Text(
+                                        t.name,
+                                        softWrap: false,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      items: PaymentType.values,
+                                    ),
+                                  )
+                                ],
                               ),
-                              Expanded(
-                                flex: 2,
-                                child: _ProductTypeDropDown<Priority>(
-                                  onTapped: _hideKeypad,
-                                  value: _priority,
-                                  onChange: (t) =>
-                                      setState(() => _priority = t!),
-                                  title: "Priority",
-                                  menuItemBuilder: (t) => Text(t.name),
-                                  items: Priority.values,
-                                ),
-                              )
-                            ],
-                          ),
-                          const Spacer(),
-                          state.processingState == ProcessingState.pending
-                              ? const CircularProgressIndicator()
-                              : Visibility(
-                                  visible: !_showKeypad,
-                                  child: ElevatedButton(
-                                      onPressed: () {
-                                        bool? isValid =
-                                            _formKey.currentState?.validate();
-                                        if (isValid != null && !isValid) return;
-                                        if (_billType == null) {
-                                          _showErrorDialog(context);
-                                          return;
-                                        }
+                              const SizedBox(
+                                height: 35,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                      flex: 4,
+                                      child: TextFormField(
+                                        onTap: _hideKeypad,
+                                        textCapitalization:
+                                            TextCapitalization.sentences,
+                                        minLines: 2,
+                                        maxLines: 4,
+                                        controller: _descriptionController,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(120),
+                                        ],
+                                        keyboardType: TextInputType.multiline,
+                                        decoration: const InputDecoration(
+                                            hintText: "description"),
+                                      )),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _ProductTypeDropDown<Priority>(
+                                      onTapped: _hideKeypad,
+                                      value: _priority,
+                                      onChange: (t) =>
+                                          setState(() => _priority = t!),
+                                      title: "Priority",
+                                      menuItemBuilder: (t) => Text(t.name),
+                                      items: Priority.values,
+                                    ),
+                                  )
+                                ],
+                              ),
+                             const Spacer(),
+                              state.processingState == ProcessingState.pending
+                                  ? const CircularProgressIndicator()
+                                  : Visibility(
+                                      visible: !_showKeypad,
+                                      child: ElevatedButton(
+                                          onPressed: () {
+                                            bool? isValid =
+                                                _formKey.currentState?.validate();
+                                            if (isValid != null && !isValid) return;
+                                            if (_billType == null) {
+                                              _showErrorDialog(context);
+                                              return;
+                                            }
 
-                                        widget.expenditure == null
-                                            ? _save()
-                                            : _update();
-                                      },
-                                      style: _getButtonStyle(context),
-                                      child: Text(widget.expenditure == null
-                                          ? "ADD"
-                                          : "Update")),
-                                ),
-                        ],
+                                            widget.expenditure == null
+                                                ? _save()
+                                                : _update();
+                                          },
+                                          style: _getButtonStyle(context),
+                                          child: Text(widget.expenditure == null
+                                              ? "ADD"
+                                              : "Update")),
+                                    ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -340,7 +352,7 @@ class _BillViewState extends State<BillView> {
                 child: Container(
                     color: Theme.of(context).colorScheme.background,
                     child: CustomKeys(
-                      height: height,
+                      height: keysHeight,
                       width: width * 0.7,
                       onKeyTapped: _onAmountChanged,
                     )),
