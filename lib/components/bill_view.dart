@@ -12,6 +12,9 @@ import '../model/expenditure.dart';
 import '../util/calculation.dart';
 import 'custom_key_pad.dart';
 
+enum Recurrence { once, daily, weekly, monthly }
+
+
 class BillView extends StatefulWidget {
   final List<BillType> billTypes;
   final Expenditure? expenditure;
@@ -30,8 +33,11 @@ class _BillViewState extends State<BillView> {
   late TextEditingController _amountController;
   late TextEditingController _descriptionController;
 
+  var _selectedRecurrence = Recurrence.once;
+
   var _selectedDate = DateTime.now();
   var _selectedTime = TimeOfDay.now();
+  var _endDate;
 
   final _calculator = Calculator();
 
@@ -43,6 +49,7 @@ class _BillViewState extends State<BillView> {
 
   @override
   void initState() {
+    _endDate = _selectedDate.add(const Duration(days: 365));
     _billController = TextEditingController(text: widget.expenditure?.bill);
     _descriptionController =
         TextEditingController(text: widget.expenditure?.description);
@@ -63,24 +70,42 @@ class _BillViewState extends State<BillView> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var keysHeight = MediaQuery.of(context).size.height * 0.4;
+    var height = MediaQuery
+        .of(context)
+        .size
+        .height;
+    var keysHeight = MediaQuery
+        .of(context)
+        .size
+        .height * 0.4;
     var bodyHeight = height - 82;
-    if(height >= 617) {
+    if (height >= 617) {
       bodyHeight = height - 110;
     }
-    if(height < 617) {
-      keysHeight = MediaQuery.of(context).size.height * 0.35;
+    if (height < 617) {
+      keysHeight = MediaQuery
+          .of(context)
+          .size
+          .height * 0.35;
     }
-    var width = MediaQuery.of(context).size.width;
+    var width = MediaQuery
+        .of(context)
+        .size
+        .width;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .background,
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Bill'),
         foregroundColor: Colors.black,
         elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .background,
       ),
       body: WillPopScope(
         onWillPop: () async {
@@ -109,6 +134,7 @@ class _BillViewState extends State<BillView> {
                         child: SizedBox(
                           height: bodyHeight,
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(
                                 height: 20,
@@ -117,7 +143,8 @@ class _BillViewState extends State<BillView> {
                                 children: [
                                   Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       const Text('Date'),
                                       GestureDetector(
@@ -128,17 +155,19 @@ class _BillViewState extends State<BillView> {
                                             Text(
                                               DateFormat('dd/MM/yy')
                                                   .format(_selectedDate),
-                                              style: const TextStyle(fontSize: 20),
+                                              style: const TextStyle(
+                                                  fontSize: 20),
                                             ),
                                             Container(
                                               margin:
-                                                  const EdgeInsets.only(left: 5),
+                                              const EdgeInsets.only(left: 5),
                                               decoration: BoxDecoration(
-                                                  color: Theme.of(context)
+                                                  color: Theme
+                                                      .of(context)
                                                       .colorScheme
                                                       .secondary,
                                                   borderRadius:
-                                                      BorderRadius.circular(7)),
+                                                  BorderRadius.circular(7)),
                                               padding: const EdgeInsets.all(5),
                                               child: const Icon(
                                                 Icons.calendar_month,
@@ -153,7 +182,8 @@ class _BillViewState extends State<BillView> {
                                   const Spacer(),
                                   Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       const Text('Time'),
                                       GestureDetector(
@@ -165,17 +195,19 @@ class _BillViewState extends State<BillView> {
                                               _selectedTime
                                                   .format(context)
                                                   .toLowerCase(),
-                                              style: const TextStyle(fontSize: 20),
+                                              style: const TextStyle(
+                                                  fontSize: 20),
                                             ),
                                             Container(
                                               margin:
-                                                  const EdgeInsets.only(left: 5),
+                                              const EdgeInsets.only(left: 5),
                                               decoration: BoxDecoration(
-                                                  color: Theme.of(context)
+                                                  color: Theme
+                                                      .of(context)
                                                       .colorScheme
                                                       .secondary,
                                                   borderRadius:
-                                                      BorderRadius.circular(7)),
+                                                  BorderRadius.circular(7)),
                                               padding: const EdgeInsets.all(5),
                                               child: const Icon(
                                                 Icons.access_time_outlined,
@@ -241,7 +273,7 @@ class _BillViewState extends State<BillView> {
                                         controller: _amountController,
                                         onTap: () =>
                                             setState(() =>
-                                              _showKeypad = true),
+                                            _showKeypad = true),
                                         readOnly: true,
                                         style: const TextStyle(fontSize: 18),
                                         validator: (s) {
@@ -267,11 +299,12 @@ class _BillViewState extends State<BillView> {
                                       onChange: (t) =>
                                           setState(() => _paymentType = t!),
                                       title: "Payment Type",
-                                      menuItemBuilder: (t) => Text(
-                                        t.name,
-                                        softWrap: false,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+                                      menuItemBuilder: (t) =>
+                                          Text(
+                                            t.name,
+                                            softWrap: false,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                       items: PaymentType.values,
                                     ),
                                   )
@@ -288,7 +321,7 @@ class _BillViewState extends State<BillView> {
                                       child: TextFormField(
                                         onTap: _hideKeypad,
                                         textCapitalization:
-                                            TextCapitalization.sentences,
+                                        TextCapitalization.sentences,
                                         minLines: 2,
                                         maxLines: 4,
                                         controller: _descriptionController,
@@ -316,30 +349,96 @@ class _BillViewState extends State<BillView> {
                                   )
                                 ],
                               ),
-                             const Spacer(),
+                              const SizedBox(height: 20,),
+                              const Text('Recurrence*'),
+                              RadioListTile<Recurrence>(
+                                  title: const Text('Once'),
+                                  value: Recurrence.once,
+                                  groupValue: _selectedRecurrence,
+                                  onChanged: (value) => onRadio(value)),
+                              RadioListTile<Recurrence>(
+                                  title: const Text('Daily'),
+                                  value: Recurrence.daily,
+                                  groupValue: _selectedRecurrence,
+                                  onChanged: (value) => onRadio(value)),
+                              RadioListTile<Recurrence>(
+                                  title: const Text('Weekly'),
+                                  value: Recurrence.weekly,
+                                  groupValue: _selectedRecurrence,
+                                  onChanged: (value) => onRadio(value)),
+                              RadioListTile<Recurrence>(
+                                  title: const Text('Monthly'),
+                                  value: Recurrence.monthly,
+                                  groupValue: _selectedRecurrence,
+                                  onChanged: (value) => onRadio(value)),
+                              Visibility(
+                                visible: _selectedRecurrence != Recurrence.once,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text('End Date:'),
+                                    const SizedBox(height: 12,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: _onEndDate,
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                DateFormat('dd/MM/yy')
+                                                    .format(_endDate),
+                                                style: const TextStyle(
+                                                    fontSize: 20),
+                                              ),
+                                              Container(
+                                                margin:
+                                                const EdgeInsets.only(left: 5),
+                                                decoration: BoxDecoration(
+                                                    color: Theme
+                                                        .of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                    borderRadius:
+                                                    BorderRadius.circular(7)),
+                                                padding: const EdgeInsets.all(5),
+                                                child: const Icon(
+                                                  Icons.calendar_month,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],)
+                                  ],
+                                ),
+                              ),
+                              const Spacer(),
                               state.processingState == ProcessingState.pending
                                   ? const CircularProgressIndicator()
                                   : Visibility(
-                                      visible: !_showKeypad,
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            bool? isValid =
-                                                _formKey.currentState?.validate();
-                                            if (isValid != null && !isValid) return;
-                                            if (_billType == null) {
-                                              _showErrorDialog(context);
-                                              return;
-                                            }
+                                visible: !_showKeypad,
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      bool? isValid =
+                                      _formKey.currentState?.validate();
+                                      if (isValid != null && !isValid) return;
+                                      if (_billType == null) {
+                                        _showErrorDialog(context);
+                                        return;
+                                      }
 
-                                            widget.expenditure == null
-                                                ? _save()
-                                                : _update();
-                                          },
-                                          style: _getButtonStyle(context),
-                                          child: Text(widget.expenditure == null
-                                              ? "ADD"
-                                              : "Update")),
-                                    ),
+                                      widget.expenditure == null
+                                          ? _save()
+                                          : _update();
+                                    },
+                                    style: _getButtonStyle(context),
+                                    child: Text(widget.expenditure == null
+                                        ? "ADD"
+                                        : "Update")),
+                              ),
                             ],
                           ),
                         ),
@@ -354,7 +453,10 @@ class _BillViewState extends State<BillView> {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                    color: Theme.of(context).colorScheme.background,
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
                     child: CustomKeys(
                       height: keysHeight,
                       width: width * 0.7,
@@ -368,10 +470,15 @@ class _BillViewState extends State<BillView> {
     );
   }
 
+  void onRadio(Recurrence? value) {
+    _hideKeypad();
+    setState(() => _selectedRecurrence = value!);
+  }
+
   void _onTime() async {
     _hideKeypad();
     var time =
-        await showTimePicker(context: context, initialTime: _selectedTime);
+    await showTimePicker(context: context, initialTime: _selectedTime);
     setState(() => _selectedTime = time ?? _selectedTime);
   }
 
@@ -404,8 +511,14 @@ class _BillViewState extends State<BillView> {
     var bill = _billController.value.text;
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
-    var ex = Expenditure.withDate(bill, description, _paymentType, _billType!,
-        date.toIso8601String(), amount, _priority);
+    var ex = Expenditure.withDate(
+        bill,
+        description,
+        _paymentType,
+        _billType!,
+        date.toIso8601String(),
+        amount,
+        _priority);
     context.read<BillBloc>().add(BillSaveEvent(ex));
   }
 
@@ -415,15 +528,25 @@ class _BillViewState extends State<BillView> {
     var bill = _billController.value.text;
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
-    Expenditure ex = Expenditure(widget.expenditure!.id, bill, description,
-        _paymentType, _billType!, amount, date.toIso8601String(), _priority);
+    Expenditure ex = Expenditure(
+        widget.expenditure!.id,
+        bill,
+        description,
+        _paymentType,
+        _billType!,
+        amount,
+        date.toIso8601String(),
+        _priority);
     context.read<BillBloc>().add(BillUpdateEvent(ex));
   }
 
   ButtonStyle _getButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
         minimumSize: const Size.fromHeight(40),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .secondary,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)));
   }
@@ -431,7 +554,8 @@ class _BillViewState extends State<BillView> {
   void _showErrorDialog(BuildContext context) async {
     await showDialog(
         context: context,
-        builder: (_) => AlertDialog(
+        builder: (_) =>
+            AlertDialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
               title: const Text(
@@ -473,6 +597,15 @@ class _BillViewState extends State<BillView> {
     _billController.dispose();
     super.dispose();
   }
+
+  void _onEndDate() async {
+    var date = await showDatePicker(
+        context: context,
+        initialDate: _endDate,
+        firstDate: _selectedDate,
+        lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
+        setState(()=>_endDate = date ?? _endDate);
+  }
 }
 
 class _ProductTypeDropDown<T> extends StatelessWidget {
@@ -483,14 +616,13 @@ class _ProductTypeDropDown<T> extends StatelessWidget {
   final void Function(T?)? onChange;
   final Function()? onTapped;
 
-  const _ProductTypeDropDown(
-      {Key? key,
-      required this.title,
-      this.items = const [],
-      required this.menuItemBuilder,
-      this.value,
-      this.onChange,
-      this.onTapped})
+  const _ProductTypeDropDown({Key? key,
+    required this.title,
+    this.items = const [],
+    required this.menuItemBuilder,
+    this.value,
+    this.onChange,
+    this.onTapped})
       : super(key: key);
 
   @override
@@ -512,7 +644,8 @@ class _ProductTypeDropDown<T> extends StatelessWidget {
           value: value,
           itemHeight: null,
           items: [
-            ...items.map((e) => DropdownMenuItem<T>(
+            ...items.map((e) =>
+                DropdownMenuItem<T>(
                   value: e,
                   child: menuItemBuilder(e),
                 ))
