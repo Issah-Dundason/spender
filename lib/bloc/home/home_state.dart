@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../model/expenditure.dart';
+import '../../model/bill.dart';
 import '../../service/database.dart';
 
 enum DataLoading { none, pending, error, done }
@@ -8,7 +8,7 @@ enum DataLoading { none, pending, error, done }
 class HomeState extends Equatable {
   final Financials? currentFinancials;
   final List<MonthSpending> monthExpenditures;
-  final List<Expenditure> transactionsToday;
+  final List<Bill> transactionsToday;
   final int? firstEverRecordYear;
   final int analysisYear;
   final DataLoading loadingState;
@@ -27,7 +27,7 @@ class HomeState extends Equatable {
       int? analysisYear,
       DataLoading? loadingState,
       List<MonthSpending>? monthSpending,
-      List<Expenditure>? transactions}) {
+      List<Bill>? transactions}) {
     return HomeState(
         analysisYear: analysisYear ?? this.analysisYear,
         firstEverRecordYear: firstEverRecordYear ?? this.firstEverRecordYear,

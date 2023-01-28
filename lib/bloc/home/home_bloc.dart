@@ -18,12 +18,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(state.copyWith(transactions: []));
     DateTime date = DateTime.now();
     var yearAndMonth = DateFormat("yyyy-MM").format(date);
-    var yearMonthDay = DateFormat("yyyy-MM-dd").format(date);
     emit(state.copyWith(loadingState: DataLoading.pending));
     var expenditures =
         await appRepo.getAmountSpentEachMonth("${state.analysisYear}");
     var financials = await appRepo.getFinancials(yearAndMonth);
-    var transactions = await appRepo.getExpenditureAt(yearMonthDay, 3);
+    var transactions = await appRepo.getExpenditureAt(date, 3);
     var firstRecordYear = await appRepo.getYearOfFirstInsert();
     emit(state.copyWith(
       loadingState: DataLoading.done,

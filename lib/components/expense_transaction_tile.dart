@@ -12,7 +12,7 @@ import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/receipt.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../icons/icons.dart';
-import '../model/expenditure.dart';
+import '../model/bill.dart';
 import '../repository/expenditure_repo.dart';
 import '../theme/theme.dart';
 import 'bill_view.dart';
@@ -30,7 +30,7 @@ class EditableTransactionTile extends StatefulWidget {
       this.iconColor = const Color(0xFFFFFFFF)})
       : super(key: key);
 
-  final Expenditure expenditure;
+  final Bill expenditure;
 
   @override
   State<EditableTransactionTile> createState() =>
@@ -93,7 +93,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                           width: MediaQuery.of(context).size.width * 0.5,
                           child: Text(
                             overflow: TextOverflow.clip,
-                            'Bill: ${widget.expenditure.bill}',
+                            'Bill: ${widget.expenditure.title}',
                             style: TextStyle(fontSize: 16, color: widget.textColor),
                           ),
                         ),
@@ -181,7 +181,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
               return BillBloc(appRepo: appRepo);
             },
             child: BillView(
-              expenditure: widget.expenditure,
+              bill: widget.expenditure,
               billTypes: billTypes,
             ))));
   }

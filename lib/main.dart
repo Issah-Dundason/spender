@@ -9,7 +9,7 @@ import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/bloc/profile/profile_event.dart';
-import 'package:spender/model/expenditure.dart';
+import 'package:spender/model/bill.dart';
 import 'package:spender/pages/app_view.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';

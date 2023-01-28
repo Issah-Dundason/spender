@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../model/expenditure.dart';
+import '../model/bill.dart';
 import '../util/app_utils.dart';
 
 class Receipt extends StatelessWidget {
-  final Expenditure expenditure;
+  final Bill expenditure;
 
   const Receipt({Key? key, required this.expenditure}) : super(key: key);
 
@@ -53,11 +53,11 @@ class Receipt extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 15.0, right: 15),
-                child: Text('Bill: ${expenditure.bill}'),
+                child: Text('Bill: ${expenditure.title}'),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
-                child: Text('Amount:  ₵${NumberFormat().format(AppUtils.amountPresented(expenditure.price))}'),
+                child: Text('Amount:  ₵${NumberFormat().format(AppUtils.amountPresented(expenditure.amount))}'),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),

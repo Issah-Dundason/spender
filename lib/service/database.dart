@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../model/bill_type.dart';
 import '../model/budget.dart';
-import '../model/expenditure.dart';
+import '../model/bill.dart';
+import 'queries.dart';
 
 class DatabaseClient {
   static const int _version = 2;
@@ -23,30 +25,80 @@ class DatabaseClient {
         version: _version, onCreate: _create);
   }
 
-  Future<bool> didTransactionOccurOnDay(String day) async {
-    var results = await _db.query("expenditure",
-        where: "strftime('%Y-%m-%d', date) = ?", whereArgs: [day], limit: 1);
-    return results.isNotEmpty;
+  Future _create(Database db, int i) async {
+    await db.execute(Query.billTypeTable);
+    await db.execute(Query.expenditureTable);
+    await db.execute(Query.budgetTable);
+    await db.execute(Query.expenditureExceptionTable);
+
+    await db.insert("bill_type", {"name": "Food", "image": "food.svg"});
+    await db.insert(
+        "bill_type", {"name": "Clothing & beauty", "image": "clothing.svg"});
+    await db
+        .insert("bill_type", {"name": "Investment", "image": "investment.svg"});
+    await db.insert("bill_type", {"name": "Health", "image": "medicine.svg"});
+    await db.insert(
+        "bill_type", {"name": "Electricity", "image": "electricity.svg"});
+    await db.insert(
+        "bill_type", {"name": "Transportation", "image": "transportation.svg"});
+    await db.insert("bill_type", {"name": "Other", "image": "other.svg"});
   }
 
-  Future deleteExpenditure(int id) async {
-    await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
-  }
+  Future<Financials?> getFinancials(String date) async {
+    var result = await _db.rawQuery(
+        Query.financialsQuery, [DateTime.now().toIso8601String(), date, date]);
 
-  Future updateExpenditure(Expenditure expenditure) async {
-    await _db.update("expenditure", expenditure.toJson(),
-        where: "id = ?", whereArgs: [expenditure.id]);
+    if (result.isEmpty) {
+      return null;
+    }
+
+    return Financials.fromMap(result[0]);
   }
 
   Future saveBudget(Budget budget) async {
     await _db.insert("budget", budget.toMap());
   }
 
+  Future saveExpenditure(Map<String, dynamic> map) async {
+    await _db.insert("expenditure", map);
+  }
+
+  Future<List<Bill>> getBillAtWithLimit(DateTime dateTime, int limit) async {
+    var date = DateFormat("yyyy-MM-dd").format(dateTime);
+    var result = await _db.rawQuery(Query.getExpenditureWithLimitQuery(),
+        [date, dateTime.toIso8601String(),limit]);
+    return result.map((record){
+      Map<String, dynamic> modified = Map.from(record);
+      modified["type"] = {
+        "bill_type": record["bill_type"],
+        "bill_name": record["bill_name"],
+        "bill_image": record["bill_image"]
+      };
+      return Bill.fromJson(modified);
+    }).toList();
+  }
+
+  Future<bool> didTransactionOccurOnDay(String day) async {
+    // var results = await _db.query("expenditure",
+    //     where: "strftime('%Y-%m-%d', date) = ?", whereArgs: [day], limit: 1);
+    // return results.isNotEmpty;
+    return false;
+  }
+
+  Future deleteExpenditure(int id) async {
+    await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
+  }
+
+  Future updateExpenditure(Bill expenditure) async {
+    await _db.update("expenditure", expenditure.toJson(),
+        where: "id = ?", whereArgs: [expenditure.id]);
+  }
+
   Future<int?> getYearOfFirstBudget() async {
-    var result =
-        await _db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year 
-           FROM budget ORDER BY date LIMIT 1''');
-    if (result.isNotEmpty) return Sqflite.firstIntValue(result);
+    // var result =
+    //     await _db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
+    //        FROM budget ORDER BY date LIMIT 1''');
+    // if (result.isNotEmpty) return Sqflite.firstIntValue(result);
     return null;
   }
 
@@ -81,65 +133,40 @@ class DatabaseClient {
     return result.map((map) => Budget.fromMap(map)).toList();
   }
 
-  Future<Financials?> getFinancials(String date) async {
-    var result = await _db.rawQuery('''
-    SELECT b.amount as budget, 
-          CASE 
-            WHEN  b.amount - t.amount_spent   ISNULL THEN b.amount
-            ELSE (b.amount - t.amount_spent) 
-            END as balance,
-          CASE
-            WHEN t.amount_spent ISNULL THEN 0 
-            ELSE t.amount_spent
-            END as amount_spent  
-    FROM budget b 
-    LEFT JOIN 
-    (SELECT SUM(price) as amount_spent, 
-            strftime('%Y-%m', date) as date 
-    FROM expenditure 
-    GROUP BY 2
-    HAVING strftime('%Y-%m', date) = ?) t 
-    on t.date = strftime('%Y-%m', b.date) 
-    WHERE strftime('%Y-%m', b.date) = ?;
-    ''', [date, date]);
-    if (result.isEmpty) {
-      return null;
-    }
-
-    return Financials.fromMap(result[0]);
-  }
 
   ///date is a string of date formatted as yyyy-MM
-  Future<List<Expenditure>> getByYearAndMonth(String date) async {
-    var result = await _db.rawQuery('''
-      SELECT e.id as eid, 
-            e.bill AS ebill, 
-            e.description as edesc, 
-            e.payment_type as epay, 
-            e.price as eprice, e.date as edate, 
-            e.priority as epri, 
-            p.id as pid, p.name as pname, p.image as pimage
-      FROM expenditure e 
-      JOIN bill_type p 
-      ON e.bill_type_id = p.id WHERE strftime('%Y-%m', e.date) = ?;
-    ''', [date]);
-    return result.map((e) => Expenditure.fromMap(e)).toList();
+  Future<List<Bill>> getByYearAndMonth(String date) async {
+    // var result = await _db.rawQuery('''
+    //   SELECT e.id as eid,
+    //         e.bill AS ebill,
+    //         e.description as edesc,
+    //         e.payment_type as epay,
+    //         e.price as eprice, e.date as edate,
+    //         e.priority as epri,
+    //         p.id as pid, p.name as pname, p.image as pimage
+    //   FROM expenditure e
+    //   JOIN bill_type p
+    //   ON e.bill_type_id = p.id WHERE strftime('%Y-%m', e.date) = ?;
+    // ''', [date]);
+    // return result.map((e) => Bill.fromMap(e)).toList();
+    return [];
   }
 
-  Future<List<Expenditure>> getExpenditureByDate(String date) async {
-    var result = await _db.rawQuery('''
-      SELECT e.id as eid, 
-            e.bill AS ebill, 
-            e.description as edesc, 
-            e.payment_type as epay, 
-            e.price as eprice, e.date as edate, 
-            e.priority as epri, 
-            p.id as pid, p.name as pname, p.image as pimage
-      FROM expenditure e 
-      JOIN bill_type p 
-      ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC;
-    ''', [date]);
-    return result.map((e) => Expenditure.fromMap(e)).toList();
+  Future<List<Bill>> getExpenditureByDate(String date) async {
+    // var result = await _db.rawQuery('''
+    //   SELECT e.id as eid,
+    //         e.bill AS ebill,
+    //         e.description as edesc,
+    //         e.payment_type as epay,
+    //         e.price as eprice, e.date as edate,
+    //         e.priority as epri,
+    //         p.id as pid, p.name as pname, p.image as pimage
+    //   FROM expenditure e
+    //   JOIN bill_type p
+    //   ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC;
+    // ''', [date]);
+    //return result.map((e) => Bill.fromMap(e)).toList();
+    return [];
   }
 
   Future<List<PieData>> getPieData(String format, String date) async {
@@ -160,14 +187,8 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getOverallPieData() async {
-    var records = await _db.rawQuery('''
-      SELECT SUM(e.price) as amount,
-        p.id as pid, p.name as pname, p.image as pimage
-      FROM expenditure e
-      JOIN bill_type p ON
-      e.bill_type_id = p.id
-      GROUP BY 2;
-    ''');
+    // var records = await _db.rawQuery();
+    var records = [];
     return records
         .map((record) =>
             PieData(record['amount'] as int, BillType.fromMap(record)))
@@ -177,87 +198,30 @@ class DatabaseClient {
   Future<List<BillType>> getProductTypes() async {
     var result = await _db.query("bill_type");
     return result
-        .map((e) => BillType(e["id"] as int, e["name"] as String, e["image"] as String))
+        .map((record) => BillType(record["id"] as int, record["name"] as String,
+            record["image"] as String))
         .toList();
   }
 
-  Future saveExpenditure(Map<String, dynamic> map) async {
-    await _db.insert("expenditure", map);
-  }
+
 
   Future<int?> getYearOfFirstInsert() async {
-    var result = await _db.rawQuery(
-        "SELECT date as edate FROM expenditure ORDER BY date ASC LIMIT 1");
+    // var result = await _db.rawQuery(
+    //     "SELECT date as edate FROM expenditure ORDER BY date ASC LIMIT 1");
+    var result = [];
     if (result.isEmpty) return null;
     var date = DateTime.parse(result[0]['edate'] as String).toLocal();
     return date.year;
   }
 
-  Future<List<Expenditure>> getExpenditureAtWithLimit(
-      String date, int limit) async {
-    var result = await _db.rawQuery('''
-      SELECT e.id as eid, 
-            e.bill AS ebill, 
-            e.description as edesc, 
-            e.payment_type as epay, 
-            e.price as eprice, e.date as edate, 
-            e.priority as epri, 
-            p.id as pid, p.name as pname, p.image as pimage
-      FROM expenditure e 
-      JOIN bill_type p 
-      ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC LIMIT ?;
-    ''', [date, limit]);
-    return result.map((e) => Expenditure.fromMap(e)).toList();
-  }
 
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
-    var result = await _db.rawQuery('''
-    SELECT strftime('%m',date) as month, 
-          SUM(price) as amount FROM expenditure 
-    GROUP BY 1 HAVING strftime('%Y',date) = ?
-    ORDER BY strftime('%m',date) ASC
-          ''', [year]);
+    //var result = await _db.rawQuery(, [year]);
+    var result = [];
     return result
         .map((q) =>
             MonthSpending(int.parse(q["month"] as String), q["amount"] as int))
         .toList();
-  }
-
-  Future _create(Database db, int i) async {
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS bill_type (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        name TEXT  NOT NULL,
-        image TEXT NOT NULL
-      );
-    ''');
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS expenditure (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        bill TEXT NOT NULL,
-        description TEXT,
-        payment_type INTEGER NOT NULL,
-        priority INTEGER NOT NULL,
-        bill_type_id INTEGER,
-        price INTEGER NOT NULL,
-        date TEXT NOT NULL,
-        FOREIGN KEY (bill_type_id) REFERENCES bill_type(id)
-      );
-    ''');
-    await db.execute('''
-        CREATE TABLE IF NOT EXISTS budget (
-          id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-          date TEXT NOT NULL UNIQUE,
-          amount INTEGER NOT NULL
-       );
-    ''');
-    await db.insert("bill_type", {"name": "Food", "image": "food.svg"});
-    await db.insert("bill_type", {"name": "Clothing & beauty", "image": "clothing.svg"});
-    await db.insert("bill_type", {"name": "Investment", "image": "investment.svg"});
-    await db.insert("bill_type", {"name": "Health", "image": "medicine.svg"});
-    await db.insert("bill_type", {"name": "Electricity", "image": "electricity.svg"});
-    await db.insert("bill_type", {"name": "Transportation", "image": "transportation.svg"});
-    await db.insert("bill_type", {"name": "Other", "image": "other.svg"});
   }
 }
 

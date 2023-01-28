@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-import '../../model/expenditure.dart';
+import '../../model/bill.dart';
 
 class ExpensesState extends Equatable {
-  final List<Expenditure> transactions;
+  final List<Bill> transactions;
   final DateTime selectedDate;
   final int? yearOfFirstInsert;
   final bool initialized;
@@ -15,7 +15,7 @@ class ExpensesState extends Equatable {
       this.yearOfFirstInsert});
 
   ExpensesState copyWith(
-      {List<Expenditure>? transactions,
+      {List<Bill>? transactions,
       DateTime? selectedDate,
       bool? initialized,
       int? yearOfFirstInsert}) {

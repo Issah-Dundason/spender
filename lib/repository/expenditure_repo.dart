@@ -1,4 +1,4 @@
-import 'package:spender/model/expenditure.dart';
+import 'package:spender/model/bill.dart';
 import 'package:spender/service/database.dart';
 
 import '../model/bill_type.dart';
@@ -49,11 +49,11 @@ class AppRepository {
     return _dbClient.getAmountSpentEachMonth(year);
   }
 
-  Future<List<Expenditure>> getExpenditureAt(String date, int limit) {
-    return _dbClient.getExpenditureAtWithLimit(date, limit);
+  Future<List<Bill>> getExpenditureAt(DateTime dateTime, int limit) {
+    return _dbClient.getBillAtWithLimit(dateTime, limit);
   }
 
-  Future updateExpenditure(Expenditure expenditure) {
+  Future updateExpenditure(Bill expenditure) {
     return _dbClient.updateExpenditure(expenditure);
   }
 
@@ -70,7 +70,7 @@ class AppRepository {
     return _dbClient.deleteExpenditure(id);
   }
 
-  Future<List<Expenditure>> getAllExpenditure(String date) {
+  Future<List<Bill>> getAllExpenditure(String date) {
     return _dbClient.getExpenditureByDate(date);
   }
 
@@ -78,7 +78,7 @@ class AppRepository {
     return _dbClient.getYearOfFirstInsert();
   }
 
-  Future saveExpenditure(Expenditure expenditure) {
-    return _dbClient.saveExpenditure(expenditure.toJson());
+  Future saveExpenditure(Bill expenditure) {
+    return _dbClient.saveExpenditure(expenditure.toNewBillJson());
   }
 }

@@ -5,7 +5,7 @@ import 'package:spender/bloc/home/home_state.dart';
 import 'package:spender/components/receipt.dart';
 import 'package:spender/components/transaction_tile.dart';
 import 'package:spender/icons/icons.dart';
-import 'package:spender/model/expenditure.dart';
+import 'package:spender/model/bill.dart';
 
 import '../bloc/app/app_cubit.dart';
 import '../bloc/expenses/expenses_bloc.dart';
@@ -47,9 +47,9 @@ class HomeTransactions extends StatelessWidget {
                   onTap: () => _onTransactionTap(context, t),
                   child: TransactionTile(
                     image: t.type.image,
-                    bill: t.bill,
+                    bill: t.title,
                     type: t.paymentType.name,
-                    amount: AppUtils.amountPresented(t.price),
+                    amount: AppUtils.amountPresented(t.amount),
                     date: t.formattedDate,
                   ),
                 );
@@ -60,7 +60,7 @@ class HomeTransactions extends StatelessWidget {
     );
   }
 
-  void _onTransactionTap(BuildContext context, Expenditure e) async {
+  void _onTransactionTap(BuildContext context, Bill e) async {
     await showDialog(
         context: context,
         builder: (_) => Receipt(
