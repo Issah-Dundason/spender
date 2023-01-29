@@ -34,7 +34,7 @@ class _BillViewState extends State<BillView> {
 
   var _selectedDate = DateTime.now();
   var _selectedTime = TimeOfDay.now();
-  late DateTime _endDate;
+  DateTime? _endDate;
 
   final _calculator = Calculator();
 
@@ -46,13 +46,15 @@ class _BillViewState extends State<BillView> {
 
   @override
   void initState() {
-    _endDate = _selectedDate.add(const Duration(days: 365));
     _billController = TextEditingController(text: widget.bill?.title);
     _descriptionController =
         TextEditingController(text: widget.bill?.description);
     _amountController = TextEditingController();
 
     if (widget.bill != null) {
+      _endDate = widget.bill!.endDate != null
+          ? DateTime.parse(widget.bill!.endDate as String)
+          : null;
       var amount = AppUtils.amountPresented(widget.bill!.amount);
       _amountController.text = '$amount';
       _calculator.add('$amount');
@@ -66,6 +68,7 @@ class _BillViewState extends State<BillView> {
           ? DateTime.parse(widget.bill!.endDate!)
           : _endDate;
     }
+
     super.initState();
   }
 
@@ -371,8 +374,11 @@ class _BillViewState extends State<BillView> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Text(
-                                                DateFormat('dd/MM/yy')
-                                                    .format(_endDate!),
+                                                DateFormat('dd/MM/yy').format(
+                                                    _endDate ??
+                                                        _selectedDate.add(
+                                                            const Duration(
+                                                                days: 365))),
                                                 style: const TextStyle(
                                                     fontSize: 20),
                                               ),
@@ -407,21 +413,7 @@ class _BillViewState extends State<BillView> {
                                   : Visibility(
                                       visible: !_showKeypad,
                                       child: ElevatedButton(
-                                          onPressed: () {
-                                            bool? isValid = _formKey
-                                                .currentState
-                                                ?.validate();
-                                            if (isValid != null && !isValid)
-                                              return;
-                                            if (_billType == null) {
-                                              _showErrorDialog(context);
-                                              return;
-                                            }
-
-                                            widget.bill == null
-                                                ? _save()
-                                                : _update();
-                                          },
+                                          onPressed: onSubmit,
                                           style: _getButtonStyle(context),
                                           child: Text(widget.bill == null
                                               ? "ADD"
@@ -455,9 +447,33 @@ class _BillViewState extends State<BillView> {
     );
   }
 
+  void onSubmit() {
+    bool? isValid = _formKey.currentState?.validate();
+    if (isValid != null && !isValid) {
+      return;
+    }
+    if (_billType == null) {
+      _showErrorDialog(context);
+      return;
+    }
+
+    widget.bill == null ? _save() : _update();
+  }
+
   void onRadio(Pattern? value) {
     _hideKeypad();
-    setState(() => _selectedRecurrence = value!);
+    setState(() {
+      _selectedRecurrence = value!;
+      if (_selectedRecurrence == Pattern.once) {
+        _endDate = null;
+      }
+      if (widget.bill?.endDate != null) {
+        _endDate = DateTime.parse(widget.bill!.endDate as String);
+      }
+      if(_selectedRecurrence != Pattern.once) {
+        _endDate = _selectedDate.add(const Duration(days: 365));
+      }
+    });
   }
 
   void _onTime() async {
@@ -499,7 +515,7 @@ class _BillViewState extends State<BillView> {
 
     Bill bill;
 
-    if(_selectedRecurrence != Pattern.once) {
+    if (_selectedRecurrence != Pattern.once) {
       bill = Bill(
           title: title,
           description: description,
@@ -509,7 +525,7 @@ class _BillViewState extends State<BillView> {
           amount: amount,
           isRecurring: true,
           priority: _priority,
-          endDate: _endDate.toIso8601String(),
+          endDate: _endDate!.toIso8601String(),
           pattern: _selectedRecurrence);
     } else {
       bill = Bill(
@@ -525,12 +541,21 @@ class _BillViewState extends State<BillView> {
     context.read<BillBloc>().add(BillSaveEvent(bill));
   }
 
-  void _update() {
+  void _update() async {
     var amount = AppUtils.getActualAmount(_amountController.value.text);
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
+    if (!_hasMadeAChange()) {
+      await showDialog(
+          context: context,
+          builder: (_) => const AlertDialog(
+                content: Text('No change has been made'),
+              ));
+      return;
+    }
+    handleRecurrenceStart();
     // Bill ex = Bill(
     //     widget.expenditure!.id,
     //     bill,
@@ -541,6 +566,59 @@ class _BillViewState extends State<BillView> {
     //     date.toIso8601String(),
     //     _priority);
     // context.read<BillBloc>().add(BillUpdateEvent(ex));
+  }
+
+  bool _hasMadeAChange() {
+    var amount = AppUtils.getActualAmount(_amountController.value.text);
+    var description = _descriptionController.value.text;
+    var bill = _billController.value.text;
+    var date = DateTime(_selectedDate.year, _selectedDate.month,
+        _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
+    return amount != widget.bill!.amount ||
+        description != widget.bill!.description ||
+        bill != widget.bill!.title ||
+        date != DateTime.parse(widget.bill!.paymentDateTime) ||
+        widget.bill!.type != _billType! ||
+        widget.bill!.paymentType != _paymentType ||
+        widget.bill!.priority != _priority ||
+        widget.bill!.pattern != _selectedRecurrence ||
+        widget.bill!.endDate != _endDate?.toIso8601String();
+  }
+
+  void handleRecurrenceStart() async {
+    if ((widget.bill!.isGenerated()) || !(widget.bill!.isRecurring)) return;
+
+    if (widget.bill!.pattern == _selectedRecurrence) {
+      var ans = await updateQuestionAns();
+
+      if (ans == true) {
+
+      }
+
+      if (ans == false) {}
+    }
+  }
+
+  Future<dynamic> updateQuestionAns() async {
+    return await showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          content:
+              const Text("Should this change be applied to all future bills"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(_, true),
+              child: const Text('Yes'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(_, false),
+              child: const Text('No'),
+            )
+          ],
+        );
+      },
+    );
   }
 
   ButtonStyle _getButtonStyle(BuildContext context) {
@@ -600,7 +678,7 @@ class _BillViewState extends State<BillView> {
   void _onEndDate() async {
     var date = await showDatePicker(
         context: context,
-        initialDate: _endDate!,
+        initialDate: _endDate ?? _selectedDate.add(const Duration(days: 365)),
         firstDate: _selectedDate,
         lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
     setState(() => _endDate = date ?? _endDate);

@@ -160,14 +160,15 @@ class Query {
 
   static String getMonthSpendingQuery() {
     return '''
-    ${generateRecursionQuery('end_date')}
-    
+    ${generateRecursionQuery('end_date')},
+    secondResolved AS (
+      SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
+    )
     SELECT strftime('%m',payment_datetime) as month, 
           SUM(amount) as amount
-    FROM resolvedData
+    FROM secondResolved
     GROUP BY strftime('%Y-%m',payment_datetime) 
     HAVING strftime('%Y',payment_datetime) = ?
-    AND datetime(payment_datetime) <= datetime(?)
     ORDER BY strftime('%m', payment_datetime) ASC;
     ''';
   }

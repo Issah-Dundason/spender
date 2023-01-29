@@ -189,7 +189,7 @@ class DatabaseClient {
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
     String dateTime = DateTime.now().toIso8601String();
       var result =
-          await _db.rawQuery(Query.getMonthSpendingQuery(), [year, dateTime]);
+          await _db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
       return result
           .map((record) => MonthSpending(
               int.parse(record["month"] as String), record["amount"] as int))

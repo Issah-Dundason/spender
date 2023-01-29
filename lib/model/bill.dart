@@ -114,7 +114,13 @@ class Bill extends Equatable {
     return cash;
   }
 
+  bool isGenerated() {
+    return id == -1;
+  }
+
   @override
   List<Object?> get props =>
       [id, paymentDateTime, amount, priority, description, paymentType];
 }
+
+

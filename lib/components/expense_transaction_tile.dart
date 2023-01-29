@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart.';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,12 +8,9 @@ import 'package:spender/bloc/expenses/expenses_bloc.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
-import 'package:spender/components/receipt.dart';
 import '../bloc/bill/bill_bloc.dart';
-import '../icons/icons.dart';
 import '../model/bill.dart';
 import '../repository/expenditure_repo.dart';
-import '../theme/theme.dart';
 import 'bill_view.dart';
 
 class EditableTransactionTile extends StatefulWidget {
