@@ -66,8 +66,8 @@ class DatabaseClient {
   Future<List<Bill>> getBillAtWithLimit(DateTime dateTime, int limit) async {
     var date = DateFormat("yyyy-MM-dd").format(dateTime);
     var result = await _db.rawQuery(Query.getExpenditureWithLimitQuery(),
-        [date, dateTime.toIso8601String(),limit]);
-    return result.map((record){
+        [date, dateTime.toIso8601String(), limit]);
+    return result.map((record) {
       Map<String, dynamic> modified = Map.from(record);
       modified["type"] = {
         "bill_type": record["bill_type"],
@@ -132,7 +132,6 @@ class DatabaseClient {
     if (result.isEmpty) return [];
     return result.map((map) => Budget.fromMap(map)).toList();
   }
-
 
   ///date is a string of date formatted as yyyy-MM
   Future<List<Bill>> getByYearAndMonth(String date) async {
@@ -203,25 +202,22 @@ class DatabaseClient {
         .toList();
   }
 
-
-
   Future<int?> getYearOfFirstInsert() async {
-    // var result = await _db.rawQuery(
-    //     "SELECT date as edate FROM expenditure ORDER BY date ASC LIMIT 1");
-    var result = [];
+    var result = await _db.rawQuery(
+        "SELECT payment_datetime as edate FROM expenditure ORDER BY payment_datetime ASC LIMIT 1");
     if (result.isEmpty) return null;
-    var date = DateTime.parse(result[0]['edate'] as String).toLocal();
+    var date = DateTime.parse(result[0]['edate'] as String);
     return date.year;
   }
 
-
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
-    //var result = await _db.rawQuery(, [year]);
-    var result = [];
-    return result
-        .map((q) =>
-            MonthSpending(int.parse(q["month"] as String), q["amount"] as int))
-        .toList();
+    String dateTime = DateTime.now().toIso8601String();
+      var result =
+          await _db.rawQuery(Query.getMonthSpendingQuery(), [year, dateTime]);
+      return result
+          .map((record) => MonthSpending(
+              int.parse(record["month"] as String), record["amount"] as int))
+          .toList();
   }
 }
 

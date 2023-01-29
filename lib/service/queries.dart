@@ -51,7 +51,7 @@ class Query {
     );
   ''';
 
-  static String generateRecursionQuery(String dateTime) => '''
+  static String generateRecursionQuery(String expression) => '''
         WITH RECURSIVE recurringData AS (
            SELECT * FROM expenditure
            UNION 
@@ -67,12 +67,10 @@ class Query {
               THEN recurringData.parent_id
               ELSE recurringData.id END AS parent_id,
               CASE 
-                WHEN pattern = 0 
+                WHEN pattern = 2 
                   THEN datetime(payment_datetime, '7 days')
-                WHEN pattern = 1
+                WHEN pattern = 3
                   THEN datetime(payment_datetime, '1 months')
-                WHEN pattern = 2
-                  THEN datetime(payment_datetime, '12 months')
                 ELSE datetime(payment_datetime, '1 days')
                 END
               AS payment_datetime,
@@ -87,7 +85,7 @@ class Query {
                   THEN datetime(payment_datetime, '1 months')
                 ELSE datetime(payment_datetime, '1 days')
                 END
-           <= datetime($dateTime)
+           <= datetime($expression)
           ),
           resolvedData AS (
             SELECT
@@ -140,7 +138,6 @@ class Query {
 
   static String financialsQuery = '''
    ${generateRecursionQuery('?')}
-   
     SELECT b.amount as budget,
             CASE 
               WHEN  b.amount - t.amount_spent   IS NULL THEN b.amount
@@ -161,20 +158,23 @@ class Query {
       WHERE strftime('%Y-%m', b.date) = ?;
   ''';
 
-  String getMonthSpendingQuery(String year) {
-    '''
-    SELECT strftime('%m',date) as month, 
-          SUM(price) as amount FROM expenditure 
-    GROUP BY 1 HAVING strftime('%Y',date) = ?
-    ORDER BY strftime('%m',date) ASC
-          ''';
-    return '';
+  static String getMonthSpendingQuery() {
+    return '''
+    ${generateRecursionQuery('end_date')}
+    
+    SELECT strftime('%m',payment_datetime) as month, 
+          SUM(amount) as amount
+    FROM resolvedData
+    GROUP BY strftime('%Y-%m',payment_datetime) 
+    HAVING strftime('%Y',payment_datetime) = ?
+    AND datetime(payment_datetime) <= datetime(?)
+    ORDER BY strftime('%m', payment_datetime) ASC;
+    ''';
   }
 
   static String getExpenditureWithLimitQuery() {
     return '''
     ${generateRecursionQuery('end_date')}
-    
     SELECT resolvedData.*, 
            bill_type.id AS bill_type, 
            bill_type.name AS bill_name,

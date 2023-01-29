@@ -95,6 +95,8 @@ class Bill extends Equatable {
     var json = toJson();
     json.remove("id");
     json.remove('exception_id');
+    json["bill_type"] = json["type"];
+    json.remove("type");
     return json;
   }
 
