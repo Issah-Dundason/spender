@@ -79,10 +79,8 @@ class DatabaseClient {
   }
 
   Future<bool> didTransactionOccurOnDay(String day) async {
-    // var results = await _db.query("expenditure",
-    //     where: "strftime('%Y-%m-%d', date) = ?", whereArgs: [day], limit: 1);
-    // return results.isNotEmpty;
-    return false;
+    var results = await _db.rawQuery(Query.didTransactionOccurQuery, [day]);
+    return results.isNotEmpty;
   }
 
   Future deleteExpenditure(int id) async {
@@ -131,24 +129,6 @@ class DatabaseClient {
         whereArgs: [year]);
     if (result.isEmpty) return [];
     return result.map((map) => Budget.fromMap(map)).toList();
-  }
-
-  ///date is a string of date formatted as yyyy-MM
-  Future<List<Bill>> getByYearAndMonth(String date) async {
-    // var result = await _db.rawQuery('''
-    //   SELECT e.id as eid,
-    //         e.bill AS ebill,
-    //         e.description as edesc,
-    //         e.payment_type as epay,
-    //         e.price as eprice, e.date as edate,
-    //         e.priority as epri,
-    //         p.id as pid, p.name as pname, p.image as pimage
-    //   FROM expenditure e
-    //   JOIN bill_type p
-    //   ON e.bill_type_id = p.id WHERE strftime('%Y-%m', e.date) = ?;
-    // ''', [date]);
-    // return result.map((e) => Bill.fromMap(e)).toList();
-    return [];
   }
 
   Future<List<Bill>> getExpenditureByDate(String date) async {

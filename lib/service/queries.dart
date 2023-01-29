@@ -197,6 +197,14 @@ class Query {
     ORDER BY resolvedData.payment_datetime DESC;
   ''';
 
+  static String didTransactionOccurQuery = '''
+    ${generateRecursionQuery('end_date')}
+     
+     SELECT * FROM resolvedData 
+     WHERE strftime('%Y-%m-%d', payment_datetime) = ?
+     LIMIT 1;
+  ''';
+
   String overallPieDataQuery() {
     '''
       SELECT SUM(e.price) as amount,
