@@ -26,6 +26,12 @@ void main() async {
 
   AppRepository appRepo = AppRepository(dbClient);
 
+  var a = DateTime(2023, 1, 1);
+
+  var b = DateTime(2023, 1, 4);
+
+  print('${a.difference(b).inDays}');
+
   // DateTime date = DateTime(2019, 02);
   //
   // var b = Budget(date.toIso8601String(), 323);

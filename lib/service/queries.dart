@@ -186,6 +186,17 @@ class Query {
     ''';
   }
 
+  static String expenditureByDateQuery = '''
+    ${Query.generateRecursionQuery('end_date')}
+    SELECT resolvedData.*, 
+           bill_type.id AS bill_type, 
+           bill_type.name AS bill_name,
+           bill_type.image AS bill_image
+    FROM resolvedData JOIN bill_type ON resolvedData.bill_type = bill_type.id
+    WHERE strftime('%Y-%m-%d', payment_datetime) = ?
+    ORDER BY resolvedData.payment_datetime DESC;
+  ''';
+
   String overallPieDataQuery() {
     '''
       SELECT SUM(e.price) as amount,

@@ -95,10 +95,10 @@ class DatabaseClient {
   }
 
   Future<int?> getYearOfFirstBudget() async {
-    // var result =
-    //     await _db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
-    //        FROM budget ORDER BY date LIMIT 1''');
-    // if (result.isNotEmpty) return Sqflite.firstIntValue(result);
+    var result =
+        await _db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
+           FROM budget ORDER BY date LIMIT 1''');
+    if (result.isNotEmpty) return Sqflite.firstIntValue(result);
     return null;
   }
 
@@ -152,20 +152,16 @@ class DatabaseClient {
   }
 
   Future<List<Bill>> getExpenditureByDate(String date) async {
-    // var result = await _db.rawQuery('''
-    //   SELECT e.id as eid,
-    //         e.bill AS ebill,
-    //         e.description as edesc,
-    //         e.payment_type as epay,
-    //         e.price as eprice, e.date as edate,
-    //         e.priority as epri,
-    //         p.id as pid, p.name as pname, p.image as pimage
-    //   FROM expenditure e
-    //   JOIN bill_type p
-    //   ON e.bill_type_id = p.id WHERE strftime('%Y-%m-%d', edate) = ? ORDER BY e.date DESC;
-    // ''', [date]);
-    //return result.map((e) => Bill.fromMap(e)).toList();
-    return [];
+    var result = await _db.rawQuery(Query.expenditureByDateQuery, [date]);
+    return result.map((record) {
+      Map<String, dynamic> modified = Map.from(record);
+      modified["type"] = {
+        "bill_type": record["bill_type"],
+        "bill_name": record["bill_name"],
+        "bill_image": record["bill_image"]
+      };
+      return Bill.fromJson(modified);
+    }).toList();
   }
 
   Future<List<PieData>> getPieData(String format, String date) async {
