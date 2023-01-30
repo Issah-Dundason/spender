@@ -105,7 +105,7 @@ class _BillViewState extends State<BillView> {
               listener: (bloc, state) {
                 if (state.processingState == ProcessingState.done) {
                   _showSnackBar("Entry saved");
-                  if(widget.bill != null) Navigator.of(context).pop();
+                  if (widget.bill != null) Navigator.of(context).pop();
                   _clearContent();
                 }
               },
@@ -468,12 +468,15 @@ class _BillViewState extends State<BillView> {
       if (_selectedRecurrence == Pattern.once) {
         _endDate = null;
       }
+
+      if (_selectedRecurrence != Pattern.once) {
+        _endDate = _selectedDate.add(const Duration(days: 365));
+      }
+
       if (widget.bill?.endDate != null) {
         _endDate = DateTime.parse(widget.bill!.endDate as String);
       }
-      if(_selectedRecurrence != Pattern.once) {
-        _endDate = _selectedDate.add(const Duration(days: 365));
-      }
+
     });
   }
 
@@ -548,6 +551,9 @@ class _BillViewState extends State<BillView> {
     var bill = _billController.value.text;
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
+
+    print("h: ${_hasMadeAChange()}");
+
     if (!_hasMadeAChange()) {
       await showDialog(
           context: context,
@@ -556,23 +562,41 @@ class _BillViewState extends State<BillView> {
               ));
       return;
     }
-    handleRecurrenceStart();
-    // Bill ex = Bill(
-    //     widget.expenditure!.id,
-    //     bill,
-    //     description,
-    //     _paymentType,
-    //     _billType!,
-    //     amount,
-    //     date.toIso8601String(),
-    //     _priority);
-    // context.read<BillBloc>().add(BillUpdateEvent(ex));
+
+    Bill update = widget.bill!.copyWith(
+        id: widget.bill!.id,
+        title: bill,
+        description: description,
+        paymentDateTime: date.toIso8601String(),
+        exceptionId: widget.bill!.exceptionId,
+        amount: amount,
+        isRecurring: widget.bill!.isRecurring,
+        parentId: widget.bill!.parentId,
+        type: _billType,
+        priority: _priority,
+        pattern: _selectedRecurrence,
+        endDate: _endDate?.toIso8601String());
+
+    if (isRecurringAndPatternIsChanged()) {
+      var ans = await updateQuestionAns("This change will modify all future events\nAre you sure?");
+      if(!ans) return;
+      print("I am done");
+    }
   }
 
+  bool isRecurringAndPatternIsChanged() { return widget.bill!.isRecurring
+      && _selectedRecurrence != widget.bill!.pattern; }
+
   bool _hasMadeAChange() {
+    print("${widget.bill!.pattern} : $_selectedRecurrence");
+
     var amount = AppUtils.getActualAmount(_amountController.value.text);
+    print("amount : ${amount != widget.bill!.amount}");
+
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
+
+    print("end: ${ widget.bill!.endDate != _endDate?.toIso8601String()}");
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
     return amount != widget.bill!.amount ||
@@ -586,27 +610,15 @@ class _BillViewState extends State<BillView> {
         widget.bill!.endDate != _endDate?.toIso8601String();
   }
 
-  void handleRecurrenceStart() async {
-    if ((widget.bill!.isGenerated()) || !(widget.bill!.isRecurring)) return;
+  void handleRecurrenceStart() async {}
 
-    if (widget.bill!.pattern == _selectedRecurrence) {
-      var ans = await updateQuestionAns();
-
-      if (ans == true) {
-
-      }
-
-      if (ans == false) {}
-    }
-  }
-
-  Future<dynamic> updateQuestionAns() async {
+  Future<dynamic> updateQuestionAns(String message) async {
     return await showDialog(
       context: context,
       builder: (_) {
         return AlertDialog(
           content:
-              const Text("Should this change be applied to all future bills"),
+               Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(_, true),

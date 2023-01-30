@@ -1,5 +1,7 @@
 import '../../model/bill.dart';
 
+enum UpdateMethod { single, multiple }
+
 abstract class BillEvent {
   const BillEvent();
 }
@@ -12,6 +14,8 @@ class BillSaveEvent extends BillEvent {
 
 class BillUpdateEvent extends BillEvent {
   final Bill expenditure;
+  final UpdateMethod updateMethod;
 
-  const BillUpdateEvent(this.expenditure);
+  const BillUpdateEvent(
+      {required this.expenditure, this.updateMethod = UpdateMethod.single});
 }
