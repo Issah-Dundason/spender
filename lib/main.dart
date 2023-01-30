@@ -30,7 +30,7 @@ void main() async {
 
   var b = DateTime(2023, 1, 4);
 
-  print('${a.difference(b).inDays}');
+  //print('${a.difference(b).inDays}');
 
   // DateTime date = DateTime(2019, 02);
   //

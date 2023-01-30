@@ -105,6 +105,7 @@ class _BillViewState extends State<BillView> {
               listener: (bloc, state) {
                 if (state.processingState == ProcessingState.done) {
                   _showSnackBar("Entry saved");
+                  if(widget.bill != null) Navigator.of(context).pop();
                   _clearContent();
                 }
               },

@@ -91,6 +91,36 @@ class Bill extends Equatable {
       this.exceptionId,
       this.endDate});
 
+  Bill copyWith(
+      {int? id,
+      String? title,
+      BillType? type,
+      Priority? priority,
+      PaymentType? paymentType,
+      String? description,
+      bool? isRecurring,
+      Pattern? pattern,
+      int? parentId,
+      String? paymentDateTime,
+      int? amount,
+      int? exceptionId,
+      String? endDate}) {
+    return Bill(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        type: type ?? this.type,
+        priority: priority ?? this.priority,
+        paymentType: paymentType ?? this.paymentType,
+        description: description ?? this.description,
+        isRecurring: isRecurring ?? this.isRecurring,
+        pattern: pattern ?? this.pattern,
+        parentId: parentId ?? this.parentId,
+        paymentDateTime: paymentDateTime ?? this.paymentDateTime,
+        amount: amount ?? this.amount,
+        exceptionId: exceptionId ?? this.exceptionId,
+        endDate: endDate ?? this.endDate);
+  }
+
   Map<String, dynamic> toNewBillJson() {
     var json = toJson();
     json.remove("id");
@@ -122,5 +152,3 @@ class Bill extends Equatable {
   List<Object?> get props =>
       [id, paymentDateTime, amount, priority, description, paymentType];
 }
-
-
