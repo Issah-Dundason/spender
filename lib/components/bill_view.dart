@@ -410,7 +410,7 @@ class _BillViewState extends State<BillView> {
                               ),
                               const Spacer(),
                               state.processingState == ProcessingState.pending
-                                  ? const CircularProgressIndicator()
+                                  ? const Center(child: CircularProgressIndicator())
                                   : Visibility(
                                       visible: !_showKeypad,
                                       child: ElevatedButton(
@@ -467,16 +467,12 @@ class _BillViewState extends State<BillView> {
       _selectedRecurrence = value!;
       if (_selectedRecurrence == Pattern.once) {
         _endDate = null;
-      }
-
-      if (_selectedRecurrence != Pattern.once) {
-        _endDate = _selectedDate.add(const Duration(days: 365));
+        return;
       }
 
       if (widget.bill?.endDate != null) {
         _endDate = DateTime.parse(widget.bill!.endDate as String);
       }
-
     });
   }
 
@@ -529,7 +525,9 @@ class _BillViewState extends State<BillView> {
           amount: amount,
           isRecurring: true,
           priority: _priority,
-          endDate: _endDate!.toIso8601String(),
+          endDate: _endDate!
+              .add(const Duration(hours: 23, minutes: 59))
+              .toIso8601String(),
           pattern: _selectedRecurrence);
     } else {
       bill = Bill(
@@ -545,23 +543,12 @@ class _BillViewState extends State<BillView> {
     context.read<BillBloc>().add(BillSaveEvent(bill));
   }
 
-  void _update() async {
+  void _update()  async {
     var amount = AppUtils.getActualAmount(_amountController.value.text);
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
-
-    print("h: ${_hasMadeAChange()}");
-
-    if (!_hasMadeAChange()) {
-      await showDialog(
-          context: context,
-          builder: (_) => const AlertDialog(
-                content: Text('No change has been made'),
-              ));
-      return;
-    }
 
     Bill update = widget.bill!.copyWith(
         id: widget.bill!.id,
@@ -577,48 +564,66 @@ class _BillViewState extends State<BillView> {
         pattern: _selectedRecurrence,
         endDate: _endDate?.toIso8601String());
 
-    if (isRecurringAndPatternIsChanged()) {
-      var ans = await updateQuestionAns("This change will modify all future events\nAre you sure?");
-      if(!ans) return;
-      print("I am done");
+    var changedFields = Bill.differentFields(update, widget.bill!);
+
+    if (changedFields.isEmpty) {
+      await showDialog(
+          context: context,
+          builder: (_) => const AlertDialog(
+                content: Text('No change has been made'),
+              ));
+      return;
     }
+
+    if (isRecurringAndPatternIsChanged()) {
+      var ans = await updateQuestionAns(
+          '''This change will modify all future events\nAre you sure?''');
+      if (ans == null || !ans) return;
+      var event = BillUpdateEvent(widget.bill!.paymentDateTime,
+          update,
+          updateMethod: UpdateMethod.multiple);
+      sendEvent(event);
+      return;
+    }
+
+    if(widget.bill!.isRecurring){
+      var ans = await updateQuestionAns('Should future events be updated?');
+      if(ans == null) return;
+
+      if(ans == true) {
+        var event = BillUpdateEvent(widget.bill!.paymentDateTime,
+            update,
+            updateMethod: UpdateMethod.multiple);
+        sendEvent(event);
+        return;
+      }
+
+      var event = BillUpdateEvent(widget.bill!.paymentDateTime,
+          update);
+      sendEvent(event);
+      return;
+    }
+
+    var event = BillUpdateEvent(widget.bill!.paymentDateTime,
+        update);
+    sendEvent(event);
   }
 
-  bool isRecurringAndPatternIsChanged() { return widget.bill!.isRecurring
-      && _selectedRecurrence != widget.bill!.pattern; }
-
-  bool _hasMadeAChange() {
-    print("${widget.bill!.pattern} : $_selectedRecurrence");
-
-    var amount = AppUtils.getActualAmount(_amountController.value.text);
-    print("amount : ${amount != widget.bill!.amount}");
-
-    var description = _descriptionController.value.text;
-    var bill = _billController.value.text;
-
-    print("end: ${ widget.bill!.endDate != _endDate?.toIso8601String()}");
-    var date = DateTime(_selectedDate.year, _selectedDate.month,
-        _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
-    return amount != widget.bill!.amount ||
-        description != widget.bill!.description ||
-        bill != widget.bill!.title ||
-        date != DateTime.parse(widget.bill!.paymentDateTime) ||
-        widget.bill!.type != _billType! ||
-        widget.bill!.paymentType != _paymentType ||
-        widget.bill!.priority != _priority ||
-        widget.bill!.pattern != _selectedRecurrence ||
-        widget.bill!.endDate != _endDate?.toIso8601String();
+  void sendEvent(BillUpdateEvent event) {
+    context.read<BillBloc>().add(event);
   }
 
-  void handleRecurrenceStart() async {}
+  bool isRecurringAndPatternIsChanged() {
+    return widget.bill!.isRecurring &&
+        _selectedRecurrence != widget.bill!.pattern;
+  }
 
   Future<dynamic> updateQuestionAns(String message) async {
     return await showDialog(
       context: context,
       builder: (_) {
         return AlertDialog(
-          content:
-               Text(message),
+          content: Text(message, textAlign: TextAlign.center,),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(_, true),
@@ -694,7 +699,8 @@ class _BillViewState extends State<BillView> {
         initialDate: _endDate ?? _selectedDate.add(const Duration(days: 365)),
         firstDate: _selectedDate,
         lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
-    setState(() => _endDate = date ?? _endDate);
+    setState(() => _endDate =
+        date?.add(const Duration(hours: 23, minutes: 59)) ?? _endDate);
   }
 }
 

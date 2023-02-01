@@ -21,7 +21,8 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
 
   _onBillUpdate(BillUpdateEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
-    await appRepo.updateExpenditure(e.expenditure);
-    emitter(const BillingState(processingState: ProcessingState.done));
+    //await appRepo.updateExpenditure(e.bill);
+    //emitter(const BillingState(processingState: ProcessingState.done));
+    print('${e.instanceDate}, ${e.updateMethod}');
   }
 }

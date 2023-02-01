@@ -13,9 +13,10 @@ class BillSaveEvent extends BillEvent {
 }
 
 class BillUpdateEvent extends BillEvent {
-  final Bill expenditure;
+  final String? instanceDate;
+  final Bill update;
   final UpdateMethod updateMethod;
 
-  const BillUpdateEvent(
-      {required this.expenditure, this.updateMethod = UpdateMethod.single});
+  const BillUpdateEvent(this.instanceDate, this.update,
+      {this.updateMethod = UpdateMethod.single});
 }

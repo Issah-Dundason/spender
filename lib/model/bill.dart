@@ -148,6 +148,27 @@ class Bill extends Equatable {
     return id == -1;
   }
 
+  static List<String> differentFields(Bill a, Bill b) {
+
+    var aMap = a.toJson();
+    var bMap = b.toJson();
+
+    var keys = aMap.keys;
+
+    // keys.forEach((element) {
+    //   print('''
+    //     prop: $element
+    //      a: ${aMap[element]}
+    //      b: ${bMap[element]}
+    //   ''');
+    // });
+
+    return keys.fold(<String>[], (prev, curr) {
+      if(aMap[curr] != bMap[curr]) prev.add(curr);
+      return prev;
+    });
+  }
+
   @override
   List<Object?> get props =>
       [id, paymentDateTime, amount, priority, description, paymentType];
