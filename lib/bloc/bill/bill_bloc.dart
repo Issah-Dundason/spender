@@ -12,6 +12,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
   BillBloc({required this.appRepo}) : super(const BillingState()) {
     on<BillSaveEvent>(_onBillSave);
     on<RecurrenceUpdateEvent>(_onRecurrenceUpdate);
+    on<NonRecurringUpdateEvent>(_onNonRecurrenceUpdate);
   }
 
   _onBillSave(BillSaveEvent e, Emitter<BillingState> emitter) async {
@@ -20,7 +21,15 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
-  _onRecurrenceUpdate(RecurrenceUpdateEvent e, Emitter<BillingState> emitter) async {
+  _onNonRecurrenceUpdate(
+      NonRecurringUpdateEvent e, Emitter<BillingState> emitter) async {
+    emitter(const BillingState(processingState: ProcessingState.pending));
+    await appRepo.updateExpenditure(e.update.id!, e.update.toNewBillJson());
+    emitter(const BillingState(processingState: ProcessingState.done));
+  }
+
+  _onRecurrenceUpdate(
+      RecurrenceUpdateEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
 
     if (e.updateMethod == UpdateMethod.single && e.update.isGenerated()) {
@@ -62,7 +71,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
   }
 
   void updateSingleInstance(String instanceDate, Bill update) {
-    if(update.exceptionId != null) {
+    if (update.exceptionId != null) {
       var exceptJson = update.toExceptionJson(instanceDate);
       exceptJson[Bill.columnExceptionParentId] = update.id;
       appRepo.updateException(update.exceptionId!, exceptJson);

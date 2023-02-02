@@ -20,3 +20,9 @@ class RecurrenceUpdateEvent extends BillEvent {
   const RecurrenceUpdateEvent(this.instanceDate, this.update,
       {this.updateMethod = UpdateMethod.single});
 }
+
+class NonRecurringUpdateEvent extends BillEvent {
+  final Bill update;
+
+  NonRecurringUpdateEvent(this.update);
+}

@@ -615,11 +615,11 @@ class _BillViewState extends State<BillView> {
       return;
     }
 
-    //var event = BillUpdateEvent(widget.bill!.paymentDateTime, update);
-    //sendEvent(event);
+    var event = NonRecurringUpdateEvent(update);
+    sendEvent(event);
   }
 
-  void sendEvent(RecurrenceUpdateEvent event) {
+  void sendEvent(BillEvent event) {
     context.read<BillBloc>().add(event);
   }
 

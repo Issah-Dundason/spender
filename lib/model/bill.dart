@@ -194,13 +194,22 @@ class Bill extends Equatable {
 
     return keys.fold(<String>[], (prev, curr) {
       if (curr == columnEndDate || curr == columnPaymentDate) {
+        if (aMap[curr] == null && bMap[curr] == null) return prev;
+
+        if (aMap[curr] == null && bMap[curr] != null ||
+            bMap[curr] == null && aMap[curr] != null) {
+          prev.add(curr);
+          return prev;
+        }
+
         if (DateTime.parse(aMap[curr]).toIso8601String() !=
             DateTime.parse(bMap[curr]).toIso8601String()) {
           prev.add(curr);
         }
-      } else {
-        if (aMap[curr] != bMap[curr]) prev.add(curr);
+
+        return prev;
       }
+      if (aMap[curr] != bMap[curr]) prev.add(curr);
       return prev;
     });
   }
