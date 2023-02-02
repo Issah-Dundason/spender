@@ -11,7 +11,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
 
   BillBloc({required this.appRepo}) : super(const BillingState()) {
     on<BillSaveEvent>(_onBillSave);
-    on<BillUpdateEvent>(_onBillUpdate);
+    on<RecurrenceUpdateEvent>(_onRecurrenceUpdate);
   }
 
   _onBillSave(BillSaveEvent e, Emitter<BillingState> emitter) async {
@@ -20,19 +20,19 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
-  _onBillUpdate(BillUpdateEvent e, Emitter<BillingState> emitter) async {
+  _onRecurrenceUpdate(RecurrenceUpdateEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
 
     if (e.updateMethod == UpdateMethod.single && e.update.isGenerated()) {
-      updateSingleGeneratedInstance(e.instanceDate!, e.update);
+      updateSingleGeneratedInstance(e.instanceDate, e.update);
     } else if (e.updateMethod == UpdateMethod.multiple &&
         e.update.isGenerated()) {
-      updateMultipleGeneratedInstance(e.instanceDate!, e.update);
+      updateMultipleGeneratedInstance(e.instanceDate, e.update);
     } else if (e.updateMethod == UpdateMethod.single &&
         !e.update.isGenerated()) {
-      updateSingleInstance(e.update);
+      updateSingleInstance(e.instanceDate, e.update);
     } else {
-      updateMultiple(e.update);
+      updateMultiple(e.instanceDate, e.update);
     }
 
     emitter(const BillingState(processingState: ProcessingState.done));
@@ -61,9 +61,22 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     await appRepo.saveExpenditure(update);
   }
 
-  void updateSingleInstance(Bill update) {
-
+  void updateSingleInstance(String instanceDate, Bill update) {
+    if(update.exceptionId != null) {
+      var exceptJson = update.toExceptionJson(instanceDate);
+      exceptJson[Bill.columnExceptionParentId] = update.id;
+      appRepo.updateException(update.exceptionId!, exceptJson);
+      appRepo.deleteParentExceptionAfterDate(update.id!, update.endDate!);
+      return;
+    }
+    var exceptJson = update.toExceptionJson(instanceDate);
+    exceptJson[Bill.columnExceptionParentId] = update.id;
+    appRepo.createException(exceptJson);
+    appRepo.deleteParentExceptionAfterDate(update.id!, update.endDate!);
   }
 
-  void updateMultiple(Bill update) {}
+  void updateMultiple(String instanceDate, Bill update) {
+    appRepo.updateExpenditure(update.id!, update.toNewBillJson());
+    appRepo.deleteParentExceptionAfterDate(update.id!, update.endDate!);
+  }
 }

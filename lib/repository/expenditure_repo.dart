@@ -53,8 +53,8 @@ class AppRepository {
     return _dbClient.getBillAtWithLimit(dateTime, limit);
   }
 
-  Future updateExpenditure(Bill expenditure) {
-    return _dbClient.updateExpenditure(expenditure);
+  Future updateExpenditure(int id, Map<String, dynamic> expenditure) {
+    return _dbClient.updateExpenditure(id, expenditure);
   }
 
   Future<List<PieData>> getPieData(String format, String date) {

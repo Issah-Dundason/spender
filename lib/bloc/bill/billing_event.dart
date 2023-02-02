@@ -12,11 +12,11 @@ class BillSaveEvent extends BillEvent {
   const BillSaveEvent(this.expenditure);
 }
 
-class BillUpdateEvent extends BillEvent {
-  final String? instanceDate;
+class RecurrenceUpdateEvent extends BillEvent {
+  final String instanceDate;
   final Bill update;
   final UpdateMethod updateMethod;
 
-  const BillUpdateEvent(this.instanceDate, this.update,
+  const RecurrenceUpdateEvent(this.instanceDate, this.update,
       {this.updateMethod = UpdateMethod.single});
 }

@@ -87,9 +87,9 @@ class DatabaseClient {
     await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
   }
 
-  Future updateExpenditure(Bill expenditure) async {
-    await _db.update("expenditure", expenditure.toJson(),
-        where: "id = ?", whereArgs: [expenditure.id]);
+  Future updateExpenditure(int id, Map<String, dynamic> expenditure) async {
+    await _db
+        .update("expenditure", expenditure, where: "id = ?", whereArgs: [id]);
   }
 
   Future<void> createException(Map<String, dynamic> json) async {
@@ -137,6 +137,7 @@ class DatabaseClient {
 
   Future<List<Bill>> getExpenditureByDate(String date) async {
     var result = await _db.rawQuery(Query.expenditureByDateQuery, [date]);
+
     return result.map((record) {
       Map<String, dynamic> modified = Map.from(record);
       modified["type"] = {

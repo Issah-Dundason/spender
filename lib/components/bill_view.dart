@@ -494,6 +494,8 @@ class _BillViewState extends State<BillView> {
     setState(() {
       _selectedDate = date ?? _selectedDate;
       if (_selectedRecurrence == Pattern.once) return;
+      _endDate = DateUtils.dateOnly(_selectedDate)
+          .add(const Duration(days: 30, hours: 23, minutes: 59));
       if (widget.bill == null || date == null) return;
       if (widget.bill?.endDate == null) return;
 
@@ -591,7 +593,7 @@ class _BillViewState extends State<BillView> {
       var ans = await updateQuestionAns(
           '''This change will modify all future events\nAre you sure?''');
       if (ans == null || !ans) return;
-      var event = BillUpdateEvent(widget.bill!.paymentDateTime, update,
+      var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update,
           updateMethod: UpdateMethod.multiple);
       sendEvent(event);
       return;
@@ -602,22 +604,22 @@ class _BillViewState extends State<BillView> {
       if (ans == null) return;
 
       if (ans == true) {
-        var event = BillUpdateEvent(widget.bill!.paymentDateTime, update,
+        var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update,
             updateMethod: UpdateMethod.multiple);
         sendEvent(event);
         return;
       }
 
-      var event = BillUpdateEvent(widget.bill!.paymentDateTime, update);
+      var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update);
       sendEvent(event);
       return;
     }
 
-    var event = BillUpdateEvent(widget.bill!.paymentDateTime, update);
-    sendEvent(event);
+    //var event = BillUpdateEvent(widget.bill!.paymentDateTime, update);
+    //sendEvent(event);
   }
 
-  void sendEvent(BillUpdateEvent event) {
+  void sendEvent(RecurrenceUpdateEvent event) {
     context.read<BillBloc>().add(event);
   }
 

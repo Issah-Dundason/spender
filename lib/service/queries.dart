@@ -132,7 +132,12 @@ class Query {
             FROM recurringData r
             LEFT JOIN expenditure_exception ed
             ON strftime('%Y-%m-%d', r.payment_datetime) == ed.instance_date 
-            AND r.parent_id = ed.expenditure_id
+            AND CASE 
+                  WHEN r.id == -1
+                         THEN r.parent_id
+                  ELSE r.id 
+                  END   
+            = ed.expenditure_id
       )
   ''';
 
