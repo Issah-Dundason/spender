@@ -206,7 +206,7 @@ class DatabaseClient {
         where: 'id = ?', whereArgs: [exceptionId]);
   }
 
-  void updateParentDate(int parentId, String endDate) async {
+  void deleteParentExceptionAfterDate(int parentId, String endDate) async {
     await _db.update('expenditure', {Bill.columnEndDate: endDate},
         where: 'id = ?', whereArgs: [parentId]);
     await _db.delete('expenditure_exception',

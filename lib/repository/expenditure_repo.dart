@@ -89,7 +89,11 @@ class AppRepository {
    await _dbClient.createException(json);
   }
 
-  void updateParentDate(int parentId, String endDate)  {
-  _dbClient.updateParentDate(parentId, endDate);
+  void deleteParentExceptionAfterDate(int parentId, String endDate)  {
+  _dbClient.deleteParentExceptionAfterDate(parentId, endDate);
+  }
+
+  void updateParentEndDate(int id, String endDate) async {
+
   }
 }

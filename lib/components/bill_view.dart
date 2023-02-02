@@ -410,7 +410,8 @@ class _BillViewState extends State<BillView> {
                               ),
                               const Spacer(),
                               state.processingState == ProcessingState.pending
-                                  ? const Center(child: CircularProgressIndicator())
+                                  ? const Center(
+                                      child: CircularProgressIndicator())
                                   : Visibility(
                                       visible: !_showKeypad,
                                       child: ElevatedButton(
@@ -490,7 +491,20 @@ class _BillViewState extends State<BillView> {
         initialDate: _selectedDate,
         firstDate: DateTime(199),
         lastDate: DateTime.now());
-    setState(() => _selectedDate = date ?? _selectedDate);
+    setState(() {
+      _selectedDate = date ?? _selectedDate;
+      if (_selectedRecurrence == Pattern.once) return;
+      if (widget.bill == null || date == null) return;
+      if (widget.bill?.endDate == null) return;
+
+      var start =
+          DateUtils.dateOnly(DateTime.parse(widget.bill!.paymentDateTime));
+      var end = DateUtils.dateOnly(DateTime.parse(widget.bill!.endDate!));
+      var days = end.difference(start).inDays;
+
+      _endDate = DateUtils.dateOnly(_selectedDate)
+          .add(Duration(days: days, hours: 23, minutes: 59));
+    });
   }
 
   void _onAmountChanged(String input) {
@@ -516,7 +530,6 @@ class _BillViewState extends State<BillView> {
     Bill bill;
 
     if (_selectedRecurrence != Pattern.once) {
-      print(_endDate!.toIso8601String());
       bill = Bill(
           title: title,
           description: description,
@@ -526,8 +539,7 @@ class _BillViewState extends State<BillView> {
           amount: amount,
           isRecurring: true,
           priority: _priority,
-          endDate: _endDate!
-              .toIso8601String(),
+          endDate: _endDate!.toIso8601String(),
           pattern: _selectedRecurrence);
     } else {
       bill = Bill(
@@ -543,14 +555,12 @@ class _BillViewState extends State<BillView> {
     context.read<BillBloc>().add(BillSaveEvent(bill));
   }
 
-  void _update()  async {
+  void _update() async {
     var amount = AppUtils.getActualAmount(_amountController.value.text);
     var description = _descriptionController.value.text;
     var bill = _billController.value.text;
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
-
-    print(date.toIso8601String());
 
     Bill update = widget.bill!.copyWith(
         id: widget.bill!.id,
@@ -568,8 +578,6 @@ class _BillViewState extends State<BillView> {
 
     var changedFields = Bill.differentFields(update, widget.bill!);
 
-    //print(changedFields);
-
     if (changedFields.isEmpty) {
       await showDialog(
           context: context,
@@ -583,38 +591,33 @@ class _BillViewState extends State<BillView> {
       var ans = await updateQuestionAns(
           '''This change will modify all future events\nAre you sure?''');
       if (ans == null || !ans) return;
-      var event = BillUpdateEvent(widget.bill!.paymentDateTime,
-          update,
+      var event = BillUpdateEvent(widget.bill!.paymentDateTime, update,
           updateMethod: UpdateMethod.multiple);
       sendEvent(event);
       return;
     }
 
-    if(widget.bill!.isRecurring){
+    if (widget.bill!.isRecurring) {
       var ans = await updateQuestionAns('Should future events be updated?');
-      if(ans == null) return;
+      if (ans == null) return;
 
-      if(ans == true) {
-        var event = BillUpdateEvent(widget.bill!.paymentDateTime,
-            update,
+      if (ans == true) {
+        var event = BillUpdateEvent(widget.bill!.paymentDateTime, update,
             updateMethod: UpdateMethod.multiple);
         sendEvent(event);
         return;
       }
 
-      var event = BillUpdateEvent(widget.bill!.paymentDateTime,
-          update);
+      var event = BillUpdateEvent(widget.bill!.paymentDateTime, update);
       sendEvent(event);
       return;
     }
 
-    var event = BillUpdateEvent(widget.bill!.paymentDateTime,
-        update);
+    var event = BillUpdateEvent(widget.bill!.paymentDateTime, update);
     sendEvent(event);
   }
 
   void sendEvent(BillUpdateEvent event) {
-    print('called 1');
     context.read<BillBloc>().add(event);
   }
 
@@ -628,7 +631,10 @@ class _BillViewState extends State<BillView> {
       context: context,
       builder: (_) {
         return AlertDialog(
-          content: Text(message, textAlign: TextAlign.center,),
+          content: Text(
+            message,
+            textAlign: TextAlign.center,
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(_, true),
@@ -701,7 +707,7 @@ class _BillViewState extends State<BillView> {
   void _onEndDate() async {
     var date = await showDatePicker(
         context: context,
-        initialDate: _endDate ?? _selectedDate.add(const Duration(days: 365)),
+        initialDate: _endDate ?? _selectedDate.add(const Duration(days: 30)),
         firstDate: _selectedDate,
         lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
     setState(() => _endDate =

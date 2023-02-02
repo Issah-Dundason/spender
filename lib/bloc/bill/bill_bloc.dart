@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:spender/bloc/bill/billing_event.dart';
 import 'package:spender/model/bill.dart';
 
@@ -41,19 +42,28 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     if (update.exceptionId != null) {
       var exceptJson = update.toExceptionJson(instanceDate);
       appRepo.updateException(update.exceptionId!, exceptJson);
-      appRepo.updateParentDate(update.parentId!, update.endDate!);
+      appRepo.deleteParentExceptionAfterDate(update.parentId!, update.endDate!);
       return;
     }
     var exceptJson = update.toExceptionJson(instanceDate);
     appRepo.createException(exceptJson);
-    appRepo.updateParentDate(update.parentId!, update.endDate!);
+    appRepo.deleteParentExceptionAfterDate(update.parentId!, update.endDate!);
   }
 
-  void updateMultipleGeneratedInstance(String instanceDate, Bill update) {
+  void updateMultipleGeneratedInstance(String instanceDate, Bill update) async {
+    var parentEndDate = DateUtils.dateOnly(DateTime.parse(instanceDate))
+        .subtract(const Duration(days: 1));
+    parentEndDate = parentEndDate.add(const Duration(hours: 23, minutes: 59));
 
+    appRepo.deleteParentExceptionAfterDate(
+        update.parentId!, parentEndDate.toIso8601String());
+
+    await appRepo.saveExpenditure(update);
   }
 
-  void updateSingleInstance(Bill update) {}
+  void updateSingleInstance(Bill update) {
+
+  }
 
   void updateMultiple(Bill update) {}
 }
