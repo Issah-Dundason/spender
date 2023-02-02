@@ -92,6 +92,10 @@ class DatabaseClient {
         where: "id = ?", whereArgs: [expenditure.id]);
   }
 
+  Future<void> createException(Map<String, dynamic> json) async {
+    await _db.insert('expenditure_exception', json);
+  }
+
   Future<int?> getYearOfFirstBudget() async {
     var result =
         await _db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
@@ -188,12 +192,27 @@ class DatabaseClient {
 
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
     String dateTime = DateTime.now().toIso8601String();
-      var result =
-          await _db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
-      return result
-          .map((record) => MonthSpending(
-              int.parse(record["month"] as String), record["amount"] as int))
-          .toList();
+    var result =
+        await _db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
+    return result
+        .map((record) => MonthSpending(
+            int.parse(record["month"] as String), record["amount"] as int))
+        .toList();
+  }
+
+  Future<void> updateException(
+      int exceptionId, Map<String, dynamic> json) async {
+    await _db.update('expenditure_exception', json,
+        where: 'id = ?', whereArgs: [exceptionId]);
+  }
+
+  void updateParentDate(int parentId, String endDate) async {
+    await _db.update('expenditure', {Bill.columnEndDate: endDate},
+        where: 'id = ?', whereArgs: [parentId]);
+    await _db.delete('expenditure_exception',
+        where:
+            '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
+        whereArgs: [parentId, endDate]);
   }
 }
 

@@ -162,6 +162,8 @@ class Bill extends Equatable {
     }
     json[columnExceptionParentId] = json[columnParentId];
     json[columnExceptionInstanceDate] = exceptionDate;
+    json[columnBillType] = json[columnBillTypeGenerated];
+    json.remove(columnBillTypeGenerated);
     json.remove(columnParentId);
     return json;
   }

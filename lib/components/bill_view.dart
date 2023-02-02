@@ -516,6 +516,7 @@ class _BillViewState extends State<BillView> {
     Bill bill;
 
     if (_selectedRecurrence != Pattern.once) {
+      print(_endDate!.toIso8601String());
       bill = Bill(
           title: title,
           description: description,
@@ -526,7 +527,6 @@ class _BillViewState extends State<BillView> {
           isRecurring: true,
           priority: _priority,
           endDate: _endDate!
-              .add(const Duration(hours: 23, minutes: 59))
               .toIso8601String(),
           pattern: _selectedRecurrence);
     } else {

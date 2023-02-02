@@ -21,8 +21,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
 
   _onBillUpdate(BillUpdateEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
-   // e.update.isGenerated();
-    print('called : ${e.update.isGenerated()}');
+
     if (e.updateMethod == UpdateMethod.single && e.update.isGenerated()) {
       updateSingleGeneratedInstance(e.instanceDate!, e.update);
     } else if (e.updateMethod == UpdateMethod.multiple &&
@@ -34,22 +33,25 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     } else {
       updateMultiple(e.update);
     }
+
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
-  void updateSingleGeneratedInstance(String instanceDate, Bill update) {
+  void updateSingleGeneratedInstance(String instanceDate, Bill update) async {
     if (update.exceptionId != null) {
       var exceptJson = update.toExceptionJson(instanceDate);
-      print(exceptJson);
-      appRepo.updateException(update.exceptionId!, update.toJson());
+      appRepo.updateException(update.exceptionId!, exceptJson);
+      appRepo.updateParentDate(update.parentId!, update.endDate!);
       return;
     }
     var exceptJson = update.toExceptionJson(instanceDate);
-    print(exceptJson);
-    appRepo.createException(update.toJson());
+    appRepo.createException(exceptJson);
+    appRepo.updateParentDate(update.parentId!, update.endDate!);
   }
 
-  void updateMultipleGeneratedInstance(String instanceDate, Bill update) {}
+  void updateMultipleGeneratedInstance(String instanceDate, Bill update) {
+
+  }
 
   void updateSingleInstance(Bill update) {}
 

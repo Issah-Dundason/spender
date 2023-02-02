@@ -81,7 +81,15 @@ class AppRepository {
     return _dbClient.saveExpenditure(expenditure.toNewBillJson());
   }
 
-  void updateException(int exceptionId, Map<String, dynamic> json) {}
+  void updateException(int exceptionId, Map<String, dynamic> json) async {
+    await _dbClient.updateException(exceptionId, json);
+  }
 
-  void createException(Map<String, dynamic> json) {}
+  void createException(Map<String, dynamic> json) async {
+   await _dbClient.createException(json);
+  }
+
+  void updateParentDate(int parentId, String endDate)  {
+  _dbClient.updateParentDate(parentId, endDate);
+  }
 }
