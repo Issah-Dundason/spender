@@ -39,6 +39,22 @@ bool isRecurringFromJson(int value) {
 
 @JsonSerializable()
 class Bill extends Equatable {
+  static const String columnID = 'id';
+  static const String columnBillType = 'bill_type';
+  static const String columnBillTypeGenerated = 'type';
+  static const String columnPaymentType = 'payment_type';
+  static const String columnIsRecurring = 'is_recurring';
+  static const String columnPaymentDate = 'payment_datetime';
+  static const String columnParentId = 'parent_id';
+  static const String columnExceptionParentId = 'expenditure_id';
+  static const String columnExceptionId = 'exception_id';
+  static const String columnEndDate = 'end_date';
+  static const String columnAmount = 'amount';
+  static const String columnDeleted = 'deleted';
+  static const String columnPriority = 'priority';
+  static const String columnPattern = 'pattern';
+  static const String columnExceptionInstanceDate = 'instance_date';
+
   final int? id;
 
   final String title;
@@ -48,13 +64,13 @@ class Bill extends Equatable {
 
   final Priority priority;
 
-  @JsonKey(name: "payment_type")
+  @JsonKey(name: columnIsRecurring)
   final PaymentType paymentType;
 
   final String? description;
 
   @JsonKey(
-      name: "is_recurring",
+      name: columnIsRecurring,
       toJson: isRecurringToJson,
       fromJson: isRecurringFromJson)
   final bool isRecurring;
@@ -62,18 +78,18 @@ class Bill extends Equatable {
   @JsonKey(toJson: patternToInt, fromJson: patternFromIndex)
   final Pattern pattern;
 
-  @JsonKey(name: "parent_id")
+  @JsonKey(name: columnParentId)
   final int? parentId;
 
-  @JsonKey(name: "payment_datetime")
+  @JsonKey(name: columnPaymentDate)
   final String paymentDateTime;
 
   final int amount;
 
-  @JsonKey(name: "exception_id")
+  @JsonKey(name: columnExceptionId)
   final int? exceptionId;
 
-  @JsonKey(name: "end_date")
+  @JsonKey(name: columnEndDate)
   final String? endDate;
 
   const Bill(
@@ -123,10 +139,30 @@ class Bill extends Equatable {
 
   Map<String, dynamic> toNewBillJson() {
     var json = toJson();
-    json.remove("id");
-    json.remove('exception_id');
-    json["bill_type"] = json["type"];
-    json.remove("type");
+    json.remove(columnID);
+    json.remove(columnExceptionId);
+    json[columnBillType] = json[columnBillTypeGenerated];
+    json.remove(columnBillTypeGenerated);
+    return json;
+  }
+
+  Map<String, dynamic> toExceptionJson(String instanceDate) {
+    DateTime date = DateTime.parse(instanceDate);
+    var exceptionDate = DateFormat('yyyy-MM-dd').format(date);
+    var json = toJson();
+    var exclusion = [
+      columnID,
+      columnExceptionId,
+      columnIsRecurring,
+      columnPattern,
+      columnEndDate
+    ];
+    for (var key in exclusion) {
+      json.remove(key);
+    }
+    json[columnExceptionParentId] = json[columnParentId];
+    json[columnExceptionInstanceDate] = exceptionDate;
+    json.remove(columnParentId);
     return json;
   }
 
@@ -149,27 +185,26 @@ class Bill extends Equatable {
   }
 
   static List<String> differentFields(Bill a, Bill b) {
-
     var aMap = a.toJson();
     var bMap = b.toJson();
 
     var keys = aMap.keys;
 
-    // keys.forEach((element) {
-    //   print('''
-    //     prop: $element
-    //      a: ${aMap[element]}
-    //      b: ${bMap[element]}
-    //   ''');
-    // });
-
     return keys.fold(<String>[], (prev, curr) {
-      if(aMap[curr] != bMap[curr]) prev.add(curr);
+      if (curr == columnEndDate || curr == columnPaymentDate) {
+        if (DateTime.parse(aMap[curr]).toIso8601String() !=
+            DateTime.parse(bMap[curr]).toIso8601String()) {
+          prev.add(curr);
+        }
+      } else {
+        if (aMap[curr] != bMap[curr]) prev.add(curr);
+      }
       return prev;
     });
   }
 
   @override
-  List<Object?> get props =>
-      [id, paymentDateTime, amount, priority, description, paymentType];
+  List<Object?> get props {
+    return [id, paymentDateTime, amount, priority, description, paymentType];
+  }
 }

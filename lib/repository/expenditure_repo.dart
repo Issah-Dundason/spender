@@ -65,7 +65,6 @@ class AppRepository {
     return _dbClient.getOverallPieData();
   }
 
-
   Future deleteRepository(int id) {
     return _dbClient.deleteExpenditure(id);
   }
@@ -81,4 +80,8 @@ class AppRepository {
   Future saveExpenditure(Bill expenditure) {
     return _dbClient.saveExpenditure(expenditure.toNewBillJson());
   }
+
+  void updateException(int exceptionId, Map<String, dynamic> json) {}
+
+  void createException(Map<String, dynamic> json) {}
 }

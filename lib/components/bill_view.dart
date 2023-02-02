@@ -550,6 +550,8 @@ class _BillViewState extends State<BillView> {
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
 
+    print(date.toIso8601String());
+
     Bill update = widget.bill!.copyWith(
         id: widget.bill!.id,
         title: bill,
@@ -565,6 +567,8 @@ class _BillViewState extends State<BillView> {
         endDate: _endDate?.toIso8601String());
 
     var changedFields = Bill.differentFields(update, widget.bill!);
+
+    //print(changedFields);
 
     if (changedFields.isEmpty) {
       await showDialog(
@@ -610,6 +614,7 @@ class _BillViewState extends State<BillView> {
   }
 
   void sendEvent(BillUpdateEvent event) {
+    print('called 1');
     context.read<BillBloc>().add(event);
   }
 
