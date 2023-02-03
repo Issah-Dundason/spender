@@ -132,7 +132,7 @@ class _BillViewState extends State<BillView> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Text(
-                                                DateFormat('dd/MM/yy')
+                                                DateFormat('dd MMM, yy')
                                                     .format(_selectedDate),
                                                 style:
                                                 const TextStyle(fontSize: 20),
@@ -367,7 +367,7 @@ class _BillViewState extends State<BillView> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  DateFormat('dd/MM/yy').format(
+                                                  DateFormat('dd MMM, yy').format(
                                                       _endDate ??
                                                           _selectedDate.add(
                                                               const Duration(

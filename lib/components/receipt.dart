@@ -27,24 +27,14 @@ class Receipt extends StatelessWidget {
               Container(
                 height: 50,
                 color: Theme.of(context).colorScheme.secondary,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      'Transaction',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    Text(
-                      'Number #${expenditure.id}',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSecondary),
-                    )
-                  ],
+                child: Center(
+                  child: Text(
+                    'Transaction',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSecondary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
               //body
