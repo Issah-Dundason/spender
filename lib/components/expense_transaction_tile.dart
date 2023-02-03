@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart.';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -40,8 +39,8 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
       color: widget.tileColor,
       elevation: 0,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(09),
-          ),
+        borderRadius: BorderRadius.circular(09),
+      ),
       clipBehavior: Clip.antiAlias,
       child: GestureDetector(
         onTap: showUpdate,
@@ -49,15 +48,35 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
         child: Stack(
           children: [
             Positioned(
-              right: 3,
-                child: IconButton(icon:  Icon(Icons.close, color: widget.iconColor,), onPressed: () async {
-              var result = await showDialog(
-                  context: context,
-                  builder: (_) => buildDeleteDialog(_));
-              if (result != true) return;
-              if (!mounted) return;
-              selfDestruct();
-            },)),
+                right: 3,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: widget.iconColor,
+                  ),
+                  onPressed: () async {
+                    var result = await showDialog(
+                        context: context, builder: (_) => buildDeleteDialog(_));
+                    if (result != true) return;
+                    if (!mounted) return;
+                    selfDestruct();
+                  },
+                )),
+            Positioned(
+                right: 20,
+                bottom: 11,
+                child: RichText(
+                  textWidthBasis: TextWidthBasis.longestLine,
+                  text: TextSpan(
+                      text: '₵',
+                      style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                          fontSize: 17,
+                          color: Theme.of(context).colorScheme.secondary),
+                  children: [
+
+                    TextSpan(text:NumberFormat.compact().format(widget.expenditure.cash), style: const TextStyle(fontSize: 17, color: Colors.black) )
+                  ]),
+                )),
             Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -90,38 +109,46 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                           child: Text(
                             overflow: TextOverflow.clip,
                             'Bill: ${widget.expenditure.title}',
-                            style: TextStyle(fontSize: 16, color: widget.textColor),
+                            style: TextStyle(
+                                fontSize: 16, color: widget.textColor),
                           ),
                         ),
                         const SizedBox(
-                          height: 15,
+                          height: 10,
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                overflow: TextOverflow.clip,
-                                widget.expenditure.formattedDate,
-                                style:
-                                    TextStyle(fontSize: 16, color: widget.textColor),
-                              ),
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  '₵${NumberFormat().format(widget.expenditure.cash)}',
-                                  overflow: TextOverflow.clip,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: widget.textColor),
+                        Text(
+                          overflow: TextOverflow.clip,
+                          widget.expenditure.formattedDate,
+                          style:
+                              TextStyle(fontSize: 16, color: widget.textColor),
+                        ),
+                        Visibility(
+                            visible: widget.expenditure.isRecurring,
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 10,
                                 ),
-                              ),
-                            ),
-                          ],
-                        )
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.repeat_rounded,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      toBeginningOfSentenceCase(
+                                              widget.expenditure.pattern.name)
+                                          as String,
+                                      style: const TextStyle(fontSize: 16),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ))
                       ],
                     ),
                   ),
