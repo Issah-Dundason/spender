@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
-import '../icons/icons.dart';
 
 class TransactionTile extends StatelessWidget {
   const TransactionTile(

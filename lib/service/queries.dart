@@ -225,4 +225,19 @@ class Query {
     ''';
     return '';
   }
+
+  static String pieQuery(String format, String date) => '''
+    $generateRecursionQuery,
+    secondResolved AS (
+      SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
+    )
+   
+    SELECT SUM(s.amount) as amount,
+           s.bill_type, bp.name as bill_name, bp.image as bill_image,
+           strftime($format, payment_datetime) as date
+     FROM secondResolved s
+     JOIN bill_type bp ON
+     s.bill_type = bp.id
+     GROUP BY strftime($format, payment_datetime), s.bill_type HAVING strftime($format, s.payment_datetime) = '$date';
+  ''';
 }

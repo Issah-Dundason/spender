@@ -150,15 +150,8 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getPieData(String format, String date) async {
-    var records = await _db.rawQuery('''
-    SELECT SUM(e.price) as amount,
-            p.id as pid, p.name as pname, p.image as pimage,
-            strftime($format, e.date) as date
-     FROM expenditure e 
-     JOIN bill_type p ON
-     e.bill_type_id = p.id
-     GROUP BY 4, 2 HAVING strftime($format, e.date) = '$date';
-    ''');
+    var records = await _db.rawQuery(
+        Query.pieQuery(format, date), [DateTime.now().toIso8601String()]);
 
     return records
         .map((record) =>
@@ -167,7 +160,6 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getOverallPieData() async {
-    // var records = await _db.rawQuery();
     var records = [];
     return records
         .map((record) =>
@@ -217,7 +209,8 @@ class DatabaseClient {
   }
 
   Future<void> deleteAllExceptionsForParent(int parentId) async {
-    await _db.delete('expenditure_exception', where: '${Bill.columnExceptionParentId} = ?', whereArgs: [parentId]);
+    await _db.delete('expenditure_exception',
+        where: '${Bill.columnExceptionParentId} = ?', whereArgs: [parentId]);
   }
 }
 
