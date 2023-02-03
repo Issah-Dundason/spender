@@ -12,6 +12,7 @@ class Receipt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    const textStyle = TextStyle(fontSize: 16);
     return Center(
       child: ClipPath(
         clipBehavior: Clip.antiAlias,
@@ -41,39 +42,71 @@ class Receipt extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15),
-                child: Text('Bill: ${expenditure.title}'),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
-                child: Text('Amount:  ₵${NumberFormat().format(AppUtils.amountPresented(expenditure.amount))}'),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
-                child: Text(
-                    'Payment type: ${expenditure.paymentType.name.toUpperCase()}'),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
-                child: Text(
-                    'Priority of service: ${expenditure.priority.name.toUpperCase()}'),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 20, right: 15),
-                child: Text(
-                    'Bill Type: ${expenditure.type.name.toUpperCase()}'),
-              ),
-              if (expenditure.description != null && expenditure.description!.isNotEmpty)
-                const Padding(
-                  padding: EdgeInsets.only(top: 20.0, left: 8),
-                  child: Text('Description'),
-                ),
-              if (expenditure.description != null && expenditure.description!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, top: 6, right: 8.0),
-                  child: Text(expenditure.description!),
-                ),
+             Padding(
+               padding: const EdgeInsets.symmetric(horizontal: 20),
+               child: Column(
+                 children: [
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       const Text(
+                         'Bill',
+                         style: textStyle,
+                       ),
+                       Text(
+                         expenditure.title,
+                         style: textStyle,
+                       )
+                     ],
+                   ),
+                   const SizedBox(height: 20,),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       const Text('Amount Spent'),
+                       Text(
+                           '₵${NumberFormat().format(AppUtils.amountPresented(expenditure.amount))}')
+                     ],
+                   ),
+                   const SizedBox(height: 20,),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       const Text('Payment type'),
+                       Text(expenditure.paymentType.name.toUpperCase())
+                     ],
+                   ),
+                   const SizedBox(height: 20,),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       const Text('Priority of service'),
+                       Text(expenditure.priority.name.toUpperCase()),
+                     ],
+                   ),
+                   const SizedBox(height: 20,),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       const Text('Bill Type'),
+                       Text(expenditure.type.name.toUpperCase()),
+                     ],
+                   ),
+                   if (expenditure.description != null &&
+                       expenditure.description!.isNotEmpty)
+                     const Padding(
+                       padding: EdgeInsets.only(top: 20.0, left: 8),
+                       child: Text('Description'),
+                     ),
+                   if (expenditure.description != null &&
+                       expenditure.description!.isNotEmpty)
+                     Padding(
+                       padding: const EdgeInsets.only(left: 8.0, top: 6, right: 8.0),
+                       child: Text(expenditure.description!),
+                     ),
+                 ],
+               ),
+             ),
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,

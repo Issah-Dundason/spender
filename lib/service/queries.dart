@@ -214,17 +214,19 @@ class Query {
      LIMIT 1;
   ''';
 
-  String overallPieDataQuery() {
+  static String overallPieDataQuery =
     '''
-      SELECT SUM(e.price) as amount,
-        p.id as pid, p.name as pname, p.image as pimage
-      FROM expenditure e
-      JOIN bill_type p ON
-      e.bill_type_id = p.id
+    $generateRecursionQuery,
+    secondResolved AS (
+      SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
+    )
+      SELECT SUM(s.amount) as amount,
+        s.bill_type, bp.name as bill_name, bp.image as bill_image
+      FROM secondResolved s
+      JOIN bill_type bp ON
+      s.bill_type = bp.id
       GROUP BY 2;
     ''';
-    return '';
-  }
 
   static String pieQuery(String format, String date) => '''
     $generateRecursionQuery,

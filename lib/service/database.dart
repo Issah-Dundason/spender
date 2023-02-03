@@ -160,7 +160,8 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getOverallPieData() async {
-    var records = [];
+    var records = await _db.rawQuery(
+        Query.overallPieDataQuery, [DateTime.now().toIso8601String()]);
     return records
         .map((record) =>
             PieData(record['amount'] as int, BillType.fromMap(record)))
