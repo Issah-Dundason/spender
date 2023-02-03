@@ -86,6 +86,6 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
 
   void updateMultiple(String instanceDate, Bill update) {
     appRepo.updateExpenditure(update.id!, update.toNewBillJson());
-    appRepo.deleteParentExceptionAfterDate(update.id!, update.endDate!);
+    appRepo.deleteAllExceptionsForParent(update.id!);
   }
 }

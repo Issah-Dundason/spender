@@ -215,6 +215,10 @@ class DatabaseClient {
             '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
         whereArgs: [parentId, endDate]);
   }
+
+  Future<void> deleteAllExceptionsForParent(int parentId) async {
+    await _db.delete('expenditure_exception', where: '${Bill.columnExceptionParentId} = ?', whereArgs: [parentId]);
+  }
 }
 
 class PieData extends Equatable {

@@ -493,10 +493,17 @@ class _BillViewState extends State<BillView> {
         lastDate: DateTime.now());
     setState(() {
       _selectedDate = date ?? _selectedDate;
+
       if (_selectedRecurrence == Pattern.once) return;
-      _endDate = DateUtils.dateOnly(_selectedDate)
+
+      if(widget.bill == null) {
+        _endDate = DateUtils.dateOnly(_selectedDate)
           .add(const Duration(days: 30, hours: 23, minutes: 59));
-      if (widget.bill == null || date == null) return;
+        return;
+      }
+
+      if (date == null) return;
+      if(widget.bill!.isGenerated()) return;
       if (widget.bill?.endDate == null) return;
 
       var start =

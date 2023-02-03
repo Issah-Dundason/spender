@@ -93,7 +93,7 @@ class AppRepository {
   _dbClient.deleteParentExceptionAfterDate(parentId, endDate);
   }
 
-  void updateParentEndDate(int id, String endDate) async {
-
+  void deleteAllExceptionsForParent(int i) async {
+    await _dbClient.deleteAllExceptionsForParent(i);
   }
 }

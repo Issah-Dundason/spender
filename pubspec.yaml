@@ -61,18 +61,6 @@ flutter:
     - family: whiteboard
       fonts:
         - asset: assets/fonts/whiteboard.ttf
-    - family: cart
-      fonts:
-        - asset: assets/fonts/cart.ttf
-    - family: Bin
-      fonts:
-        - asset: assets/fonts/Bin.ttf
-    - family: QuillPencil
-      fonts:
-        - asset: assets/fonts/QuillPencil.ttf
-    - family: Receipt
-      fonts:
-        - asset: assets/fonts/Receipt.ttf
     - family: Back
       fonts:
         - asset: assets/fonts/Back.ttf

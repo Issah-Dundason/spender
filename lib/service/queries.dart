@@ -51,7 +51,7 @@ class Query {
     );
   ''';
 
-  static String generateRecursionQuery(String expression) => '''
+  static String generateRecursionQuery = '''
         WITH RECURSIVE recurringData AS (
            SELECT * FROM expenditure
            UNION 
@@ -85,7 +85,7 @@ class Query {
                   THEN datetime(payment_datetime, '1 months')
                 ELSE datetime(payment_datetime, '1 days')
                 END
-           <= datetime($expression)
+           <= datetime(end_date)
           ),
           resolvedData AS (
             SELECT
@@ -142,7 +142,10 @@ class Query {
   ''';
 
   static String financialsQuery = '''
-   ${generateRecursionQuery('?')}
+   $generateRecursionQuery,
+   secondResolved AS (
+      SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
+    )
     SELECT b.amount as budget,
             CASE 
               WHEN  b.amount - t.amount_spent   IS NULL THEN b.amount
@@ -156,7 +159,7 @@ class Query {
       LEFT JOIN 
       (SELECT SUM(amount) as amount_spent, 
               strftime('%Y-%m', payment_datetime) as date 
-      FROM resolvedData 
+      FROM secondResolved 
       GROUP BY 2
       HAVING strftime('%Y-%m', payment_datetime) = ?) t 
       on t.date = strftime('%Y-%m', b.date) 
@@ -165,7 +168,7 @@ class Query {
 
   static String getMonthSpendingQuery() {
     return '''
-    ${generateRecursionQuery('end_date')},
+    $generateRecursionQuery,
     secondResolved AS (
       SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
     )
@@ -180,7 +183,7 @@ class Query {
 
   static String getExpenditureWithLimitQuery() {
     return '''
-    ${generateRecursionQuery('end_date')}
+    $generateRecursionQuery
     SELECT resolvedData.*, 
            bill_type.id AS bill_type, 
            bill_type.name AS bill_name,
@@ -193,7 +196,7 @@ class Query {
   }
 
   static String expenditureByDateQuery = '''
-    ${Query.generateRecursionQuery('end_date')}
+    $generateRecursionQuery
     SELECT resolvedData.*, 
            bill_type.id AS bill_type, 
            bill_type.name AS bill_name,
@@ -204,7 +207,7 @@ class Query {
   ''';
 
   static String didTransactionOccurQuery = '''
-    ${generateRecursionQuery('end_date')}
+    $generateRecursionQuery
      
      SELECT * FROM resolvedData 
      WHERE strftime('%Y-%m-%d', payment_datetime) = ?
