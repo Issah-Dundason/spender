@@ -74,15 +74,7 @@ class _BillViewState extends State<BillView> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     var keysHeight = MediaQuery.of(context).size.height * 0.4;
-    var bodyHeight = height - 82;
-    if (height >= 617) {
-      bodyHeight = height - 110;
-    }
-    if (height < 617) {
-      keysHeight = MediaQuery.of(context).size.height * 0.35;
-    }
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -117,271 +109,33 @@ class _BillViewState extends State<BillView> {
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Form(
                       key: _formKey,
-                      child: SingleChildScrollView(
-                        child: SizedBox(
-                          height: bodyHeight,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text('Date'),
-                                      GestureDetector(
-                                        onTap: _onDate,
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              DateFormat('dd/MM/yy')
-                                                  .format(_selectedDate),
-                                              style:
-                                                  const TextStyle(fontSize: 20),
-                                            ),
-                                            Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 5),
-                                              decoration: BoxDecoration(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                  borderRadius:
-                                                      BorderRadius.circular(7)),
-                                              padding: const EdgeInsets.all(5),
-                                              child: const Icon(
-                                                Icons.calendar_month,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const Spacer(),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text('Time'),
-                                      GestureDetector(
-                                        onTap: _onTime,
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              _selectedTime
-                                                  .format(context)
-                                                  .toLowerCase(),
-                                              style:
-                                                  const TextStyle(fontSize: 20),
-                                            ),
-                                            Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 5),
-                                              decoration: BoxDecoration(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                  borderRadius:
-                                                      BorderRadius.circular(7)),
-                                              padding: const EdgeInsets.all(5),
-                                              child: const Icon(
-                                                Icons.access_time_outlined,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 50,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: TextFormField(
-                                        controller: _billController,
-                                        onTap: _hideKeypad,
-                                        validator: (s) {
-                                          if (s != null && s.isEmpty) {
-                                            return 'Field can not be empty';
-                                          }
-                                          return null;
-                                        },
-                                        inputFormatters: [
-                                          LengthLimitingTextInputFormatter(30),
-                                        ],
-                                        decoration: const InputDecoration(
-                                            hintText: "bill name"),
-                                      )),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: _ProductTypeDropDown<BillType>(
-                                      onChange: (t) =>
-                                          setState(() => _billType = t),
-                                      value: _billType,
-                                      onTapped: _hideKeypad,
-                                      title: "Bill Type",
-                                      items: widget.billTypes,
-                                      menuItemBuilder: (t) => Text(t.name),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 35,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: TextFormField(
-                                        controller: _amountController,
-                                        onTap: () =>
-                                            setState(() => _showKeypad = true),
-                                        readOnly: true,
-                                        style: const TextStyle(fontSize: 18),
-                                        validator: (s) {
-                                          if (s != null && s.isEmpty) {
-                                            return 'Field can not be empty';
-                                          }
-                                          if (double.parse(s!) < 1) {
-                                            return '0 is not allowed';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: const InputDecoration(
-                                            hintText: "amount paid"),
-                                      )),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: _ProductTypeDropDown<PaymentType>(
-                                      value: _paymentType,
-                                      onTapped: _hideKeypad,
-                                      onChange: (t) =>
-                                          setState(() => _paymentType = t!),
-                                      title: "Payment Type",
-                                      menuItemBuilder: (t) => Text(
-                                        t.name,
-                                        softWrap: false,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      items: PaymentType.values,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 35,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: TextFormField(
-                                        onTap: _hideKeypad,
-                                        textCapitalization:
-                                            TextCapitalization.sentences,
-                                        minLines: 2,
-                                        maxLines: 4,
-                                        controller: _descriptionController,
-                                        inputFormatters: [
-                                          LengthLimitingTextInputFormatter(120),
-                                        ],
-                                        keyboardType: TextInputType.multiline,
-                                        decoration: const InputDecoration(
-                                            hintText: "description"),
-                                      )),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: _ProductTypeDropDown<Priority>(
-                                      onTapped: _hideKeypad,
-                                      value: _priority,
-                                      onChange: (t) =>
-                                          setState(() => _priority = t!),
-                                      title: "Priority",
-                                      menuItemBuilder: (t) => Text(t.name),
-                                      items: Priority.values,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const Text('Recurrence*'),
-                              RadioListTile<Pattern>(
-                                  title: const Text('Once'),
-                                  value: Pattern.once,
-                                  groupValue: _selectedRecurrence,
-                                  onChanged: (value) => onRadio(value)),
-                              RadioListTile<Pattern>(
-                                  title: const Text('Daily'),
-                                  value: Pattern.daily,
-                                  groupValue: _selectedRecurrence,
-                                  onChanged: (value) => onRadio(value)),
-                              RadioListTile<Pattern>(
-                                  title: const Text('Weekly'),
-                                  value: Pattern.weekly,
-                                  groupValue: _selectedRecurrence,
-                                  onChanged: (value) => onRadio(value)),
-                              RadioListTile<Pattern>(
-                                  title: const Text('Monthly'),
-                                  value: Pattern.monthly,
-                                  groupValue: _selectedRecurrence,
-                                  onChanged: (value) => onRadio(value)),
-                              Visibility(
-                                visible: _selectedRecurrence != Pattern.once,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
+                      child: CustomScrollView(
+                        slivers: [
+                          SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
                                   children: [
-                                    const Text('End Date:'),
-                                    const SizedBox(
-                                      height: 12,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                    Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
+                                        const Text('Date'),
                                         GestureDetector(
-                                          onTap: _onEndDate,
+                                          onTap: _onDate,
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Text(
-                                                DateFormat('dd/MM/yy').format(
-                                                    _endDate ??
-                                                        _selectedDate.add(
-                                                            const Duration(
-                                                                days: 365))),
-                                                style: const TextStyle(
-                                                    fontSize: 20),
+                                                DateFormat('dd/MM/yy')
+                                                    .format(_selectedDate),
+                                                style:
+                                                const TextStyle(fontSize: 20),
                                               ),
                                               Container(
                                                 margin: const EdgeInsets.only(
@@ -391,12 +145,49 @@ class _BillViewState extends State<BillView> {
                                                         .colorScheme
                                                         .secondary,
                                                     borderRadius:
-                                                        BorderRadius.circular(
-                                                            7)),
-                                                padding:
-                                                    const EdgeInsets.all(5),
+                                                    BorderRadius.circular(7)),
+                                                padding: const EdgeInsets.all(5),
                                                 child: const Icon(
                                                   Icons.calendar_month,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('Time'),
+                                        GestureDetector(
+                                          onTap: _onTime,
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                _selectedTime
+                                                    .format(context)
+                                                    .toLowerCase(),
+                                                style:
+                                                const TextStyle(fontSize: 20),
+                                              ),
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 5),
+                                                decoration: BoxDecoration(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                    borderRadius:
+                                                    BorderRadius.circular(7)),
+                                                padding: const EdgeInsets.all(5),
+                                                child: const Icon(
+                                                  Icons.access_time_outlined,
                                                   color: Colors.white,
                                                 ),
                                               ),
@@ -407,23 +198,233 @@ class _BillViewState extends State<BillView> {
                                     )
                                   ],
                                 ),
-                              ),
-                              const Spacer(),
-                              state.processingState == ProcessingState.pending
-                                  ? const Center(
-                                      child: CircularProgressIndicator())
-                                  : Visibility(
-                                      visible: !_showKeypad,
-                                      child: ElevatedButton(
-                                          onPressed: onSubmit,
-                                          style: _getButtonStyle(context),
-                                          child: Text(widget.bill == null
-                                              ? "ADD"
-                                              : "Update")),
+                                const SizedBox(
+                                  height: 50,
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                        flex: 4,
+                                        child: TextFormField(
+                                          controller: _billController,
+                                          onTap: _hideKeypad,
+                                          validator: (s) {
+                                            if (s != null && s.isEmpty) {
+                                              return 'Field can not be empty';
+                                            }
+                                            return null;
+                                          },
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(30),
+                                          ],
+                                          decoration: const InputDecoration(
+                                              hintText: "bill name"),
+                                        )),
+                                    const SizedBox(
+                                      width: 10,
                                     ),
-                            ],
+                                    Expanded(
+                                      flex: 2,
+                                      child: _ProductTypeDropDown<BillType>(
+                                        onChange: (t) =>
+                                            setState(() => _billType = t),
+                                        value: _billType,
+                                        onTapped: _hideKeypad,
+                                        title: "Bill Type",
+                                        items: widget.billTypes,
+                                        menuItemBuilder: (t) => Text(t.name),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 35,
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                        flex: 4,
+                                        child: TextFormField(
+                                          controller: _amountController,
+                                          onTap: () =>
+                                              setState(() => _showKeypad = true),
+                                          readOnly: true,
+                                          style: const TextStyle(fontSize: 18),
+                                          validator: (s) {
+                                            if (s != null && s.isEmpty) {
+                                              return 'Field can not be empty';
+                                            }
+                                            if (double.parse(s!) < 1) {
+                                              return '0 is not allowed';
+                                            }
+                                            return null;
+                                          },
+                                          decoration: const InputDecoration(
+                                              hintText: "amount paid"),
+                                        )),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: _ProductTypeDropDown<PaymentType>(
+                                        value: _paymentType,
+                                        onTapped: _hideKeypad,
+                                        onChange: (t) =>
+                                            setState(() => _paymentType = t!),
+                                        title: "Payment Type",
+                                        menuItemBuilder: (t) => Text(
+                                          t.name,
+                                          softWrap: false,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        items: PaymentType.values,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 35,
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                        flex: 4,
+                                        child: TextFormField(
+                                          onTap: _hideKeypad,
+                                          textCapitalization:
+                                          TextCapitalization.sentences,
+                                          minLines: 2,
+                                          maxLines: 4,
+                                          controller: _descriptionController,
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(120),
+                                          ],
+                                          keyboardType: TextInputType.multiline,
+                                          decoration: const InputDecoration(
+                                              hintText: "description"),
+                                        )),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: _ProductTypeDropDown<Priority>(
+                                        onTapped: _hideKeypad,
+                                        value: _priority,
+                                        onChange: (t) =>
+                                            setState(() => _priority = t!),
+                                        title: "Priority",
+                                        menuItemBuilder: (t) => Text(t.name),
+                                        items: Priority.values,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                const Text('Recurrence*'),
+                                RadioListTile<Pattern>(
+                                    title: const Text('Once'),
+                                    value: Pattern.once,
+                                    groupValue: _selectedRecurrence,
+                                    onChanged: (value) => onRadio(value)),
+                                RadioListTile<Pattern>(
+                                    title: const Text('Daily'),
+                                    value: Pattern.daily,
+                                    groupValue: _selectedRecurrence,
+                                    onChanged: (value) => onRadio(value)),
+                                RadioListTile<Pattern>(
+                                    title: const Text('Weekly'),
+                                    value: Pattern.weekly,
+                                    groupValue: _selectedRecurrence,
+                                    onChanged: (value) => onRadio(value)),
+                                RadioListTile<Pattern>(
+                                    title: const Text('Monthly'),
+                                    value: Pattern.monthly,
+                                    groupValue: _selectedRecurrence,
+                                    onChanged: (value) => onRadio(value)),
+                                Visibility(
+                                  visible: _selectedRecurrence != Pattern.once,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text('End Date:'),
+                                      const SizedBox(
+                                        height: 12,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: _onEndDate,
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  DateFormat('dd/MM/yy').format(
+                                                      _endDate ??
+                                                          _selectedDate.add(
+                                                              const Duration(
+                                                                  days: 365))),
+                                                  style: const TextStyle(
+                                                      fontSize: 20),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      left: 5),
+                                                  decoration: BoxDecoration(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                      borderRadius:
+                                                      BorderRadius.circular(
+                                                          7)),
+                                                  padding:
+                                                  const EdgeInsets.all(5),
+                                                  child: const Icon(
+                                                    Icons.calendar_month,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                          SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                state.processingState == ProcessingState.pending
+                                    ? const CircularProgressIndicator()
+                                    : Visibility(
+                                  visible: !_showKeypad,
+                                  child: ElevatedButton(
+                                      onPressed: onSubmit,
+                                      style: _getButtonStyle(context),
+                                      child: Text(widget.bill == null
+                                          ? "ADD"
+                                          : "Update")),
+                                ),
+                                const SizedBox(height: 5,)
+                              ]
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),
