@@ -37,9 +37,7 @@ class ExpensesPage extends StatelessWidget {
         ),
         const ExpansionTile(
           title: Text('Statistics'),
-          children:  [
-            ExpenseAnalysisSection()
-          ],
+          children: [ExpenseAnalysisSection()],
         ),
         const SizedBox(
           height: 5,
@@ -58,9 +56,41 @@ class ExpensesPage extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        const Expanded(
-            child: Align(
-                alignment: Alignment.center, child: ExpensesTransactions()))
+        Expanded(
+          child: BlocBuilder<ExpensesBloc, ExpensesState>(
+            builder: (context, state) {
+              if (state.yearOfFirstInsert == null && !state.initialized) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              var start = state.yearOfFirstInsert == null
+                  ? DateUtils.dateOnly(DateTime.now())
+                  : DateTime(state.yearOfFirstInsert!);
+
+              var end = DateTime.now().add(const Duration(days: 365 * 7));
+
+              int days = end.difference(start).inDays;
+
+              var current = state.selectedDate.difference(start).inDays;
+
+              PageController cont = PageController(initialPage: current);
+
+              print('days: $days, current: $current');
+
+              return PageView.builder(
+                controller: cont,
+                onPageChanged: (i) {
+                  print('current i: $i');
+                  var nextDate = start.add(Duration(days: i));
+                  print('$start : $start, next date: $nextDate');
+                  context.read<ExpensesBloc>().add(ChangeDateEvent(nextDate));
+                },
+                itemBuilder: (_, i) {
+                return const Align(
+                    alignment: Alignment.center, child: ExpensesTransactions());
+              }, itemCount: days,);
+            },
+          ),
+        )
       ],
     );
   }

@@ -10,7 +10,7 @@ import 'package:spender/bloc/home/home_event.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../model/bill.dart';
 import '../repository/expenditure_repo.dart';
-import 'bill_view.dart';
+import '../pages/bill_view.dart';
 
 class EditableTransactionTile extends StatefulWidget {
   final Color? tileColor;

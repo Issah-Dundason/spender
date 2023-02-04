@@ -17,7 +17,7 @@ class TransactionCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var last = DateTime.now();
+    var last = DateTime.now().add(const Duration(days: 365 * 7));
     return TableCalendar(
       onDaySelected: onDateSelected,
       focusedDay: selectedDay,

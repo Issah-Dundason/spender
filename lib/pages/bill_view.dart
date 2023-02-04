@@ -10,7 +10,7 @@ import '../bloc/bill/bill_bloc.dart';
 import '../model/bill_type.dart';
 import '../model/bill.dart';
 import '../util/calculation.dart';
-import 'custom_key_pad.dart';
+import '../components/custom_key_pad.dart';
 
 class BillView extends StatefulWidget {
   final List<BillType> billTypes;
@@ -522,7 +522,7 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
         context: context,
         initialDate: _selectedDate,
         firstDate: DateTime(199),
-        lastDate: DateTime.now());
+        lastDate: DateTime.now().add(const Duration(days: 365 * 7)));
     setState(() {
       _selectedDate = date ?? _selectedDate;
 

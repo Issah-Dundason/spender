@@ -11,7 +11,7 @@ import '../bloc/bill/bill_bloc.dart';
 import '../bloc/expenses/expenses_bloc.dart';
 import '../bloc/expenses/expenses_event.dart';
 import '../bloc/profile/profile_bloc.dart';
-import '../components/bill_view.dart';
+import 'bill_view.dart';
 import 'expenses.dart';
 import 'home_page.dart';
 
