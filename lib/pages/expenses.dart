@@ -9,8 +9,43 @@ import '../components/expenses_analysis.dart';
 import '../components/expenses_calendar.dart';
 import '../components/expenses_transactions.dart';
 
-class ExpensesPage extends StatelessWidget {
+class ExpensesPage extends StatefulWidget {
   const ExpensesPage({Key? key}) : super(key: key);
+
+  @override
+  State<ExpensesPage> createState() => _ExpensesPageState();
+}
+
+class _ExpensesPageState extends State<ExpensesPage> {
+  final PageController _pageController = PageController();
+  int _pageCount = 0;
+  late DateTime _startDate;
+
+  @override
+  void initState() {
+    context.read<ExpensesBloc>().stream.listen((state) {
+      var start = state.yearOfFirstInsert == null
+          ? DateUtils.dateOnly(DateTime.now())
+          : DateUtils.dateOnly(DateTime(state.yearOfFirstInsert!));
+
+      var end =
+          DateUtils.dateOnly(DateTime.now()).add(const Duration(days: 365 * 7));
+
+      int days = end.difference(start).inDays;
+
+      var current =
+          DateUtils.dateOnly(state.selectedDate).difference(start).inDays;
+
+      setState(() {
+        _pageCount = days + 1;
+        _startDate = start;
+        Future.delayed(Duration.zero, () {
+          _pageController.jumpToPage(current);
+        });
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,41 +92,27 @@ class ExpensesPage extends StatelessWidget {
           height: 10,
         ),
         Expanded(
-          child: BlocBuilder<ExpensesBloc, ExpensesState>(
-            builder: (context, state) {
-              if (state.yearOfFirstInsert == null && !state.initialized) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              var start = state.yearOfFirstInsert == null
-                  ? DateUtils.dateOnly(DateTime.now())
-                  : DateTime(state.yearOfFirstInsert!);
-
-              var end = DateTime.now().add(const Duration(days: 365 * 7));
-
-              int days = end.difference(start).inDays;
-
-              var current = state.selectedDate.difference(start).inDays;
-
-              PageController cont = PageController(initialPage: current);
-
-              print('days: $days, current: $current');
-
-              return PageView.builder(
-                controller: cont,
-                onPageChanged: (i) {
-                  print('current i: $i');
-                  var nextDate = start.add(Duration(days: i));
-                  print('$start : $start, next date: $nextDate');
-                  context.read<ExpensesBloc>().add(ChangeDateEvent(nextDate));
-                },
-                itemBuilder: (_, i) {
-                return const Align(
-                    alignment: Alignment.center, child: ExpensesTransactions());
-              }, itemCount: days,);
-            },
-          ),
-        )
+            child: PageView.builder(
+          controller: _pageController,
+          itemCount: _pageCount,
+          onPageChanged: (i) {
+            var nextDate = _startDate.add(Duration(days: i));
+            var bloc = context.read<ExpensesBloc>();
+            if (DateUtils.isSameDay(bloc.state.selectedDate, nextDate)) return;
+            bloc.add(ChangeDateEvent(nextDate));
+          },
+          itemBuilder: (_, i) {
+            return const Align(
+                alignment: Alignment.center, child: ExpensesTransactions());
+          },
+        ))
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 }
