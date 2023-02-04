@@ -23,7 +23,7 @@ class BillView extends StatefulWidget {
   State<BillView> createState() => _BillViewState();
 }
 
-class _BillViewState extends State<BillView> {
+class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _billController;
@@ -43,6 +43,8 @@ class _BillViewState extends State<BillView> {
   Priority _priority = Priority.need;
 
   bool _showKeypad = false;
+
+  late AnimationController _animController;
 
   @override
   void initState() {
@@ -69,6 +71,7 @@ class _BillViewState extends State<BillView> {
           : _endDate;
     }
 
+    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 150));
     super.initState();
   }
 
@@ -123,7 +126,7 @@ class _BillViewState extends State<BillView> {
                                     Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const Text('Date'),
                                         GestureDetector(
@@ -134,8 +137,8 @@ class _BillViewState extends State<BillView> {
                                               Text(
                                                 DateFormat('dd MMM, yy')
                                                     .format(_selectedDate),
-                                                style:
-                                                const TextStyle(fontSize: 20),
+                                                style: const TextStyle(
+                                                    fontSize: 20),
                                               ),
                                               Container(
                                                 margin: const EdgeInsets.only(
@@ -145,8 +148,10 @@ class _BillViewState extends State<BillView> {
                                                         .colorScheme
                                                         .secondary,
                                                     borderRadius:
-                                                    BorderRadius.circular(7)),
-                                                padding: const EdgeInsets.all(5),
+                                                        BorderRadius.circular(
+                                                            7)),
+                                                padding:
+                                                    const EdgeInsets.all(5),
                                                 child: const Icon(
                                                   Icons.calendar_month,
                                                   color: Colors.white,
@@ -161,7 +166,7 @@ class _BillViewState extends State<BillView> {
                                     Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const Text('Time'),
                                         GestureDetector(
@@ -173,8 +178,8 @@ class _BillViewState extends State<BillView> {
                                                 _selectedTime
                                                     .format(context)
                                                     .toLowerCase(),
-                                                style:
-                                                const TextStyle(fontSize: 20),
+                                                style: const TextStyle(
+                                                    fontSize: 20),
                                               ),
                                               Container(
                                                 margin: const EdgeInsets.only(
@@ -184,8 +189,10 @@ class _BillViewState extends State<BillView> {
                                                         .colorScheme
                                                         .secondary,
                                                     borderRadius:
-                                                    BorderRadius.circular(7)),
-                                                padding: const EdgeInsets.all(5),
+                                                        BorderRadius.circular(
+                                                            7)),
+                                                padding:
+                                                    const EdgeInsets.all(5),
                                                 child: const Icon(
                                                   Icons.access_time_outlined,
                                                   color: Colors.white,
@@ -216,7 +223,8 @@ class _BillViewState extends State<BillView> {
                                             return null;
                                           },
                                           inputFormatters: [
-                                            LengthLimitingTextInputFormatter(30),
+                                            LengthLimitingTextInputFormatter(
+                                                30),
                                           ],
                                           decoration: const InputDecoration(
                                               hintText: "bill name"),
@@ -248,8 +256,11 @@ class _BillViewState extends State<BillView> {
                                         flex: 4,
                                         child: TextFormField(
                                           controller: _amountController,
-                                          onTap: () =>
-                                              setState(() => _showKeypad = true),
+                                          onTap: () async {
+                                            await Future.delayed(const Duration(milliseconds: 180));
+                                            _animController.forward();
+                                            setState(() => _showKeypad = true);
+                                          },
                                           readOnly: true,
                                           style: const TextStyle(fontSize: 18),
                                           validator: (s) {
@@ -296,12 +307,13 @@ class _BillViewState extends State<BillView> {
                                         child: TextFormField(
                                           onTap: _hideKeypad,
                                           textCapitalization:
-                                          TextCapitalization.sentences,
+                                              TextCapitalization.sentences,
                                           minLines: 2,
                                           maxLines: 4,
                                           controller: _descriptionController,
                                           inputFormatters: [
-                                            LengthLimitingTextInputFormatter(120),
+                                            LengthLimitingTextInputFormatter(
+                                                120),
                                           ],
                                           keyboardType: TextInputType.multiline,
                                           decoration: const InputDecoration(
@@ -359,7 +371,7 @@ class _BillViewState extends State<BillView> {
                                       ),
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           GestureDetector(
                                             onTap: _onEndDate,
@@ -367,8 +379,8 @@ class _BillViewState extends State<BillView> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  DateFormat('dd MMM, yy').format(
-                                                      _endDate ??
+                                                  DateFormat('dd MMM, yy')
+                                                      .format(_endDate ??
                                                           _selectedDate.add(
                                                               const Duration(
                                                                   days: 365))),
@@ -383,10 +395,10 @@ class _BillViewState extends State<BillView> {
                                                           .colorScheme
                                                           .secondary,
                                                       borderRadius:
-                                                      BorderRadius.circular(
-                                                          7)),
+                                                          BorderRadius.circular(
+                                                              7)),
                                                   padding:
-                                                  const EdgeInsets.all(5),
+                                                      const EdgeInsets.all(5),
                                                   child: const Icon(
                                                     Icons.calendar_month,
                                                     color: Colors.white,
@@ -396,7 +408,10 @@ class _BillViewState extends State<BillView> {
                                             ),
                                           ),
                                         ],
-                                      )
+                                      ),
+                                      const SizedBox(
+                                        height: 12,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -406,23 +421,25 @@ class _BillViewState extends State<BillView> {
                           SliverFillRemaining(
                             hasScrollBody: false,
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                state.processingState == ProcessingState.pending
-                                    ? const CircularProgressIndicator()
-                                    : Visibility(
-                                  visible: !_showKeypad,
-                                  child: ElevatedButton(
-                                      onPressed: onSubmit,
-                                      style: _getButtonStyle(context),
-                                      child: Text(widget.bill == null
-                                          ? "ADD"
-                                          : "Update")),
-                                ),
-                                const SizedBox(height: 5,)
-                              ]
-                            ),
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  state.processingState ==
+                                          ProcessingState.pending
+                                      ? const CircularProgressIndicator()
+                                      : Visibility(
+                                          visible: !_showKeypad,
+                                          child: ElevatedButton(
+                                              onPressed: onSubmit,
+                                              style: _getButtonStyle(context),
+                                              child: Text(widget.bill == null
+                                                  ? "ADD"
+                                                  : "Update")),
+                                        ),
+                                  const SizedBox(
+                                    height: 5,
+                                  )
+                                ]),
                           )
                         ],
                       ),
@@ -431,19 +448,26 @@ class _BillViewState extends State<BillView> {
                 );
               },
             ),
-            Visibility(
-              visible: _showKeypad,
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                    color: Theme.of(context).colorScheme.background,
-                    child: CustomKeys(
-                      height: keysHeight,
-                      width: width * 0.7,
-                      onKeyTapped: _onAmountChanged,
-                    )),
-              ),
-            )
+            AnimatedBuilder(animation: _animController, builder: (_, widget) {
+              var yFactor = 1 - _animController.value;
+
+              return Transform.translate(
+                offset: Offset(0, yFactor * 30),
+                child: Visibility(
+                  visible: _showKeypad,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                        color: Theme.of(context).colorScheme.background,
+                        child: CustomKeys(
+                          height: keysHeight,
+                          width: width * 0.7,
+                          onKeyTapped: _onAmountChanged,
+                        )),
+                  ),
+                ),
+              );
+            })
           ],
         ),
       ),
@@ -467,8 +491,15 @@ class _BillViewState extends State<BillView> {
     _hideKeypad();
     setState(() {
       _selectedRecurrence = value!;
+
       if (_selectedRecurrence == Pattern.once) {
         _endDate = null;
+        return;
+      }
+
+      if (widget.bill == null) {
+        _endDate = DateUtils.dateOnly(_selectedDate)
+            .add(const Duration(days: 30, hours: 23, minutes: 59));
         return;
       }
 
@@ -497,14 +528,14 @@ class _BillViewState extends State<BillView> {
 
       if (_selectedRecurrence == Pattern.once) return;
 
-      if(widget.bill == null) {
+      if (widget.bill == null) {
         _endDate = DateUtils.dateOnly(_selectedDate)
-          .add(const Duration(days: 30, hours: 23, minutes: 59));
+            .add(const Duration(days: 30, hours: 23, minutes: 59));
         return;
       }
 
       if (date == null) return;
-      if(widget.bill!.isGenerated()) return;
+      if (widget.bill!.isGenerated()) return;
       if (widget.bill?.endDate == null) return;
 
       var start =
@@ -701,6 +732,7 @@ class _BillViewState extends State<BillView> {
 
   void _hideKeypad() {
     if (!_showKeypad) return;
+    _animController.reverse();
     _calculator.calculate();
     _amountController.text = _calculator.getString();
     setState(() => _showKeypad = false);
@@ -711,13 +743,14 @@ class _BillViewState extends State<BillView> {
     _amountController.dispose();
     _descriptionController.dispose();
     _billController.dispose();
+    _animController.dispose();
     super.dispose();
   }
 
   void _onEndDate() async {
     var date = await showDatePicker(
         context: context,
-        initialDate: _endDate ?? _selectedDate.add(const Duration(days: 30)),
+        initialDate: _endDate!,
         firstDate: _selectedDate,
         lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
     setState(() => _endDate =

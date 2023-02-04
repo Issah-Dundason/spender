@@ -16,18 +16,20 @@ class AppTheme {
       brightness: Brightness.light,
       primaryColor: primaryColor,
       colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: Colors.blue,
+          primary: Colors.blue,
           secondary: secondaryColor,
           onSecondary: Colors.white,
           background: backgroundColor,
           primaryContainer: cardColor,
           tertiary: tertiaryColor),
       iconTheme: const IconThemeData(color: tertiaryColor),
-      inputDecorationTheme: const InputDecorationTheme(
+      inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Color(0xFFFFF0F5),
+          fillColor: const Color(0xFFFFF0F5),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: secondaryColor),
-              borderRadius: BorderRadius.zero),
-          border: InputBorder.none));
+              borderSide: const BorderSide(color: secondaryColor),
+              borderRadius: BorderRadius.circular(12)),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none)));
 }
