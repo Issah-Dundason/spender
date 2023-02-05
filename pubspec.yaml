@@ -27,7 +27,6 @@ dependencies:
   table_calendar: ^3.0.9
   shared_preferences: ^2.0.15
   json_annotation: ^4.8.0
-  cron: ^0.5.1
 
 dev_dependencies:
   flutter_launcher_icons: "^0.11.0"

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
@@ -23,6 +25,24 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
+  late Timer timer;
+
+  @override
+  void initState() {
+    timer = Timer.periodic(const Duration(hours: 1), (timer) {
+      context.read<ExpensesBloc>().add(const LoadEvent());
+      context.read<HomeBloc>().add(const HomeInitializationEvent());
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedTab = context.select((AppCubit bloc) => bloc.state);
@@ -99,7 +119,7 @@ class _MainBottomAppBarState extends State<_MainBottomAppBar> {
 
   void _addBill() async {
     await _showAddBillView();
-    if(!mounted) return;
+    if (!mounted) return;
     context.read<ExpensesBloc>().add(const LoadEvent());
     context.read<HomeBloc>().add(const HomeInitializationEvent());
   }
