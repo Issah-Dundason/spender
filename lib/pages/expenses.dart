@@ -25,7 +25,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
   void initState() {
     context.read<ExpensesBloc>().stream.listen((state) {
       var start = state.yearOfFirstInsert == null
-          ? DateUtils.dateOnly(DateTime.now())
+          ? DateUtils.dateOnly(DateTime(DateTime.now().year))
           : DateUtils.dateOnly(DateTime(state.yearOfFirstInsert!));
 
       var end =

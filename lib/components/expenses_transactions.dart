@@ -20,11 +20,12 @@ class ExpensesTransactions extends StatelessWidget {
               padding: const EdgeInsets.only(top: 20.0),
               child: Stack(
                 alignment: Alignment.center,
-                children: const [
-                  Text("No Data"),
+                children:  [
+                  const Text("No Data"),
                   Icon(
                     Whiteboard.icon,
                     size: 150,
+                    color: Theme.of(context).colorScheme.primary,
                   )
                 ],
               ),
