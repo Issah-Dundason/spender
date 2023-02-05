@@ -64,7 +64,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                 )),
             Positioned(
                 right: 20,
-                bottom: 11,
+                bottom: 15,
                 child: RichText(
                   textWidthBasis: TextWidthBasis.longestLine,
                   text: TextSpan(
@@ -143,8 +143,21 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                                       toBeginningOfSentenceCase(
                                               widget.expenditure.pattern.name)
                                           as String,
-                                      style: const TextStyle(fontSize: 16),
-                                    )
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                   DateTime.parse(widget.expenditure.paymentDateTime).isAfter(DateTime.now()) ?
+                                    Row(
+                                      children: [
+                                        const SizedBox(width: 4,),
+                                        Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(12),
+                                            color: Colors.limeAccent
+                                          ),
+                                            child: const Text('Pending >>')),
+                                      ],
+                                    )   : Container()
                                   ],
                                 )
                               ],
