@@ -138,6 +138,7 @@ class Query {
                   ELSE r.id 
                   END   
             = ed.expenditure_id
+           AND ed.deleted != 1
       )
   ''';
 

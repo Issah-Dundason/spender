@@ -51,16 +51,22 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
 
   void _onNonRecurringDelete(
       NonRecurringDelete e, Emitter<ExpensesState> emitter) {
-
+    print('Non recurring');
   }
 
   void _onDeleteSingleGenerated() {
-
+    print('Single deleted');
   }
 
-  void _onDeleteMultipleGenerated() {}
+  void _onDeleteMultipleGenerated() {
+    print('multiple generated');
+  }
 
-  void _onDeleteSingle() {}
+  void _onDeleteSingle() {
+    print('recurring not generated');
+  }
 
-  void _onDeleteMultiple() {}
+  void _onDeleteMultiple() {
+    print('recurring not generate multiple');
+  }
 }
