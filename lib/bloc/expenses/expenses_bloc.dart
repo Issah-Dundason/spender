@@ -12,12 +12,13 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     on<ChangeDateEvent>(_onDateChange);
     on<OnStartEvent>(_onStart);
     on<LoadEvent>(_onLoad);
+    on<RecurrentDeleteEvent>(_onRecurrentDelete);
+    on<NonRecurringDelete>(_onNonRecurringDelete);
   }
 
   void _onDateChange(ChangeDateEvent e, Emitter<ExpensesState> emitter) async {
     var date = DateFormat("yyyy-MM-dd").format(e.selectedDate);
     var expenditures = await appRepo.getAllExpenditure(date);
-    print('selected date: ${e.selectedDate}');
     emitter(state.copyWith(
         selectedDate: e.selectedDate, transactions: expenditures));
   }
@@ -33,4 +34,33 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     var expenditures = await appRepo.getAllExpenditure(date);
     emitter(state.copyWith(transactions: expenditures));
   }
+
+  void _onRecurrentDelete(
+      RecurrentDeleteEvent e, Emitter<ExpensesState> emitter) {
+    if(e.bill.isGenerated() && e.method == DeleteMethod.single) {
+      _onDeleteSingleGenerated();
+    }
+    else if(e.bill.isGenerated() && e.method == DeleteMethod.multiple) {
+      _onDeleteMultipleGenerated();
+    } else if(!e.bill.isGenerated() && e.method == DeleteMethod.single) {
+      _onDeleteSingle();
+    } else {
+      _onDeleteMultiple();
+    }
+  }
+
+  void _onNonRecurringDelete(
+      NonRecurringDelete e, Emitter<ExpensesState> emitter) {
+
+  }
+
+  void _onDeleteSingleGenerated() {
+
+  }
+
+  void _onDeleteMultipleGenerated() {}
+
+  void _onDeleteSingle() {}
+
+  void _onDeleteMultiple() {}
 }

@@ -54,13 +54,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     Icons.close,
                     color: widget.iconColor,
                   ),
-                  onPressed: () async {
-                    var result = await showDialog(
-                        context: context, builder: (_) => buildDeleteDialog(_));
-                    if (result != true) return;
-                    if (!mounted) return;
-                    selfDestruct();
-                  },
+                  onPressed: onDelete,
                 )),
             Positioned(
                 right: 20,
@@ -72,10 +66,13 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                       style: Theme.of(context).textTheme.bodyText2?.copyWith(
                           fontSize: 17,
                           color: Theme.of(context).colorScheme.secondary),
-                  children: [
-
-                    TextSpan(text:NumberFormat.compact().format(widget.expenditure.cash), style: const TextStyle(fontSize: 17, color: Colors.black) )
-                  ]),
+                      children: [
+                        TextSpan(
+                            text: NumberFormat.compact()
+                                .format(widget.expenditure.cash),
+                            style: const TextStyle(
+                                fontSize: 17, color: Colors.black))
+                      ]),
                 )),
             Padding(
               padding: const EdgeInsets.all(12),
@@ -145,19 +142,27 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                                           as String,
                                       style: const TextStyle(fontSize: 18),
                                     ),
-                                   DateTime.parse(widget.expenditure.paymentDateTime).isAfter(DateTime.now()) ?
-                                    Row(
-                                      children: [
-                                        const SizedBox(width: 4,),
-                                        Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(12),
-                                            color: Colors.limeAccent
-                                          ),
-                                            child: const Text('Pending >>')),
-                                      ],
-                                    )   : Container()
+                                    DateTime.parse(widget
+                                                .expenditure.paymentDateTime)
+                                            .isAfter(DateTime.now())
+                                        ? Row(
+                                            children: [
+                                              const SizedBox(
+                                                width: 4,
+                                              ),
+                                              Container(
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                      color: Colors.limeAccent),
+                                                  child:
+                                                      const Text('Pending >>')),
+                                            ],
+                                          )
+                                        : Container()
                                   ],
                                 )
                               ],
@@ -179,21 +184,23 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
     context.read<HomeBloc>().add(const HomeInitializationEvent());
   }
 
-  AlertDialog buildDeleteDialog(BuildContext _) {
+  AlertDialog buildDeleteDialog({String? message}) {
     return AlertDialog(
-      content: const Text(
-        'Do you want to delete it?',
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      content: Text(
+        message ?? 'Do you want to delete it?',
         textAlign: TextAlign.center,
       ),
       actions: [
         TextButton(
             onPressed: () {
-              Navigator.pop(_, true);
+              Navigator.pop(context, true);
             },
             child: const Text('Yes')),
         TextButton(
             onPressed: () {
-              Navigator.pop(_, false);
+              Navigator.pop(context, false);
             },
             child: const Text('No'))
       ],
@@ -222,12 +229,43 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
             ))));
   }
 
-  void selfDestruct() async {
-    var appRepository = context.read<AppRepository>();
-    await appRepository.deleteRepository(widget.expenditure.id!);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Deleted')));
-    notifyBlocs();
+  // void selfDestruct() async {
+  //   var appRepository = context.read<AppRepository>();
+  //   await appRepository.deleteRepository(widget.expenditure.id!);
+  //   if (!mounted) return;
+  //   ScaffoldMessenger.of(context)
+  //       .showSnackBar(const SnackBar(content: Text('Deleted')));
+  //   notifyBlocs();
+  // }
+
+  void onDelete() async {
+    var isRecurring = widget.expenditure.isRecurring;
+    if (isRecurring) {
+
+      var ans = await showDialog(
+          context: context,
+          builder: (_) =>
+              buildDeleteDialog(message: 'Should delete future events?'));
+
+      if (ans == true) {
+        if(!mounted) return;
+        context.read<ExpensesBloc>().add(RecurrentDeleteEvent(
+            bill: widget.expenditure, method: DeleteMethod.multiple));
+      }
+
+      if (ans == false) {
+        if(!mounted) return;
+        context.read<ExpensesBloc>().add(RecurrentDeleteEvent(
+            bill: widget.expenditure));
+      }
+
+      return;
+    }
+    var ans =
+        await showDialog(context: context, builder: (_) => buildDeleteDialog());
+    if (ans != true) return;
+
+    if(!mounted) return;
+    context.read<ExpensesBloc>().add(NonRecurringDelete(widget.expenditure));
   }
 }
