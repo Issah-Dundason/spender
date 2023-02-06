@@ -59,7 +59,7 @@ class DatabaseClient {
     await _db.insert("budget", budget.toMap());
   }
 
-  Future saveExpenditure(Map<String, dynamic> map) async {
+  Future saveBill(Map<String, dynamic> map) async {
     await _db.insert("expenditure", map);
   }
 
@@ -83,11 +83,11 @@ class DatabaseClient {
     return results.isNotEmpty;
   }
 
-  Future deleteExpenditure(int id) async {
+  Future deleteBill(int id) async {
     await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
   }
 
-  Future updateExpenditure(int id, Map<String, dynamic> expenditure) async {
+  Future updateBill(int id, Map<String, dynamic> expenditure) async {
     await _db
         .update("expenditure", expenditure, where: "id = ?", whereArgs: [id]);
   }
@@ -135,7 +135,7 @@ class DatabaseClient {
     return result.map((map) => Budget.fromMap(map)).toList();
   }
 
-  Future<List<Bill>> getExpenditureByDate(String date) async {
+  Future<List<Bill>> getBillByDate(String date) async {
     var result = await _db.rawQuery(Query.expenditureByDateQuery, [date]);
 
     return result.map((record) {

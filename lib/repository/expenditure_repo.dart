@@ -49,12 +49,12 @@ class AppRepository {
     return _dbClient.getAmountSpentEachMonth(year);
   }
 
-  Future<List<Bill>> getExpenditureAt(DateTime dateTime, int limit) {
+  Future<List<Bill>> getBillAt(DateTime dateTime, int limit) {
     return _dbClient.getBillAtWithLimit(dateTime, limit);
   }
 
-  Future updateExpenditure(int id, Map<String, dynamic> expenditure) {
-    return _dbClient.updateExpenditure(id, expenditure);
+  Future updateBill(int id, Map<String, dynamic> expenditure) {
+    return _dbClient.updateBill(id, expenditure);
   }
 
   Future<List<PieData>> getPieData(String format, String date) {
@@ -66,19 +66,19 @@ class AppRepository {
   }
 
   Future deleteRepository(int id) {
-    return _dbClient.deleteExpenditure(id);
+    return _dbClient.deleteBill(id);
   }
 
-  Future<List<Bill>> getAllExpenditure(String date) {
-    return _dbClient.getExpenditureByDate(date);
+  Future<List<Bill>> getAllBills(String date) {
+    return _dbClient.getBillByDate(date);
   }
 
   Future<int?> getYearOfFirstInsert() {
     return _dbClient.getYearOfFirstInsert();
   }
 
-  Future saveExpenditure(Bill expenditure) {
-    return _dbClient.saveExpenditure(expenditure.toNewBillJson());
+  Future saveBill(Bill expenditure) {
+    return _dbClient.saveBill(expenditure.toNewBillJson());
   }
 
   void updateException(int exceptionId, Map<String, dynamic> json) async {

@@ -17,14 +17,14 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
 
   _onBillSave(BillSaveEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
-    await appRepo.saveExpenditure(e.expenditure);
+    await appRepo.saveBill(e.expenditure);
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
   _onNonRecurrenceUpdate(
       NonRecurringUpdateEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
-    await appRepo.updateExpenditure(e.update.id!, e.update.toNewBillJson());
+    await appRepo.updateBill(e.update.id!, e.update.toNewBillJson());
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
@@ -67,7 +67,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     appRepo.deleteParentExceptionAfterDate(
         update.parentId!, parentEndDate.toIso8601String());
 
-    await appRepo.saveExpenditure(update);
+    await appRepo.saveBill(update);
   }
 
   void updateSingleInstance(String instanceDate, Bill update) {
@@ -85,7 +85,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
   }
 
   void updateMultiple(String instanceDate, Bill update) {
-    appRepo.updateExpenditure(update.id!, update.toNewBillJson());
+    appRepo.updateBill(update.id!, update.toNewBillJson());
     appRepo.deleteAllExceptionsForParent(update.id!);
   }
 }

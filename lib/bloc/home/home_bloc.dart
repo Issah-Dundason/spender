@@ -22,7 +22,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     var expenditures =
         await appRepo.getAmountSpentEachMonth("${state.analysisYear}");
     var financials = await appRepo.getFinancials(yearAndMonth);
-    var transactions = await appRepo.getExpenditureAt(date, 3);
+    var transactions = await appRepo.getBillAt(date, 3);
     var firstRecordYear = await appRepo.getYearOfFirstInsert();
     emit(state.copyWith(
       loadingState: DataLoading.done,

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/expenses/expenses_state.dart';
@@ -20,7 +21,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
 
   void _onDateChange(ChangeDateEvent e, Emitter<ExpensesState> emitter) async {
     var date = DateFormat("yyyy-MM-dd").format(e.selectedDate);
-    var expenditures = await appRepo.getAllExpenditure(date);
+    var expenditures = await appRepo.getAllBills(date);
     emitter(state.copyWith(
         selectedDate: e.selectedDate, transactions: expenditures));
   }
@@ -33,7 +34,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   void _onLoad(ExpensesEvent e, Emitter<ExpensesState> emitter) async {
     emitter(state.copyWith(transactions: []));
     var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
-    var expenditures = await appRepo.getAllExpenditure(date);
+    var expenditures = await appRepo.getAllBills(date);
     emitter(state.copyWith(transactions: expenditures));
   }
 
@@ -43,7 +44,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     if (e.bill.isGenerated() && e.method == DeleteMethod.single) {
       _onDeleteSingleGenerated(e.bill);
     } else if (e.bill.isGenerated() && e.method == DeleteMethod.multiple) {
-      _onDeleteMultipleGenerated();
+      _onDeleteMultipleGenerated(e.bill);
     } else if (!e.bill.isGenerated() && e.method == DeleteMethod.single) {
       _onDeleteSingle();
     } else {
@@ -58,17 +59,13 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   }
 
   void _onDeleteSingleGenerated(Bill bill) {
-
     if (bill.exceptionId != null) {
-      print('here 1');
       appRepo.deleteGenerated(bill.exceptionId!);
       return;
     }
 
     DateTime date = DateTime.parse(bill.paymentDateTime);
     var exceptionDate = DateFormat('yyyy-MM-dd').format(date);
-
-    print('here 2');
 
     appRepo.createException({
       Bill.columnExceptionInstanceDate: exceptionDate,
@@ -77,8 +74,13 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     });
   }
 
-  void _onDeleteMultipleGenerated() {
-    print('multiple generated');
+  void _onDeleteMultipleGenerated(Bill bill) {
+    var parentEndDate = DateUtils.dateOnly(DateTime.parse(bill.paymentDateTime))
+        .subtract(const Duration(days: 1));
+    parentEndDate = parentEndDate.add(const Duration(hours: 23, minutes: 59));
+
+    appRepo.deleteParentExceptionAfterDate(
+        bill.parentId!, parentEndDate.toIso8601String());
   }
 
   void _onDeleteSingle() {
