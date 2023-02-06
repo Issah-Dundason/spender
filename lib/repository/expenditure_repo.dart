@@ -65,7 +65,7 @@ class AppRepository {
     return _dbClient.getOverallPieData();
   }
 
-  Future deleteRepository(int id) {
+  Future deleteBill(int id) {
     return _dbClient.deleteBill(id);
   }
 

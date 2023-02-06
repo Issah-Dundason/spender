@@ -48,14 +48,16 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     } else if (!e.bill.isGenerated() && e.method == DeleteMethod.single) {
       _onDeleteSingle(e.bill);
     } else {
-      _onDeleteMultiple();
+      _onDeleteMultiple(e.bill);
     }
     emitter(state.copyWith(deleteState: DeleteState.deleted));
   }
 
   void _onNonRecurringDelete(
       NonRecurringDelete e, Emitter<ExpensesState> emitter) {
-    print('Non recurring');
+    emitter(state.copyWith(deleteState: DeleteState.deleting));
+    appRepo.deleteBill(e.bill.id!);
+    emitter(state.copyWith(deleteState: DeleteState.deleted));
   }
 
   void _onDeleteSingleGenerated(Bill bill) {
@@ -99,7 +101,8 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     });
   }
 
-  void _onDeleteMultiple() {
-    print('recurring not generate multiple');
+  void _onDeleteMultiple(Bill bill) {
+    appRepo.deleteBill(bill.id!);
+    appRepo.deleteAllExceptionsForParent(bill.id!);
   }
 }
