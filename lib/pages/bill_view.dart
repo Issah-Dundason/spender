@@ -459,10 +459,16 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
                     alignment: Alignment.bottomCenter,
                     child: Container(
                         color: Theme.of(context).colorScheme.background,
-                        child: CustomKeys(
-                          height: keysHeight,
-                          width: width * 0.7,
-                          onKeyTapped: _onAmountChanged,
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomKeys(
+                              height: keysHeight,
+                              width: width * 0.7,
+                              onKeyTapped: _onAmountChanged,
+                            ),
+                          ],
                         )),
                   ),
                 ),

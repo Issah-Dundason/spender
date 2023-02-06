@@ -20,6 +20,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   }
 
   void _onDateChange(ChangeDateEvent e, Emitter<ExpensesState> emitter) async {
+    emitter(state.copyWith(deleteState: DeleteState.none));
     var date = DateFormat("yyyy-MM-dd").format(e.selectedDate);
     var expenditures = await appRepo.getAllBills(date);
     emitter(state.copyWith(
@@ -27,15 +28,17 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   }
 
   void _onStart(OnStartEvent e, Emitter<ExpensesState> emitter) async {
+    emitter(state.copyWith(deleteState: DeleteState.none));
     int? year = await appRepo.getYearOfFirstInsert();
     emitter(state.copyWith(yearOfFirstInsert: year, initialized: true));
   }
 
   void _onLoad(ExpensesEvent e, Emitter<ExpensesState> emitter) async {
-    emitter(state.copyWith(transactions: []));
+    emitter(state.copyWith(transactions: [], deleteState: DeleteState.none));
     var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
     var expenditures = await appRepo.getAllBills(date);
-    emitter(state.copyWith(transactions: expenditures));
+    int? year = await appRepo.getYearOfFirstInsert();
+    emitter(state.copyWith(transactions: expenditures, yearOfFirstInsert: year));
   }
 
   void _onRecurrentDelete(

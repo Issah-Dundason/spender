@@ -229,15 +229,6 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
             ))));
   }
 
-  // void selfDestruct() async {
-  //   var appRepository = context.read<AppRepository>();
-  //   await appRepository.deleteRepository(widget.expenditure.id!);
-  //   if (!mounted) return;
-  //   ScaffoldMessenger.of(context)
-  //       .showSnackBar(const SnackBar(content: Text('Deleted')));
-  //   notifyBlocs();
-  // }
-
   void onDelete() async {
     var isRecurring = widget.expenditure.isRecurring;
     if (isRecurring) {
