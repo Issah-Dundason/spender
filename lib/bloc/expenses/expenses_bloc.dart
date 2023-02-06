@@ -46,7 +46,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     } else if (e.bill.isGenerated() && e.method == DeleteMethod.multiple) {
       _onDeleteMultipleGenerated(e.bill);
     } else if (!e.bill.isGenerated() && e.method == DeleteMethod.single) {
-      _onDeleteSingle();
+      _onDeleteSingle(e.bill);
     } else {
       _onDeleteMultiple();
     }
@@ -83,8 +83,20 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
         bill.parentId!, parentEndDate.toIso8601String());
   }
 
-  void _onDeleteSingle() {
-    print('recurring not generated');
+  void _onDeleteSingle(Bill bill) {
+    if (bill.exceptionId != null) {
+      appRepo.deleteGenerated(bill.exceptionId!);
+      return;
+    }
+
+    DateTime date = DateTime.parse(bill.paymentDateTime);
+    var exceptionDate = DateFormat('yyyy-MM-dd').format(date);
+
+    appRepo.createException({
+      Bill.columnExceptionInstanceDate: exceptionDate,
+      Bill.columnExceptionParentId: bill.id,
+      "deleted": 1
+    });
   }
 
   void _onDeleteMultiple() {

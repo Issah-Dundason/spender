@@ -14,6 +14,7 @@ class ExpensesTransactions extends StatelessWidget {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9,
       child: BlocBuilder<ExpensesBloc, ExpensesState>(
+
         builder: (context, state) {
           if (state.transactions.isEmpty) {
             return Padding(
