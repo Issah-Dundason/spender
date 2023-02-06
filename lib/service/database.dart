@@ -213,6 +213,11 @@ class DatabaseClient {
     await _db.delete('expenditure_exception',
         where: '${Bill.columnExceptionParentId} = ?', whereArgs: [parentId]);
   }
+
+  Future<void> deleteGeneratedException(int exceptionId) async {
+    await _db.update('expenditure_exception', {'deleted': 1},
+        where: "id = ?", whereArgs: [exceptionId]);
+  }
 }
 
 class PieData extends Equatable {

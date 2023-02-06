@@ -4,6 +4,8 @@ import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/expenses/expenses_state.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 
+import '../../model/bill.dart';
+
 class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   final AppRepository appRepo;
 
@@ -37,16 +39,17 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
 
   void _onRecurrentDelete(
       RecurrentDeleteEvent e, Emitter<ExpensesState> emitter) {
-    if(e.bill.isGenerated() && e.method == DeleteMethod.single) {
-      _onDeleteSingleGenerated();
-    }
-    else if(e.bill.isGenerated() && e.method == DeleteMethod.multiple) {
+    emitter(state.copyWith(deleteState: DeleteState.deleting));
+    if (e.bill.isGenerated() && e.method == DeleteMethod.single) {
+      _onDeleteSingleGenerated(e.bill);
+    } else if (e.bill.isGenerated() && e.method == DeleteMethod.multiple) {
       _onDeleteMultipleGenerated();
-    } else if(!e.bill.isGenerated() && e.method == DeleteMethod.single) {
+    } else if (!e.bill.isGenerated() && e.method == DeleteMethod.single) {
       _onDeleteSingle();
     } else {
       _onDeleteMultiple();
     }
+    emitter(state.copyWith(deleteState: DeleteState.deleted));
   }
 
   void _onNonRecurringDelete(
@@ -54,8 +57,24 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     print('Non recurring');
   }
 
-  void _onDeleteSingleGenerated() {
-    print('Single deleted');
+  void _onDeleteSingleGenerated(Bill bill) {
+
+    if (bill.exceptionId != null) {
+      print('here 1');
+      appRepo.deleteGenerated(bill.exceptionId!);
+      return;
+    }
+
+    DateTime date = DateTime.parse(bill.paymentDateTime);
+    var exceptionDate = DateFormat('yyyy-MM-dd').format(date);
+
+    print('here 2');
+
+    appRepo.createException({
+      Bill.columnExceptionInstanceDate: exceptionDate,
+      Bill.columnExceptionParentId: bill.parentId,
+      "deleted": 1
+    });
   }
 
   void _onDeleteMultipleGenerated() {

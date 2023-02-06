@@ -22,10 +22,12 @@ class ExpensesState extends Equatable {
       {List<Bill>? transactions,
       DateTime? selectedDate,
       bool? initialized,
+      DeleteState? deleteState,
       int? yearOfFirstInsert}) {
     return ExpensesState(
         yearOfFirstInsert: yearOfFirstInsert ?? this.yearOfFirstInsert,
         initialized: initialized ?? this.initialized,
+        deleteState: deleteState ?? this.deleteState,
         selectedDate: selectedDate ?? this.selectedDate,
         transactions: transactions ?? this.transactions);
   }

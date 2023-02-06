@@ -47,7 +47,8 @@ class Query {
         "amount"	NUMERIC DEFAULT 0,
         "instance_date"	INTEGER,
         "deleted"	INTEGER DEFAULT 0,
-        PRIMARY KEY("id" AUTOINCREMENT)
+        PRIMARY KEY("id" AUTOINCREMENT),
+        UNIQUE ("instance_date", "expenditure_id")
     );
   ''';
 
@@ -87,7 +88,7 @@ class Query {
                 END
            <= datetime(end_date)
           ),
-          resolvedData AS (
+          generatedData AS (
             SELECT
                r.id,	
              
@@ -127,7 +128,9 @@ class Query {
             
             ed.id AS exception_id,
             
-            r.end_date
+            r.end_date,
+            
+            ed.deleted
           
             FROM recurringData r
             LEFT JOIN expenditure_exception ed
@@ -138,7 +141,8 @@ class Query {
                   ELSE r.id 
                   END   
             = ed.expenditure_id
-           AND ed.deleted != 1
+      ), resolvedData AS (
+          SELECT * FROM generatedData WHERE deleted IS NULL OR deleted = 0
       )
   ''';
 

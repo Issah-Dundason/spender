@@ -213,7 +213,6 @@ class Bill extends Equatable {
       return prev;
     });
   }
-
   @override
   List<Object?> get props {
     return [id, paymentDateTime, amount, priority, description, paymentType];

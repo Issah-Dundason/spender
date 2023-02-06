@@ -96,4 +96,8 @@ class AppRepository {
   void deleteAllExceptionsForParent(int i) async {
     await _dbClient.deleteAllExceptionsForParent(i);
   }
+
+  void deleteGenerated(int exceptionId) async {
+    await _dbClient.deleteGeneratedException(exceptionId);
+  }
 }
