@@ -21,108 +21,123 @@ class Receipt extends StatelessWidget {
           width: size.width * 0.7,
           height: size.height * 0.5,
           color: Theme.of(context).colorScheme.background,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              //header
-              Container(
-                height: 50,
-                color: Theme.of(context).colorScheme.secondary,
-                child: Center(
-                  child: Text(
-                    'Transaction',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500),
+              Image.asset('assets/images/background/receipt_bg.png', width: 180, height: 180,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  //header
+                  Container(
+                    height: 50,
+                    color: Theme.of(context).colorScheme.secondary,
+                    child: Center(
+                      child: Text(
+                        'Transaction',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              //body
-              const SizedBox(
-                height: 20,
-              ),
-             Padding(
-               padding: const EdgeInsets.symmetric(horizontal: 20),
-               child: Column(
-                 children: [
-                   Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: [
-                       const Text(
-                         'Bill',
-                         style: textStyle,
-                       ),
-                       Text(
-                         expenditure.title,
-                         style: textStyle,
-                       )
-                     ],
-                   ),
-                   const SizedBox(height: 20,),
-                   Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: [
-                       const Text('Amount Spent'),
-                       Text(
-                           '₵${NumberFormat().format(AppUtils.amountPresented(expenditure.amount))}')
-                     ],
-                   ),
-                   const SizedBox(height: 20,),
-                   Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: [
-                       const Text('Payment type'),
-                       Text(expenditure.paymentType.name.toUpperCase())
-                     ],
-                   ),
-                   const SizedBox(height: 20,),
-                   Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: [
-                       const Text('Priority of service'),
-                       Text(expenditure.priority.name.toUpperCase()),
-                     ],
-                   ),
-                   const SizedBox(height: 20,),
-                   Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: [
-                       const Text('Bill Type'),
-                       Text(expenditure.type.name.toUpperCase()),
-                     ],
-                   ),
-                   if (expenditure.description != null &&
-                       expenditure.description!.isNotEmpty)
-                     const Padding(
-                       padding: EdgeInsets.only(top: 20.0, left: 8),
-                       child: Text('Description'),
-                     ),
-                   if (expenditure.description != null &&
-                       expenditure.description!.isNotEmpty)
-                     Padding(
-                       padding: const EdgeInsets.only(left: 8.0, top: 6, right: 8.0),
-                       child: Text(expenditure.description!),
-                     ),
-                 ],
-               ),
-             ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 25),
-                    child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                top: buildBorderSide(context),
-                                left: buildBorderSide(context),
-                                right: buildBorderSide(context))),
-                        child: Text(expenditure.formattedDate)),
+                  //body
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-              )
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Bill',
+                              style: textStyle,
+                            ),
+                            Text(
+                              expenditure.title,
+                              style: textStyle,
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Amount Spent'),
+                            Text(
+                                '₵${NumberFormat().format(AppUtils.amountPresented(expenditure.amount))}')
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Payment type'),
+                            Text(expenditure.paymentType.name.toUpperCase())
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Priority of service'),
+                            Text(expenditure.priority.name.toUpperCase()),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Bill Type'),
+                            Text(expenditure.type.name.toUpperCase()),
+                          ],
+                        ),
+                        if (expenditure.description != null &&
+                            expenditure.description!.isNotEmpty)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 20.0, left: 8),
+                            child: Text('Description'),
+                          ),
+                        if (expenditure.description != null &&
+                            expenditure.description!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, top: 6, right: 8.0),
+                            child: Text(expenditure.description!),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 25),
+                        child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    top: buildBorderSide(context),
+                                    left: buildBorderSide(context),
+                                    right: buildBorderSide(context))),
+                            child: Text(expenditure.formattedDate)),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ],
           ),
         ),

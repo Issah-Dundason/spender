@@ -46,6 +46,7 @@ flutter:
   assets:
     - assets/images/avatar/
     - assets/images/bills/
+    - assets/images/background/
 
 
   fonts:
