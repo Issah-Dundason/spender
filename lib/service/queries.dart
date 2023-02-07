@@ -45,7 +45,7 @@ class Query {
         "payment_datetime"	TEXT,
         "expenditure_id"	NUMERIC NOT NULL,
         "amount"	NUMERIC DEFAULT 0,
-        "instance_date"	INTEGER,
+        "instance_date"	TEXT,
         "deleted"	INTEGER DEFAULT 0,
         PRIMARY KEY("id" AUTOINCREMENT),
         UNIQUE ("instance_date", "expenditure_id")
@@ -245,6 +245,7 @@ class Query {
      FROM secondResolved s
      JOIN bill_type bp ON
      s.bill_type = bp.id
-     GROUP BY strftime($format, payment_datetime), s.bill_type HAVING strftime($format, s.payment_datetime) = '$date';
+     GROUP BY strftime($format, payment_datetime), s.bill_type 
+     HAVING strftime($format, s.payment_datetime) = '$date';
   ''';
 }

@@ -24,25 +24,6 @@ void main() async {
 
   AppRepository appRepo = AppRepository(dbClient);
 
-  var a = DateTime(2023, 1, 1);
-
-  var b = DateTime(2023, 1, 4);
-
-  //print('${a.difference(b).inDays}');
-
-  // DateTime date = DateTime(2019, 02);
-  //
-  // var b = Budget(date.toIso8601String(), 323);
-  //
-  // appRepo.saveBudget(b);
-
-  // var types = await dbClient.getProductTypes();
-  //
-  // var expenditure = Expenditure.withDate("First Insert", "For testing",
-  //     PaymentType.momo, types[0], DateTime.utc(2019, 05, 01).toIso8601String(), 100, Priority.want);
-  //
-  // await dbClient.saveExpenditure(expenditure.toJson());
-
   //check shared preference
   final prefs = await SharedPreferences.getInstance();
   String? avatar = prefs.getString("profile/avatar");
