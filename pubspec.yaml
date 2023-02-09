@@ -22,15 +22,21 @@ dependencies:
   bloc: ^8.1.0
   equatable: ^2.0.5
   decimal: ^2.3.2
-  fl_chart: ^0.55.2
-  datepicker_dropdown: ^0.0.7+2
+  fl_chart: ^0.60.0
   flutter_svg: ^1.1.6
+  table_calendar: ^3.0.9
+  shared_preferences: ^2.0.15
+  json_annotation: ^4.8.0
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.11.0"
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  json_serializable: ^6.6.0
+  build_runner: ^2.3.3
+  sqflite_common_ffi: ^2.2.1+1
 
 flutter:
 
@@ -38,8 +44,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/no_budget.png
     - assets/images/avatar/
+    - assets/images/bills/
+    - assets/images/background/
 
 
   fonts:
@@ -55,7 +62,30 @@ flutter:
     - family: whiteboard
       fonts:
         - asset: assets/fonts/whiteboard.ttf
-    - family: cart
+    - family: Back
       fonts:
-        - asset: assets/fonts/cart.ttf
-
+        - asset: assets/fonts/Back.ttf
+    - family: Divider
+      fonts:
+        - asset: assets/fonts/Divider.ttf
+    - family: Equal
+      fonts:
+        - asset: assets/fonts/Equal.ttf
+    - family: Multiply
+      fonts:
+        - asset: assets/fonts/Multiply.ttf
+    - family: Dot
+      fonts:
+        - asset: assets/fonts/Dot.ttf
+    - family: minus
+      fonts:
+        - asset: assets/fonts/minus.ttf
+    - family: Plus
+      fonts:
+        - asset: assets/fonts/Plus.ttf
+    - family: WorkSans
+      fonts:
+        - asset: assets/fonts/WorkSans-Regular.ttf
+        - asset: assets/fonts/WorkSans-Medium.ttf
+        - asset: assets/fonts/WorkSans-Thin.ttf
+        - asset: assets/fonts/WorkSans-Bold.ttf

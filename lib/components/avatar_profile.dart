@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class AvatarProfile extends StatelessWidget {
+  final String assetName;
+
   const AvatarProfile(
       {Key? key,
       required this.avatarHeight,
       required this.avatarWidth,
-      required this.backColor})
+      required this.backColor,
+        required this.assetName})
       : super(key: key);
   final double avatarHeight;
   final double avatarWidth;
@@ -21,10 +24,10 @@ class AvatarProfile extends StatelessWidget {
       decoration: BoxDecoration(
         color: backColor,
         borderRadius: const BorderRadius.all(
-          Radius.circular(10),
+          Radius.circular(15),
         ),
       ),
-      child: SvgPicture.asset('assets/images/avatar/035-man.svg'),
+      child: SvgPicture.asset('assets/images/avatar/$assetName'),
     );
   }
 }

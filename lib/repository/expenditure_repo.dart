@@ -1,40 +1,103 @@
-import 'package:spender/model/expenditure.dart';
+import 'package:spender/model/bill.dart';
 import 'package:spender/service/database.dart';
 
 import '../model/bill_type.dart';
 import '../model/budget.dart';
 
 class AppRepository {
-  late DatabaseClient dbClient;
+  final DatabaseClient _dbClient;
 
-  AppRepository(this.dbClient);
+  AppRepository(this._dbClient);
 
-  Future<Budget?> getBudget(String date) {
-    return dbClient.getBudget(date);
+  Future<bool> budgetExist(String yearMonth) {
+    return _dbClient.budgetExists(yearMonth);
+  }
+
+  Future updateBudget(Budget budget) {
+    return _dbClient.updateBudget(budget);
+  }
+
+  Future saveBudget(Budget budget) {
+    return _dbClient.saveBudget(budget);
+  }
+
+  Future<Budget?> getBudget(String yearMonth) {
+    return _dbClient.getBudget(yearMonth);
+  }
+
+  Future<List<Budget>> getBudgetsForYear(String year) {
+    return _dbClient.getBudgets(year);
+  }
+
+  Future<int?> getYearOfFirstBudget() {
+    return _dbClient.getYearOfFirstBudget();
+  }
+
+  Future<bool> didTransactionsOnDay(String day) {
+    return _dbClient.didTransactionOccurOnDay(day);
   }
 
   Future<Financials?> getFinancials(String date) {
-    return dbClient.getFinancials(date);
+    return _dbClient.getFinancials(date);
   }
 
   Future<List<BillType>> getBillTypes() {
-    return dbClient.getProductTypes();
+    return _dbClient.getProductTypes();
   }
 
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) {
-    return dbClient.getAmountSpentEachMonth(year);
+    return _dbClient.getAmountSpentEachMonth(year);
   }
 
-  Future<List<Expenditure>> getExpenditureAt(String date, int limit) {
-    return dbClient.getExpenditureAtWithLimit(date, limit);
+  Future<List<Bill>> getBillAt(DateTime dateTime, int limit) {
+    return _dbClient.getBillAtWithLimit(dateTime, limit);
+  }
+
+  Future updateBill(int id, Map<String, dynamic> expenditure) {
+    return _dbClient.updateBill(id, expenditure);
+  }
+
+  Future<List<PieData>> getPieData(String format, String date) {
+    return _dbClient.getPieData(format, date);
+  }
+
+  Future<List<PieData>> getOverallPieData() {
+    return _dbClient.getOverallPieData();
+  }
+
+  Future deleteBill(int id) {
+    return _dbClient.deleteBill(id);
+  }
+
+  Future<List<Bill>> getAllBills(String date) {
+    return _dbClient.getBillByDate(date);
   }
 
   Future<int?> getYearOfFirstInsert() {
-    return dbClient.getYearOfFirstInsert();
+    return _dbClient.getYearOfFirstInsert();
   }
 
-  Future  saveExpenditure(Expenditure expenditure) {
-    return dbClient.saveExpenditure(expenditure.toJson());
+  Future saveBill(Bill expenditure) {
+    return _dbClient.saveBill(expenditure.toNewBillJson());
   }
 
+  void updateException(int exceptionId, Map<String, dynamic> json) async {
+    await _dbClient.updateException(exceptionId, json);
+  }
+
+  void createException(Map<String, dynamic> json) async {
+   await _dbClient.createException(json);
+  }
+
+  void deleteParentExceptionAfterDate(int parentId, String endDate)  {
+  _dbClient.deleteParentExceptionAfterDate(parentId, endDate);
+  }
+
+  void deleteAllExceptionsForParent(int i) async {
+    await _dbClient.deleteAllExceptionsForParent(i);
+  }
+
+  void deleteGenerated(int exceptionId) async {
+    await _dbClient.deleteGeneratedException(exceptionId);
+  }
 }

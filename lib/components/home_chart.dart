@@ -1,8 +1,9 @@
-import 'package:decimal/decimal.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:spender/util/app_utils.dart';
 
-import '../bloc/home_state.dart';
+import '../bloc/home/home_state.dart';
 import '../service/database.dart';
 
 class ChartWidget extends StatefulWidget {
@@ -36,34 +37,30 @@ class _ChartWidgetState extends State<ChartWidget> {
   @override
   Widget build(BuildContext context) {
     _scrollToRightPosition();
-    return Align(
-      alignment: Alignment.center,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.7,
-        height: 200,
-        child: SingleChildScrollView(
-          controller: scrollController,
-          scrollDirection: Axis.horizontal,
-          child: AspectRatio(
-            aspectRatio: 5,
-            child: BarChart(BarChartData(
-                gridData: FlGridData(show: false),
-                borderData: FlBorderData(
-                  border: null,
-                  show: false,
-                ),
-                titlesData: FlTitlesData(
-                    leftTitles:
-                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: AxisTitles(),
-                    topTitles: AxisTitles(
-                        sideTitles: _topTitle(context,
-                            _displayList(widget.state.monthExpenditures))),
-                    bottomTitles:
-                        AxisTitles(sideTitles: _getBottomTitle(context))),
-                barGroups: _chartGroups(
-                    _displayList(widget.state.monthExpenditures), context))),
-          ),
+    return SizedBox(
+      height: 200,
+      child: SingleChildScrollView(
+        controller: scrollController,
+        scrollDirection: Axis.horizontal,
+        child: AspectRatio(
+          aspectRatio: 3.5,
+          child: BarChart(BarChartData(
+              gridData: FlGridData(show: false),
+              borderData: FlBorderData(
+                border: null,
+                show: false,
+              ),
+              titlesData: FlTitlesData(
+                  leftTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(),
+                  topTitles: AxisTitles(
+                      sideTitles: _topTitle(context,
+                          _displayList(widget.state.monthExpenditures))),
+                  bottomTitles:
+                      AxisTitles(sideTitles: _getBottomTitle(context))),
+              barGroups: _chartGroups(
+                  _displayList(widget.state.monthExpenditures), context))),
         ),
       ),
     );
@@ -86,8 +83,7 @@ class _ChartWidgetState extends State<ChartWidget> {
       List<MonthSpending> monthSpendings, BuildContext context) {
     var month = DateTime.now().month;
     return monthSpendings.map((m) {
-      Decimal decimal = Decimal.fromInt(m.amount);
-      var r = decimal / Decimal.fromInt(100);
+      var r = AppUtils.amountPresented(m.amount);
       return BarChartGroupData(barsSpace: 30, x: m.month, barRods: [
         BarChartRodData(
             color: month == m.month
@@ -95,7 +91,7 @@ class _ChartWidgetState extends State<ChartWidget> {
                 : Theme.of(context).colorScheme.tertiary,
             borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(12), topLeft: Radius.circular(12)),
-            toY: r.toDouble(),
+            toY: r,
             width: 50)
       ]);
     }).toList();
@@ -108,9 +104,8 @@ class _ChartWidgetState extends State<ChartWidget> {
         getTitlesWidget: (value, meta) {
           var month = DateTime.now().month;
           var ms = monthSpendings.firstWhere((m) => m.month == value.toInt());
-          Decimal d = Decimal.fromInt(ms.amount);
-          var r = d / Decimal.fromInt(100);
-          return Text('₵${r.toDouble()}',
+          var r = AppUtils.amountPresented(ms.amount);
+          return Text('₵${NumberFormat().format(r)}',
               style: TextStyle(
                 color: value.toInt() == month
                     ? Theme.of(context).colorScheme.primary

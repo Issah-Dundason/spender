@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 
-import '../icons/icons.dart';
 
 class TransactionTile extends StatelessWidget {
   const TransactionTile(
       {super.key,
-      this.icon = Cart.icon,
-      this.store = "Puma Store",
+      this.bill = "Puma Store",
       this.type = "Bank Amount",
-      this.amount = '954',
-      this.date = "Fri, 05 April 2022"});
+      this.amount = 954,
+      this.date = "Fri, 05 April 2022", required this.image});
 
-  final IconData icon;
-  final String store;
+  final String bill;
   final String type;
-  final String amount;
+  final double amount;
   final String date;
+  final String image;
 
   @override
   Widget build(BuildContext context) {
@@ -23,40 +23,70 @@ class TransactionTile extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.grey[200],
-      child: ListTile(
-        leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(12)),
-            child: Icon(
-              icon,
-              size: 35,
-              color: Colors.black,
-            )),
-        title: Text(
-          store,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(type,
-            style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
-        trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.all(11.0),
+        child: Row(
             children: [
-              Text(
-                "₵$amount",
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: SvgPicture.asset(
+                  'assets/images/bills/$image',
+                  fit: BoxFit.scaleDown,
+                  width: 40,
+                  height: 40,
+                ),
               ),
-              Text(
-                date,
-                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              const SizedBox(width: 10,),
+              Expanded(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: Text(
+                          bill,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      Text(
+                        type,
+                        style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                      )
+                    ]),
+              ),
+
+              Expanded(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "₵${NumberFormat().format(amount)}",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 5,),
+                      Text(
+                        date,
+                        style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                      )
+                    ]),
               )
-            ]),
-      ),
+            ],
+        ),
+      )
     );
   }
 }

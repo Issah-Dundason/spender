@@ -1,16 +1,29 @@
-# spender
+## Tracedi   
 
-A new Flutter project.
+> <img src="./assets/icon/icon.png" width="40" height="40"/>
 
-## Getting Started
+### Project Description
+This app help users track their spending and also maintain a healthy budget. The app provides its
+user with a graphical understanding of their expenses.
 
-This project is a starting point for a Flutter application.
+### Features
+<ul style="list-style-type: none;">
+    <li>:point_right: Record recurring and non recurring bills</li>
+    <li>:point_right: View statistics</li>
+    <li>:point_right: Update bills</li>
+    <li>:point_right: Set monthly budgets</li>
+    <li>:point_right: In built calculator</li>
+    <li>:point_right: Beautiful UI</li>
+</ul>
 
-A few resources to get you started if this is your first Flutter project:
+### State Manager
+<a href="https://pub.dev/packages/flutter_bloc">Bloc</a>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Preview
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<p style="text-align: center">
+    <img src="./snapshots/snap.png" width="500" />
+</p>
+
+### Tech Stack
+Mobile App: Flutter | dart

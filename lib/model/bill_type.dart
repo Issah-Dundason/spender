@@ -1,18 +1,25 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class BillType extends Equatable{
+part 'bill_type.g.dart';
+
+@JsonSerializable()
+class BillType extends Equatable {
+  @JsonKey(name: "bill_type")
   final int id;
+
+  @JsonKey(name: "bill_name")
   final String name;
 
-  const BillType(this.id, this.name);
+  @JsonKey(name: "bill_image")
+  final String image;
+
+  const BillType(this.id, this.name, this.image);
+
+  factory BillType.fromMap(Map<String, dynamic> json) =>
+      _$BillTypeFromJson(json);
 
   toMap() => {"id": id, "name": name};
-
-  static fromMap(Map<String, dynamic> map) {
-    int id = map["pid"];
-    String name = map["pname"];
-    return BillType(id, name);
-  }
 
   @override
   List<Object?> get props => [id, name];
