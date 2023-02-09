@@ -1,4 +1,7 @@
 class Query {
+
+  Query._();
+
   static String billTypeTable = '''
       CREATE TABLE "bill_type" (
         "id"	INTEGER NOT NULL,
@@ -31,7 +34,7 @@ class Query {
           id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
           date TEXT NOT NULL UNIQUE,
           amount INTEGER NOT NULL
-       );
+        );
     ''';
 
   static String expenditureExceptionTable = '''
@@ -49,7 +52,7 @@ class Query {
         "deleted"	INTEGER DEFAULT 0,
         PRIMARY KEY("id" AUTOINCREMENT),
         UNIQUE ("instance_date", "expenditure_id")
-    );
+      );
   ''';
 
   static String generateRecursionQuery = '''

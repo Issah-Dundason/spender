@@ -64,6 +64,15 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   }
 
   void _onDeleteSingleGenerated(Bill bill) {
+    var billDate = DateTime.parse(bill.paymentDateTime);
+    var endDate = DateTime.parse(bill.endDate!);
+
+    if(DateUtils.isSameDay(billDate, endDate)) {
+      var end = endDate.subtract(const Duration(days: 1));
+      appRepo.deleteParentExceptionAfterDate(bill.parentId!, end.toIso8601String());
+      return;
+    }
+
     if (bill.exceptionId != null) {
       appRepo.deleteGenerated(bill.exceptionId!);
       return;
@@ -89,6 +98,14 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   }
 
   void _onDeleteSingle(Bill bill) {
+    var end = DateTime.parse(bill.endDate!);
+    var start = DateTime.parse(bill.paymentDateTime);
+
+    if(DateUtils.isSameDay(end, start)) {
+      _onDeleteMultiple(bill);
+      return;
+    }
+
     if (bill.exceptionId != null) {
       appRepo.deleteGenerated(bill.exceptionId!);
       return;

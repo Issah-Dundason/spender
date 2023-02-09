@@ -32,39 +32,6 @@ class Whiteboard {
   static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
 }
 
-class Cart {
-  Cart._();
-
-  static const String _fontFamily = 'cart';
-
-  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
-}
-
-class Bin {
-  Bin._();
-
-  static const String _fontFamily = 'Bin';
-
-  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
-}
-
-
-class QuillPencil {
-  QuillPencil._();
-
-  static const String _fontFamily = 'QuillPencil';
-
-  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
-}
-
-class ReceiptIcon {
-  ReceiptIcon._();
-
-  static const String _fontFamily = 'Receipt';
-
-  static const IconData icon = IconData(0xe900, fontFamily: _fontFamily);
-}
-
 class Back {
   Back._();
 

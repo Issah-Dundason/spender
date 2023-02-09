@@ -218,6 +218,13 @@ class DatabaseClient {
     await _db.update('expenditure_exception', {'deleted': 1},
         where: "id = ?", whereArgs: [exceptionId]);
   }
+
+  Future<Bill?> getBillById(int id) async {
+    //_db.rawQuery('expenditure', whereArgs: [id]);
+    // TO DO
+    return null;
+  }
+
 }
 
 class PieData extends Equatable {
