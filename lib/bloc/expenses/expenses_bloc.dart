@@ -44,11 +44,11 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   void _onRecurrentDelete(
       RecurrentDeleteEvent e, Emitter<ExpensesState> emitter) {
     emitter(state.copyWith(deleteState: DeleteState.deleting));
-    if (e.bill.isGenerated() && e.method == DeleteMethod.single) {
+    if (e.bill.isGenerated && e.method == DeleteMethod.single) {
       _onDeleteSingleGenerated(e.bill);
-    } else if (e.bill.isGenerated() && e.method == DeleteMethod.multiple) {
+    } else if (e.bill.isGenerated && e.method == DeleteMethod.multiple) {
       _onDeleteMultipleGenerated(e.bill);
-    } else if (!e.bill.isGenerated() && e.method == DeleteMethod.single) {
+    } else if (!e.bill.isGenerated && e.method == DeleteMethod.single) {
       _onDeleteSingle(e.bill);
     } else {
       _onDeleteMultiple(e.bill);

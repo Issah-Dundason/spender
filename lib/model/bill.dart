@@ -29,13 +29,14 @@ Pattern patternFromIndex(int index) {
   return Pattern.values[index];
 }
 
-int isRecurringToJson(bool value) {
-  return value == true ? 1 : 0;
-}
-
-bool isRecurringFromJson(int value) {
-  return value == 1;
-}
+// int isRecurringToJson(bool value) {
+//   print('value of interest: $value');
+//   return value == true ? 1 : 0;
+// }
+//
+// bool isRecurringFromJson(int value) {
+//   return value == 1;
+// }
 
 @JsonSerializable()
 class Bill extends Equatable {
@@ -64,16 +65,16 @@ class Bill extends Equatable {
 
   final Priority priority;
 
-  @JsonKey(name: columnIsRecurring)
+  @JsonKey(name: columnPaymentType)
   final PaymentType paymentType;
 
   final String? description;
 
-  @JsonKey(
-      name: columnIsRecurring,
-      toJson: isRecurringToJson,
-      fromJson: isRecurringFromJson)
-  final bool isRecurring;
+  // @JsonKey(
+  //     name: columnIsRecurring,
+  //     toJson: isRecurringToJson,
+  //     fromJson: isRecurringFromJson)
+  // final bool isRecurring;
 
   @JsonKey(toJson: patternToInt, fromJson: patternFromIndex)
   final Pattern pattern;
@@ -99,7 +100,6 @@ class Bill extends Equatable {
       required this.priority,
       required this.paymentType,
       this.description,
-      this.isRecurring = false,
       required this.pattern,
       this.parentId,
       required this.paymentDateTime,
@@ -114,7 +114,6 @@ class Bill extends Equatable {
       Priority? priority,
       PaymentType? paymentType,
       String? description,
-      bool? isRecurring,
       Pattern? pattern,
       int? parentId,
       String? paymentDateTime,
@@ -128,7 +127,6 @@ class Bill extends Equatable {
         priority: priority ?? this.priority,
         paymentType: paymentType ?? this.paymentType,
         description: description ?? this.description,
-        isRecurring: isRecurring ?? this.isRecurring,
         pattern: pattern ?? this.pattern,
         parentId: parentId ?? this.parentId,
         paymentDateTime: paymentDateTime ?? this.paymentDateTime,
@@ -182,9 +180,9 @@ class Bill extends Equatable {
     return cash;
   }
 
-  bool isGenerated() {
-    return id == -1;
-  }
+  bool get isGenerated =>  id == -1;
+
+  bool get isRecurring => pattern != Pattern.once;
 
   static List<String> differentFields(Bill a, Bill b) {
     var aMap = a.toJson();

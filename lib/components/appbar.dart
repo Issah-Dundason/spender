@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:spender/pages/profile_page.dart';
 
@@ -9,6 +10,9 @@ class TopBar {
         backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
         centerTitle: true,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent, // <-- SEE HERE
+        ),
         leading: GestureDetector(
           onTap: func,
           child: Padding(

@@ -17,9 +17,8 @@ class Query {
         "title"	TEXT NOT NULL,
         "bill_type"	INTEGER,
         "priority"	INTEGER NOT NULL DEFAULT 0,
-        "payment_type"	INTEGER NOT NULL,
+        "payment_type"	TEXT NOT NULL,
         "description"	TEXT,
-        "is_recurring"	INTEGER NOT NULL DEFAULT 0,
         "pattern"	INTEGER,
         "parent_id"	INTEGER,
         "payment_datetime"	TEXT NOT NULL,
@@ -43,7 +42,7 @@ class Query {
         "title"	NUMERIC,
         "bill_type"	INTEGER,
         "priority"	INTEGER,
-        "payment_type"	INTEGER,
+        "payment_type"	TEXT,
         "description"	TEXT,
         "payment_datetime"	TEXT,
         "expenditure_id"	NUMERIC NOT NULL,
@@ -65,7 +64,6 @@ class Query {
               priority, 
               payment_type, 
               description,
-              is_recurring,
               pattern,
               CASE WHEN recurringData.id = -1
               THEN recurringData.parent_id
@@ -81,7 +79,7 @@ class Query {
               amount,
               end_date
           FROM recurringData 
-          WHERE is_recurring = 1 AND
+          WHERE pattern != 0 AND
            CASE 
                 WHEN pattern = 2 
                   THEN datetime(payment_datetime, '7 days')
@@ -114,8 +112,6 @@ class Query {
             CASE WHEN ed.description IS NOT NULL 
               THEN ed.description
             ELSE r.description END AS description,
-            
-            r.is_recurring,
             
             r.pattern,
             

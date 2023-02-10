@@ -21,9 +21,8 @@ user with a graphical understanding of their expenses.
 
 Preview
 
-<p style="text-align: center">
-    <img src="./snapshots/snap.png" width="500" />
-</p>
+
+<img src="./snapshots/snap.png" style="display: block; margin-left: auto; margin-right:auto; width: 50%"/>
 
 ### Tech Stack
 Mobile App: Flutter | dart

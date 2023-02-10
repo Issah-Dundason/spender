@@ -7,6 +7,7 @@ import 'package:spender/bloc/bill/billing_state.dart';
 import 'package:spender/util/app_utils.dart';
 
 import '../bloc/bill/bill_bloc.dart';
+import '../components/product_dropdown.dart';
 import '../model/bill_type.dart';
 import '../model/bill.dart';
 import '../util/calculation.dart';
@@ -23,7 +24,8 @@ class BillView extends StatefulWidget {
   State<BillView> createState() => _BillViewState();
 }
 
-class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin {
+class _BillViewState extends State<BillView>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _billController;
@@ -53,6 +55,7 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
         TextEditingController(text: widget.bill?.description);
     _amountController = TextEditingController();
 
+
     if (widget.bill != null) {
       _endDate = widget.bill!.endDate != null
           ? DateTime.parse(widget.bill!.endDate as String)
@@ -71,7 +74,8 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
           : _endDate;
     }
 
-    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 150));
+    _animController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 150));
     super.initState();
   }
 
@@ -234,7 +238,7 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
                                     ),
                                     Expanded(
                                       flex: 2,
-                                      child: _ProductTypeDropDown<BillType>(
+                                      child: ProductTypeDropDown<BillType>(
                                         onChange: (t) =>
                                             setState(() => _billType = t),
                                         value: _billType,
@@ -257,7 +261,8 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
                                         child: TextFormField(
                                           controller: _amountController,
                                           onTap: () async {
-                                            await Future.delayed(const Duration(milliseconds: 180));
+                                            await Future.delayed(const Duration(
+                                                milliseconds: 180));
                                             _animController.forward();
                                             setState(() => _showKeypad = true);
                                           },
@@ -280,7 +285,7 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
                                     ),
                                     Expanded(
                                       flex: 2,
-                                      child: _ProductTypeDropDown<PaymentType>(
+                                      child: ProductTypeDropDown<PaymentType>(
                                         value: _paymentType,
                                         onTapped: _hideKeypad,
                                         onChange: (t) =>
@@ -324,7 +329,7 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
                                     ),
                                     Expanded(
                                       flex: 2,
-                                      child: _ProductTypeDropDown<Priority>(
+                                      child: ProductTypeDropDown<Priority>(
                                         onTapped: _hideKeypad,
                                         value: _priority,
                                         onChange: (t) =>
@@ -448,32 +453,34 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
                 );
               },
             ),
-            AnimatedBuilder(animation: _animController, builder: (_, widget) {
-              var yFactor = 1 - _animController.value;
+            AnimatedBuilder(
+                animation: _animController,
+                builder: (_, widget) {
+                  var yFactor = 1 - _animController.value;
 
-              return Transform.translate(
-                offset: Offset(0, yFactor * 30),
-                child: Visibility(
-                  visible: _showKeypad,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                        color: Theme.of(context).colorScheme.background,
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomKeys(
-                              height: keysHeight,
-                              width: width * 0.7,
-                              onKeyTapped: _onAmountChanged,
-                            ),
-                          ],
-                        )),
-                  ),
-                ),
-              );
-            })
+                  return Transform.translate(
+                    offset: Offset(0, yFactor * 30),
+                    child: Visibility(
+                      visible: _showKeypad,
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                            color: Theme.of(context).colorScheme.background,
+                            width: double.infinity,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CustomKeys(
+                                  height: keysHeight,
+                                  width: width * 0.7,
+                                  onKeyTapped: _onAmountChanged,
+                                ),
+                              ],
+                            )),
+                      ),
+                    ),
+                  );
+                })
           ],
         ),
       ),
@@ -481,8 +488,8 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
   }
 
   void onSubmit() {
-    bool? isValid = _formKey.currentState?.validate();
-    if (isValid != null && !isValid) {
+    bool isValid = _formKey.currentState!.validate();
+    if (!isValid) {
       return;
     }
     if (_billType == null) {
@@ -541,7 +548,7 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
       }
 
       if (date == null) return;
-      if (widget.bill!.isGenerated()) return;
+      if (widget.bill!.isGenerated) return;
       if (widget.bill?.endDate == null) return;
 
       var start =
@@ -574,31 +581,17 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
     var date = DateTime(_selectedDate.year, _selectedDate.month,
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
 
-    Bill bill;
+    var bill = Bill(
+        title: title,
+        description: description,
+        paymentType: _paymentType,
+        type: _billType!,
+        paymentDateTime: date.toIso8601String(),
+        amount: amount,
+        priority: _priority,
+        endDate: _endDate?.toIso8601String(),
+        pattern: _selectedRecurrence);
 
-    if (_selectedRecurrence != Pattern.once) {
-      bill = Bill(
-          title: title,
-          description: description,
-          paymentType: _paymentType,
-          type: _billType!,
-          paymentDateTime: date.toIso8601String(),
-          amount: amount,
-          isRecurring: true,
-          priority: _priority,
-          endDate: _endDate!.toIso8601String(),
-          pattern: _selectedRecurrence);
-    } else {
-      bill = Bill(
-          title: title,
-          description: description,
-          paymentType: _paymentType,
-          type: _billType!,
-          paymentDateTime: date.toIso8601String(),
-          amount: amount,
-          priority: _priority,
-          pattern: _selectedRecurrence);
-    }
     context.read<BillBloc>().add(BillSaveEvent(bill));
   }
 
@@ -616,7 +609,6 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
         paymentDateTime: date.toIso8601String(),
         exceptionId: widget.bill!.exceptionId,
         amount: amount,
-        isRecurring: widget.bill!.isRecurring,
         parentId: widget.bill!.parentId,
         type: _billType,
         priority: _priority,
@@ -727,6 +719,9 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
     _billController.text = '';
     _descriptionController.text = '';
     _billType = null;
+    _calculator.clear();
+    _endDate = null;
+    _selectedRecurrence = Pattern.once;
     _paymentType = PaymentType.cash;
     _priority = Priority.need;
   }
@@ -761,53 +756,5 @@ class _BillViewState extends State<BillView> with SingleTickerProviderStateMixin
         lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
     setState(() => _endDate =
         date?.add(const Duration(hours: 23, minutes: 59)) ?? _endDate);
-  }
-}
-
-class _ProductTypeDropDown<T> extends StatelessWidget {
-  final String title;
-  final List<T> items;
-  final T? value;
-  final Widget Function(T) menuItemBuilder;
-  final void Function(T?)? onChange;
-  final Function()? onTapped;
-
-  const _ProductTypeDropDown(
-      {Key? key,
-      required this.title,
-      this.items = const [],
-      required this.menuItemBuilder,
-      this.value,
-      this.onChange,
-      this.onTapped})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(title),
-        DropdownButton<T>(
-          onTap: onTapped,
-          isExpanded: true,
-          onChanged: (s) {
-            if (onChange != null) onChange!(s);
-          },
-          alignment: AlignmentDirectional.bottomEnd,
-          hint: const Padding(
-            padding: EdgeInsets.only(bottom: 15),
-            child: Text("----Select"),
-          ),
-          value: value,
-          itemHeight: null,
-          items: [
-            ...items.map((e) => DropdownMenuItem<T>(
-                  value: e,
-                  child: menuItemBuilder(e),
-                ))
-          ],
-        )
-      ],
-    );
   }
 }
