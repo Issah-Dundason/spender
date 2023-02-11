@@ -1,5 +1,10 @@
 import 'package:decimal/decimal.dart';
 
+
+extension IntBool on bool {
+  int get toInt => this ? 1 : 0;
+}
+
 class AppUtils {
   static int getActualAmount(String amount) {
     var d = Decimal.parse(amount);

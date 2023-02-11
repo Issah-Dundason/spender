@@ -4,19 +4,25 @@ import 'package:intl/intl.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/expenses/expenses_state.dart';
 import 'package:spender/repository/expenditure_repo.dart';
+import 'package:spender/util/app_utils.dart';
 
 import '../../model/bill.dart';
 
 class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   final AppRepository appRepo;
 
+  final _removers = [
+    BillRemover(),
+    RecurringBillRemover(),
+    GeneratedBillRemover()
+  ];
+
   ExpensesBloc({required this.appRepo})
       : super(ExpensesState(selectedDate: DateTime.now())) {
     on<ChangeDateEvent>(_onDateChange);
     on<OnStartEvent>(_onStart);
     on<LoadEvent>(_onLoad);
-    on<RecurrentDeleteEvent>(_onRecurrentDelete);
-    on<NonRecurringDelete>(_onNonRecurringDelete);
+    on<BillDeleteEvent>(_onDelete);
   }
 
   void _onDateChange(ChangeDateEvent e, Emitter<ExpensesState> emitter) async {
@@ -41,88 +47,108 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     emitter(state.copyWith(transactions: expenditures, yearOfFirstInsert: year));
   }
 
-  void _onRecurrentDelete(
-      RecurrentDeleteEvent e, Emitter<ExpensesState> emitter) {
-    emitter(state.copyWith(deleteState: DeleteState.deleting));
-    if (e.bill.isGenerated && e.method == DeleteMethod.single) {
-      _onDeleteSingleGenerated(e.bill);
-    } else if (e.bill.isGenerated && e.method == DeleteMethod.multiple) {
-      _onDeleteMultipleGenerated(e.bill);
-    } else if (!e.bill.isGenerated && e.method == DeleteMethod.single) {
-      _onDeleteSingle(e.bill);
-    } else {
-      _onDeleteMultiple(e.bill);
-    }
-    emitter(state.copyWith(deleteState: DeleteState.deleted));
+  int _getIndex(Bill bill) {
+    return bill.isRecurring.toInt + bill.isGenerated.toInt;
   }
 
-  void _onNonRecurringDelete(
-      NonRecurringDelete e, Emitter<ExpensesState> emitter) {
-    emitter(state.copyWith(deleteState: DeleteState.deleting));
-    appRepo.deleteBill(e.bill.id!);
-    emitter(state.copyWith(deleteState: DeleteState.deleted));
+  void _onDelete(BillDeleteEvent event, Emitter<ExpensesState> emit) {
+    emit(state.copyWith(deleteState: DeleteState.deleting));
+    _removers[_getIndex(event.bill)].remove(appRepo, event);
+    emit(state.copyWith(deleteState: DeleteState.deleted));
   }
+}
 
-  void _onDeleteSingleGenerated(Bill bill) {
-    var billDate = DateTime.parse(bill.paymentDateTime);
-    var endDate = DateTime.parse(bill.endDate!);
+class BillRemover {
+  void remove(AppRepository repo, BillDeleteEvent event) {
+    repo.deleteBill(event.bill.id!);
+  }
+}
 
-    if(DateUtils.isSameDay(billDate, endDate)) {
-      var end = endDate.subtract(const Duration(days: 1));
-      appRepo.deleteParentExceptionAfterDate(bill.parentId!, end.toIso8601String());
+class RecurringBillRemover implements BillRemover {
+
+  @override
+  void remove(AppRepository repo, BillDeleteEvent event) {
+    if(event.method == DeleteMethod.single) {
+      _onDeleteSingle(repo, event.bill);
       return;
     }
-
-    if (bill.exceptionId != null) {
-      appRepo.deleteGenerated(bill.exceptionId!);
-      return;
-    }
-
-    DateTime date = DateTime.parse(bill.paymentDateTime);
-    var exceptionDate = DateFormat('yyyy-MM-dd').format(date);
-
-    appRepo.createException({
-      Bill.columnExceptionInstanceDate: exceptionDate,
-      Bill.columnExceptionParentId: bill.parentId,
-      "deleted": 1
-    });
+    _onDeleteMultiple(repo, event.bill);
   }
 
-  void _onDeleteMultipleGenerated(Bill bill) {
-    var parentEndDate = DateUtils.dateOnly(DateTime.parse(bill.paymentDateTime))
-        .subtract(const Duration(days: 1));
-    parentEndDate = parentEndDate.add(const Duration(hours: 23, minutes: 59));
-
-    appRepo.deleteParentExceptionAfterDate(
-        bill.parentId!, parentEndDate.toIso8601String());
-  }
-
-  void _onDeleteSingle(Bill bill) {
+  void _onDeleteSingle(AppRepository repo, Bill bill) {
     var end = DateTime.parse(bill.endDate!);
     var start = DateTime.parse(bill.paymentDateTime);
 
     if(DateUtils.isSameDay(end, start)) {
-      _onDeleteMultiple(bill);
+      _onDeleteMultiple(repo, bill);
       return;
     }
 
     if (bill.exceptionId != null) {
-      appRepo.deleteGenerated(bill.exceptionId!);
+      repo.deleteGenerated(bill.exceptionId!);
       return;
     }
 
     DateTime date = DateTime.parse(bill.paymentDateTime);
     var exceptionDate = DateFormat('yyyy-MM-dd').format(date);
 
-    appRepo.createException({
+    repo.createException({
       Bill.columnExceptionInstanceDate: exceptionDate,
       Bill.columnExceptionParentId: bill.id,
       "deleted": 1
     });
   }
 
-  void _onDeleteMultiple(Bill bill) {
-    appRepo.deleteBill(bill.id!);
-    appRepo.deleteAllExceptionsForParent(bill.id!);
+  void _onDeleteMultiple(AppRepository repo, Bill bill) {
+    repo.deleteBill(bill.id!);
+    repo.deleteAllExceptionsForParent(bill.id!);
   }
+
+}
+
+class GeneratedBillRemover implements BillRemover {
+
+  @override
+  void remove(AppRepository repo, BillDeleteEvent event) {
+    if(event.method != DeleteMethod.multiple) {
+      _deleteMultipleBills(repo, event.bill);
+      return;
+    }
+    _deleteSingleBill(repo, event.bill);
+  }
+
+  void _deleteSingleBill(AppRepository repo, Bill bill) {
+    var billDate = DateTime.parse(bill.paymentDateTime);
+    var endDate = DateTime.parse(bill.endDate!);
+
+    if(DateUtils.isSameDay(billDate, endDate)) {
+      var end = endDate.subtract(const Duration(days: 1));
+      repo.deleteParentExceptionAfterDate(bill.parentId!, end.toIso8601String());
+      return;
+    }
+
+    if (bill.exceptionId != null) {
+      repo.deleteGenerated(bill.exceptionId!);
+      return;
+    }
+
+    DateTime date = DateTime.parse(bill.paymentDateTime);
+    var exceptionDate = DateFormat('yyyy-MM-dd').format(date);
+
+    repo.createException({
+      Bill.columnExceptionInstanceDate: exceptionDate,
+      Bill.columnExceptionParentId: bill.parentId,
+      "deleted": 1
+    });
+  }
+
+  void _deleteMultipleBills(AppRepository repo, Bill bill) {
+    var parentEndDate = DateUtils.dateOnly(DateTime.parse(bill.paymentDateTime))
+        .subtract(const Duration(days: 1));
+    parentEndDate = parentEndDate.add(const Duration(hours: 23, minutes: 59));
+
+    repo.deleteParentExceptionAfterDate(
+        bill.parentId!, parentEndDate.toIso8601String());
+  }
+
 }

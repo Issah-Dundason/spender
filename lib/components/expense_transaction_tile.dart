@@ -195,12 +195,12 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
       actions: [
         TextButton(
             onPressed: () {
-              Navigator.pop(context, true);
+              Navigator.pop(context, DeleteMethod.multiple);
             },
             child: const Text('Yes')),
         TextButton(
             onPressed: () {
-              Navigator.pop(context, false);
+              Navigator.pop(context, DeleteMethod.single);
             },
             child: const Text('No'))
       ],
@@ -231,6 +231,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
 
   void onDelete() async {
     var isRecurring = widget.expenditure.isRecurring;
+
     if (isRecurring) {
 
       var ans = await showDialog(
@@ -238,25 +239,18 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
           builder: (_) =>
               buildDeleteDialog(message: 'Should delete future events?'));
 
-      if (ans == true) {
-        if(!mounted) return;
-        context.read<ExpensesBloc>().add(RecurrentDeleteEvent(
-            bill: widget.expenditure, method: DeleteMethod.multiple));
-      }
+      if(ans == null || !mounted) return;
+      var event = BillDeleteEvent(method: ans, bill: widget.expenditure);
 
-      if (ans == false) {
-        if(!mounted) return;
-        context.read<ExpensesBloc>().add(RecurrentDeleteEvent(
-            bill: widget.expenditure));
-      }
-
+      context.read<ExpensesBloc>().add(event);
       return;
     }
+
     var ans =
         await showDialog(context: context, builder: (_) => buildDeleteDialog());
-    if (ans != true) return;
 
-    if(!mounted) return;
-    context.read<ExpensesBloc>().add(NonRecurringDelete(widget.expenditure));
+    if (ans == true || !mounted) return;
+
+    context.read<ExpensesBloc>().add(BillDeleteEvent(bill: widget.expenditure));
   }
 }
