@@ -32,13 +32,13 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
       RecurrenceUpdateEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
 
-    if (e.updateMethod == UpdateMethod.single && e.update.isGenerated()) {
+    if (e.updateMethod == UpdateMethod.single && e.update.isGenerated) {
       updateSingleGeneratedInstance(e.instanceDate, e.update);
     } else if (e.updateMethod == UpdateMethod.multiple &&
-        e.update.isGenerated()) {
+        e.update.isGenerated) {
       updateMultipleGeneratedInstance(e.instanceDate, e.update);
     } else if (e.updateMethod == UpdateMethod.single &&
-        !e.update.isGenerated()) {
+        !e.update.isGenerated) {
       updateSingleInstance(e.instanceDate, e.update);
     } else {
       updateMultiple(e.instanceDate, e.update);

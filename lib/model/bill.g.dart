@@ -13,9 +13,6 @@ Bill _$BillFromJson(Map<String, dynamic> json) => Bill(
       priority: $enumDecode(_$PriorityEnumMap, json['priority']),
       paymentType: $enumDecode(_$PaymentTypeEnumMap, json['payment_type']),
       description: json['description'] as String?,
-      isRecurring: json['is_recurring'] == null
-          ? false
-          : isRecurringFromJson(json['is_recurring'] as int),
       pattern: patternFromIndex(json['pattern'] as int),
       parentId: json['parent_id'] as int?,
       paymentDateTime: json['payment_datetime'] as String,
@@ -31,7 +28,6 @@ Map<String, dynamic> _$BillToJson(Bill instance) => <String, dynamic>{
       'priority': _$PriorityEnumMap[instance.priority]!,
       'payment_type': _$PaymentTypeEnumMap[instance.paymentType]!,
       'description': instance.description,
-      'is_recurring': isRecurringToJson(instance.isRecurring),
       'pattern': patternToInt(instance.pattern),
       'parent_id': instance.parentId,
       'payment_datetime': instance.paymentDateTime,
