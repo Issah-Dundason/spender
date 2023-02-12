@@ -19,7 +19,7 @@ class BillType extends Equatable {
   factory BillType.fromMap(Map<String, dynamic> json) =>
       _$BillTypeFromJson(json);
 
-  toMap() => {"id": id, "name": name};
+  Map<String, dynamic> toJson() => _$BillTypeToJson(this);
 
   @override
   List<Object?> get props => [id, name];

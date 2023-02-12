@@ -29,22 +29,12 @@ Pattern patternFromIndex(int index) {
   return Pattern.values[index];
 }
 
-// int isRecurringToJson(bool value) {
-//   print('value of interest: $value');
-//   return value == true ? 1 : 0;
-// }
-//
-// bool isRecurringFromJson(int value) {
-//   return value == 1;
-// }
-
 @JsonSerializable()
 class Bill extends Equatable {
   static const String columnID = 'id';
   static const String columnBillType = 'bill_type';
   static const String columnBillTypeGenerated = 'type';
   static const String columnPaymentType = 'payment_type';
-  static const String columnIsRecurring = 'is_recurring';
   static const String columnPaymentDate = 'payment_datetime';
   static const String columnParentId = 'parent_id';
   static const String columnExceptionParentId = 'expenditure_id';
@@ -69,12 +59,6 @@ class Bill extends Equatable {
   final PaymentType paymentType;
 
   final String? description;
-
-  // @JsonKey(
-  //     name: columnIsRecurring,
-  //     toJson: isRecurringToJson,
-  //     fromJson: isRecurringFromJson)
-  // final bool isRecurring;
 
   @JsonKey(toJson: patternToInt, fromJson: patternFromIndex)
   final Pattern pattern;
@@ -151,7 +135,6 @@ class Bill extends Equatable {
     var exclusion = [
       columnID,
       columnExceptionId,
-      columnIsRecurring,
       columnPattern,
       columnEndDate
     ];
@@ -214,6 +197,18 @@ class Bill extends Equatable {
 
   @override
   List<Object?> get props {
-    return [id, paymentDateTime, amount, priority, description, paymentType];
+    return [
+      id,
+      pattern,
+      parentId,
+      paymentDateTime,
+      amount,
+      priority,
+      description,
+      paymentType,
+      endDate,
+      title,
+      description,
+      type];
   }
 }

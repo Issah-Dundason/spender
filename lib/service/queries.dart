@@ -3,16 +3,17 @@ class Query {
   Query._();
 
   static String billTypeTable = '''
-      CREATE TABLE "bill_type" (
+      CREATE TABLE IF NOT EXISTS "bill_type" (
         "id"	INTEGER NOT NULL,
         "name"	TEXT NOT NULL,
         "image"	TEXT NOT NULL,
-        PRIMARY KEY("id" AUTOINCREMENT)
+        PRIMARY KEY("id" AUTOINCREMENT),
+        UNIQUE("name")
       );
     ''';
 
   static String expenditureTable = '''
-      CREATE TABLE "expenditure" (
+      CREATE TABLE IF NOT EXISTS "expenditure" (
         "id"	INTEGER NOT NULL,
         "title"	TEXT NOT NULL,
         "bill_type"	INTEGER,
@@ -37,7 +38,7 @@ class Query {
     ''';
 
   static String expenditureExceptionTable = '''
-      CREATE TABLE "expenditure_exception" (
+      CREATE TABLE IF NOT EXISTS "expenditure_exception" (
         "id"	INTEGER NOT NULL,
         "title"	NUMERIC,
         "bill_type"	INTEGER,

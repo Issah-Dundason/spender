@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spender/util/calculation.dart';
 
-
 void main() {
   test('adding . to the calculator and calling the toString returns 0.', () {
     var calc = Calculator();
@@ -27,15 +26,16 @@ void main() {
 
   test(
       'adding a series of numbers followed by an operator (\\+-x) returns string with operator',
-          () {
-        var calc = Calculator();
-        calc.add('5');
-        calc.add('-');
-        expect(calc.getString(), '5 -');
-      });
+      () {
+    var calc = Calculator();
+    calc.add('5');
+    calc.add('-');
+    expect(calc.getString(), '5 -');
+  });
 
   test(
-      'adding a . after an operator excludes the operator when calculate is called', () {
+      'adding a . after an operator excludes the operator when calculate is called',
+      () {
     var calc = Calculator();
     calc.add('4');
     calc.add('8');
@@ -74,7 +74,6 @@ void main() {
       expect(calc.getString(), equals('56 / 8'));
     });
   });
-
 
   group('testing calculation', () {
     test('first test', () {
@@ -130,7 +129,8 @@ void main() {
   });
 
   group(
-      'adding successive operators will make sure only the first one is returned', () {
+      'adding successive operators will make sure only the first one is returned',
+      () {
     test('first test', () {
       var calc = Calculator();
       calc.add('5');
@@ -159,7 +159,6 @@ void main() {
       expect(calc.getString(), '567 - 98');
     });
   });
-
 
   test('negative values are not deleted', () {
     var calc = Calculator();
