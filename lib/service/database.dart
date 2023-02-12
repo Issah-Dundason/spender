@@ -136,6 +136,7 @@ class DatabaseClient {
   }
 
   Future<List<Bill>> getBillByDate(String date) async {
+
     var result = await _db.rawQuery(Query.expenditureByDateQuery, [date]);
 
     return result.map((record) {
@@ -217,12 +218,6 @@ class DatabaseClient {
   Future<void> deleteGeneratedException(int exceptionId) async {
     await _db.update('expenditure_exception', {'deleted': 1},
         where: "id = ?", whereArgs: [exceptionId]);
-  }
-
-  Future<Bill?> getBillById(int id) async {
-    //_db.rawQuery('expenditure', whereArgs: [id]);
-    // TO DO
-    return null;
   }
 
 }
