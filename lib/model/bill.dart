@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:spender/util/app_utils.dart';
@@ -162,6 +163,13 @@ class Bill extends Equatable {
   double get cash {
     var cash = AppUtils.amountPresented(amount);
     return cash;
+  }
+
+  bool get isLast {
+    if(!isRecurring) return true;
+    var billDate = DateTime.parse(paymentDateTime);
+    var end = DateTime.parse(endDate!);
+    return DateUtils.isSameDay(billDate, end);
   }
 
   bool get isGenerated =>  id == -1;

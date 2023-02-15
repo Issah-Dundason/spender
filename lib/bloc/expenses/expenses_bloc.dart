@@ -116,18 +116,9 @@ class GeneratedBillRemover implements BillRemover {
   }
 
   void _deleteSingleBill(AppRepository repo, Bill bill) async {
-    var billDate = DateTime.parse(bill.paymentDateTime);
-    var endDate = DateTime.parse(bill.endDate!);
 
-    if (DateUtils.isSameDay(billDate, endDate)) {
-      String date = DateFormat('yyyy-MM-dd').format(endDate);
-      var lastPaymentDate = await repo.getLastEndDate(bill.parentId!, date);
-
-      print('last payment: $lastPaymentDate');
-      var lastDate = DateUtils.dateOnly(DateTime.parse(lastPaymentDate));
-
-      var end = lastDate.add(const Duration(hours: 23, minutes: 59));
-
+    if (bill.isLast) {
+      var end = await getLastDay(bill, repo);
       repo.deleteParentExceptionAfterDate(
           bill.parentId!, end.toIso8601String());
       return;
@@ -148,14 +139,24 @@ class GeneratedBillRemover implements BillRemover {
     });
   }
 
-  void _deleteMultipleBills(AppRepository repo, Bill bill) {
-    var parentEndDate = DateUtils.dateOnly(DateTime.parse(bill.paymentDateTime))
-        .subtract(const Duration(days: 1));
-    parentEndDate = parentEndDate.add(const Duration(hours: 23, minutes: 59));
+  void _deleteMultipleBills(AppRepository repo, Bill bill) async {
+
+    DateTime end = await getLastDay(bill, repo);
 
     repo.deleteParentExceptionAfterDate(
       bill.parentId!,
-      parentEndDate.toIso8601String(),
+      end.toIso8601String(),
     );
+  }
+
+  Future<DateTime> getLastDay(Bill bill, AppRepository repo) async {
+    var billDate = DateTime.parse(bill.paymentDateTime);
+    String date = DateFormat('yyyy-MM-dd').format(billDate);
+    var lastPaymentDate = await repo.getLastEndDate(bill.parentId!, date);
+
+    var lastDate = DateUtils.dateOnly(DateTime.parse(lastPaymentDate));
+
+    var end = lastDate.add(const Duration(hours: 23, minutes: 59));
+    return end;
   }
 }

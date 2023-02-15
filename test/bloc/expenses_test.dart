@@ -79,11 +79,12 @@ void main() async {
     );
   });
 
-  group('can delete bills', () {
+  group('can delete bills (SINGLE DELETE)', () {
     late Bill firstTestBill;
     late Bill secondTestBill;
     late Bill thirdTestBill;
     late Bill fourthTestBill;
+    late Bill fifthTestBill;
 
     blocTest('can delete non recurring bill',
         setUp: () async {
@@ -98,16 +99,7 @@ void main() async {
         act: (bloc) {
           bloc.add(BillDeleteEvent(bill: firstTestBill));
         },
-        expect: () {
-          return [
-            predicate<ExpensesState>((state) {
-              return state.deleteState == DeleteState.deleting;
-            }),
-            predicate<ExpensesState>((state) {
-              return state.deleteState == DeleteState.deleted;
-            }),
-          ];
-        },
+        expect: verifyDeletionStateChanges,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
           repo.getAllBills('2023-05-01').then(expectAsync1((bills) {
@@ -126,16 +118,7 @@ void main() async {
           return ExpensesBloc(appRepo: repo);
         },
         act: (bloc) => bloc.add(BillDeleteEvent(bill: secondTestBill)),
-        expect: () {
-          return [
-            predicate<ExpensesState>((state) {
-              return state.deleteState == DeleteState.deleting;
-            }),
-            predicate<ExpensesState>((state) {
-              return state.deleteState == DeleteState.deleted;
-            }),
-          ];
-        },
+        expect: verifyDeletionStateChanges,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
           for (var date in ['2023-04-12', '2023-04-13', '2023-04-14']) {
@@ -160,16 +143,7 @@ void main() async {
           return ExpensesBloc(appRepo: repo);
         },
         act: (bloc) => bloc.add(BillDeleteEvent(bill: thirdTestBill)),
-        expect: () {
-          return [
-            predicate<ExpensesState>((state) {
-              return state.deleteState == DeleteState.deleting;
-            }),
-            predicate<ExpensesState>((state) {
-              return state.deleteState == DeleteState.deleted;
-            }),
-          ];
-        },
+        expect: verifyDeletionStateChanges,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
           repo.getAllBills('2023-04-16').then(expectAsync1((bills) {
@@ -186,7 +160,8 @@ void main() async {
           }));
         });
 
-    blocTest('deletion of recurrent bill creates exception',
+    blocTest(
+      'deletion of recurrent bill creates exception',
       setUp: () async {
         var repo = AppRepository(dbClient);
         fourthTestBill = (await repo.getAllBills('2023-04-26')).first;
@@ -195,19 +170,9 @@ void main() async {
         var repo = AppRepository(dbClient);
         return ExpensesBloc(appRepo: repo);
       },
-      expect: () {
-          return [
-            predicate<ExpensesState>((state) {
-              return state.deleteState == DeleteState.deleting;
-            }),
-            predicate<ExpensesState>((state) {
-              return state.deleteState == DeleteState.deleted;
-            }),
-          ];
-        },
+      expect: verifyDeletionStateChanges,
       wait: const Duration(milliseconds: 5),
       verify: (bloc) {
-
         var repo = AppRepository(dbClient);
 
         repo.getAllBills('2023-04-26').then(expectAsync1((bills) {
@@ -219,15 +184,94 @@ void main() async {
           expect(bills.first.title, equals('Bill 5_3'));
         }));
 
-        for(var date in [ '2023-04-27','2023-04-28']) {
+        for (var date in ['2023-04-27', '2023-04-28']) {
           repo.getAllBills(date).then(expectAsync1((bills) {
             expect(true, equals(bills.first.isGenerated));
             expect(bills.first.title, equals('Bill 5_3'));
           }));
         }
       },
-      act: (bloc) => bloc.add(BillDeleteEvent(bill: fourthTestBill),
+      act: (bloc) => bloc.add(
+        BillDeleteEvent(bill: fourthTestBill),
       ),
     );
+
+    blocTest(
+      'deletion of recurrent bill (parent) creates an exception',
+      setUp: () async {
+        var repo = AppRepository(dbClient);
+        fifthTestBill = (await repo.getAllBills('2023-04-29')).first;
+      },
+      build: () {
+        var repo = AppRepository(dbClient);
+        return ExpensesBloc(appRepo: repo);
+      },
+      expect: verifyDeletionStateChanges,
+      wait: const Duration(milliseconds: 5),
+      verify: (bloc) {
+        var repo = AppRepository(dbClient);
+
+        repo.getAllBills('2023-04-29').then(expectAsync1((bills) {
+          expect(true, equals(bills.isEmpty));
+        }));
+
+        repo.getAllBills('2023-04-30').then(expectAsync1((bills) {
+          expect(true, equals(bills.first.isGenerated));
+          expect(bills.first.title, equals('Bill 5_4'));
+          expect(bills.first.amount, equals(10));
+        }));
+      },
+      act: (bloc) => bloc.add(BillDeleteEvent(bill: fifthTestBill)),
+    );
   });
+
+  group('can delete bills (MULTIPLE DELETE)', () {
+    late Bill firstTestBill;
+    // late Bill secondTestBill;
+
+    blocTest('multiple deletion of generated bills changes end date of parent',
+        setUp: () async {
+          var repo = AppRepository(dbClient);
+          firstTestBill = (await repo.getAllBills('2023-04-03')).first;
+        },
+        build: () {
+          var repo = AppRepository(dbClient);
+          return ExpensesBloc(appRepo: repo);
+        },
+        expect: verifyDeletionStateChanges,
+        wait: const Duration(milliseconds: 5),
+        verify: (bloc) {
+          var repo = AppRepository(dbClient);
+
+          for (var date in ['2023-04-01', '2023-04-02']) {
+            repo.getAllBills(date).then(expectAsync1((bills) {
+              expect(bills.first.title, equals('Bill 5_1'));
+              expect(
+                  true,
+                  DateUtils.isSameDay(
+                    DateTime.parse(bills.first.endDate!),
+                    DateTime.parse('2023-04-02'),
+                  ),);
+            }));
+          }
+          for (var date in ['2023-04-03', '2023-04-04', '2023-04-05']) {
+            repo.getAllBills(date).then(expectAsync1((bills) {
+              expect(true, equals(bills.isEmpty));
+            }));
+          }
+        },
+        act: (bloc) => bloc.add(BillDeleteEvent(
+            bill: firstTestBill, method: DeleteMethod.multiple)));
+  });
+}
+
+verifyDeletionStateChanges() {
+  return [
+    predicate<ExpensesState>((state) {
+      return state.deleteState == DeleteState.deleting;
+    }),
+    predicate<ExpensesState>((state) {
+      return state.deleteState == DeleteState.deleted;
+    }),
+  ];
 }
