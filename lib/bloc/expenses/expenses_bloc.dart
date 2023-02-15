@@ -76,10 +76,8 @@ class RecurringBillRemover implements BillRemover {
   }
 
   void _onDeleteSingle(AppRepository repo, Bill bill) {
-    var end = DateTime.parse(bill.endDate!);
-    var start = DateTime.parse(bill.paymentDateTime);
 
-    if (DateUtils.isSameDay(end, start)) {
+    if (bill.isLast) {
       _onDeleteMultiple(repo, bill);
       return;
     }

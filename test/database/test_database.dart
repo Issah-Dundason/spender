@@ -58,6 +58,15 @@ class TestDatabaseClient extends DatabaseClient {
       'end_date': '2023-04-05T23:59:00.000',
     },
     {
+      'title': 'Bill 5_1_2',
+      'priority': 'want',
+      'payment_type': 'momo',
+      'pattern': 1,
+      'payment_datetime': '2023-04-06T16:00:00.000',
+      'amount': 10,
+      'end_date': '2023-04-08T23:59:00.000',
+    },
+    {
       'title': 'Bill 5',
       'priority': 'need',
       'payment_type': 'cash',

@@ -227,7 +227,7 @@ void main() async {
 
   group('can delete bills (MULTIPLE DELETE)', () {
     late Bill firstTestBill;
-    // late Bill secondTestBill;
+    late Bill secondTestBill;
 
     blocTest('multiple deletion of generated bills changes end date of parent',
         setUp: () async {
@@ -262,7 +262,32 @@ void main() async {
         },
         act: (bloc) => bloc.add(BillDeleteEvent(
             bill: firstTestBill, method: DeleteMethod.multiple)));
+
+    blocTest('deletion of parent ensures no generated bills are returned',
+        setUp: () async {
+          var repo = AppRepository(dbClient);
+          secondTestBill = (await repo.getAllBills('2023-04-06')).first;
+        },
+        build: () {
+          var repo = AppRepository(dbClient);
+          return ExpensesBloc(appRepo: repo);
+        },
+        expect: verifyDeletionStateChanges,
+        wait: const Duration(milliseconds: 5),
+        verify: (bloc) {
+          var repo = AppRepository(dbClient);
+          expect(true, !secondTestBill.isGenerated);
+          for (var date in ['2023-04-06', '2023-04-07', '2023-04-08']) {
+            repo.getAllBills(date).then(expectAsync1((bills) {
+              expect(true, equals(bills.isEmpty));
+            }));
+          }
+        },
+        act: (bloc) => bloc.add(BillDeleteEvent(
+            bill: secondTestBill, method: DeleteMethod.multiple)));
   });
+
+
 }
 
 verifyDeletionStateChanges() {

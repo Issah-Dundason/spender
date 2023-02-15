@@ -239,9 +239,11 @@ class Query {
   static String lastEndDate = '''
     $generateRecursionQuery
     SELECT payment_dateTime FROM resolvedData
-    WHERE id = ? OR parent_id = ? AND  datetime(strftime('%Y-%m-%d', payment_datetime)) < datetime(?)
+    WHERE id = ? OR parent_id = ? AND  
+    datetime(strftime('%Y-%m-%d', payment_datetime)) < datetime(?)
     ORDER BY datetime(payment_datetime) DESC
   ''';
+
   static String pieQuery(String format, String date) => '''
     $generateRecursionQuery,
     secondResolved AS (
