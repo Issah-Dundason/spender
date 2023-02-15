@@ -1,9 +1,12 @@
+import '../model/bill.dart';
+import '../model/bill_type.dart';
+
 class Query {
 
   Query._();
 
   static String billTypeTable = '''
-      CREATE TABLE IF NOT EXISTS "bill_type" (
+      CREATE TABLE IF NOT EXISTS ${BillType.tableName} (
         "id"	INTEGER NOT NULL,
         "name"	TEXT NOT NULL,
         "image"	TEXT NOT NULL,
@@ -13,7 +16,7 @@ class Query {
     ''';
 
   static String expenditureTable = '''
-      CREATE TABLE IF NOT EXISTS "expenditure" (
+      CREATE TABLE IF NOT EXISTS ${Bill.tableName} (
         "id"	INTEGER NOT NULL,
         "title"	TEXT NOT NULL,
         "bill_type"	INTEGER,
@@ -233,6 +236,12 @@ class Query {
       GROUP BY 2;
     ''';
 
+  static String lastEndDate = '''
+    $generateRecursionQuery
+    SELECT payment_dateTime FROM resolvedData
+    WHERE id = ? OR parent_id = ? AND strftime('%Y-%m-%d', payment_datetime) != ?
+    ORDER BY datetime(payment_datetime) DESC
+  ''';
   static String pieQuery(String format, String date) => '''
     $generateRecursionQuery,
     secondResolved AS (

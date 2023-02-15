@@ -47,6 +47,7 @@ class TestDatabaseClient extends DatabaseClient {
       'payment_datetime': '2023-03-01T23:00:00.000',
       'amount': 200,
     },
+    //for recurring bill deletion
     {
       'title': 'Bill 5',
       'priority': 'need',
@@ -55,6 +56,24 @@ class TestDatabaseClient extends DatabaseClient {
       'payment_datetime': '2023-04-12T23:00:00.000',
       'amount': 200,
       'end_date': '2023-04-15T23:59:00.000',
+    },
+    {
+      'title': 'Bill 5_2',
+      'priority': 'need',
+      'payment_type': 'cash',
+      'pattern': 2,
+      'payment_datetime': '2023-04-16T23:00:00.000',
+      'amount': 200,
+      'end_date': '2023-04-23T23:59:00.000',
+    },
+    {
+      'title': 'Bill 5_3',
+      'priority': 'need',
+      'payment_type': 'cash',
+      'pattern': 1,
+      'payment_datetime': '2023-04-25T12:00:00.000',
+      'amount': 200,
+      'end_date': '2023-04-28T23:59:00.000',
     },
     //for testing non recurring bill deletion
     {

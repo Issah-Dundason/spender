@@ -100,4 +100,8 @@ class AppRepository {
   void deleteGenerated(int exceptionId) async {
     await _dbClient.deleteGeneratedException(exceptionId);
   }
+
+  Future<String> getLastEndDate(int parentId, String date) async {
+    return await _dbClient.getLastEndDate(parentId, date);
+  }
 }

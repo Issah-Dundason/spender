@@ -5,6 +5,8 @@ part 'bill_type.g.dart';
 
 @JsonSerializable()
 class BillType extends Equatable {
+  static const String tableName = "bill_type";
+
   @JsonKey(name: "bill_type")
   final int id;
 

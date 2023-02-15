@@ -33,17 +33,19 @@ class DatabaseClient {
     await db.execute(Query.budgetTable);
     await db.execute(Query.expenditureExceptionTable);
 
-    await db.insert("bill_type", {"name": "Food", "image": "food.svg"});
+    await db.insert(BillType.tableName, {"name": "Food", "image": "food.svg"});
+    await db.insert(BillType.tableName,
+        {"name": "Clothing & beauty", "image": "clothing.svg"});
     await db.insert(
-        "bill_type", {"name": "Clothing & beauty", "image": "clothing.svg"});
+        BillType.tableName, {"name": "Investment", "image": "investment.svg"});
+    await db.insert(
+        BillType.tableName, {"name": "Health", "image": "medicine.svg"});
+    await db.insert(BillType.tableName,
+        {"name": "Electricity", "image": "electricity.svg"});
+    await db.insert(BillType.tableName,
+        {"name": "Transportation", "image": "transportation.svg"});
     await db
-        .insert("bill_type", {"name": "Investment", "image": "investment.svg"});
-    await db.insert("bill_type", {"name": "Health", "image": "medicine.svg"});
-    await db.insert(
-        "bill_type", {"name": "Electricity", "image": "electricity.svg"});
-    await db.insert(
-        "bill_type", {"name": "Transportation", "image": "transportation.svg"});
-    await db.insert("bill_type", {"name": "Other", "image": "other.svg"});
+        .insert(BillType.tableName, {"name": "Other", "image": "other.svg"});
   }
 
   Future<Financials?> getFinancials(String date) async {
@@ -62,7 +64,7 @@ class DatabaseClient {
   }
 
   Future saveBill(Map<String, dynamic> map) async {
-    await db.insert("expenditure", map);
+    await db.insert(Bill.tableName, map);
   }
 
   Future<List<Bill>> getBillAtWithLimit(DateTime dateTime, int limit) async {
@@ -86,12 +88,12 @@ class DatabaseClient {
   }
 
   Future deleteBill(int id) async {
-    await db.delete("expenditure", where: "id = ?", whereArgs: [id]);
+    await db.delete(Bill.tableName, where: "id = ?", whereArgs: [id]);
   }
 
   Future updateBill(int id, Map<String, dynamic> expenditure) async {
     await db
-        .update("expenditure", expenditure, where: "id = ?", whereArgs: [id]);
+        .update(Bill.tableName, expenditure, where: "id = ?", whereArgs: [id]);
   }
 
   Future<void> createException(Map<String, dynamic> json) async {
@@ -138,7 +140,6 @@ class DatabaseClient {
   }
 
   Future<List<Bill>> getBillByDate(String date) async {
-
     var result = await db.rawQuery(Query.expenditureByDateQuery, [date]);
 
     return result.map((record) {
@@ -206,22 +207,36 @@ class DatabaseClient {
   void deleteParentExceptionAfterDate(int parentId, String endDate) async {
     await db.update('expenditure', {Bill.columnEndDate: endDate},
         where: 'id = ?', whereArgs: [parentId]);
-    await db.delete('expenditure_exception',
-        where:
-            '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
-        whereArgs: [parentId, endDate]);
+    await db.delete(
+      'expenditure_exception',
+      where:
+          '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
+      whereArgs: [parentId, endDate],
+    );
   }
 
   Future<void> deleteAllExceptionsForParent(int parentId) async {
-    await db.delete('expenditure_exception',
-        where: '${Bill.columnExceptionParentId} = ?', whereArgs: [parentId]);
+    await db.delete(
+      'expenditure_exception',
+      where: '${Bill.columnExceptionParentId} = ?',
+      whereArgs: [parentId],
+    );
   }
 
   Future<void> deleteGeneratedException(int exceptionId) async {
-    await db.update('expenditure_exception', {'deleted': 1},
-        where: "id = ?", whereArgs: [exceptionId]);
+    await db.update(
+      'expenditure_exception',
+      {'deleted': 1},
+      where: "id = ?",
+      whereArgs: [exceptionId],
+    );
   }
 
+  Future<String> getLastEndDate(int parentId, String date) async {
+    var record =
+        await db.rawQuery(Query.lastEndDate, [parentId, parentId, date]);
+    return record.first['payment_datetime'] as String;
+  }
 }
 
 class PieData extends Equatable {

@@ -31,6 +31,7 @@ Pattern patternFromIndex(int index) {
 
 @JsonSerializable()
 class Bill extends Equatable {
+  static const String tableName = "expenditure";
   static const String columnID = 'id';
   static const String columnBillType = 'bill_type';
   static const String columnBillTypeGenerated = 'type';
