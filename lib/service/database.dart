@@ -204,7 +204,7 @@ class DatabaseClient {
         where: 'id = ?', whereArgs: [exceptionId]);
   }
 
-  void deleteParentExceptionAfterDate(int parentId, String endDate) async {
+  Future<void> deleteParentExceptionAfterDate(int parentId, String endDate) async {
     await db.update('expenditure', {Bill.columnEndDate: endDate},
         where: 'id = ?', whereArgs: [parentId]);
     await db.delete(
@@ -235,8 +235,10 @@ class DatabaseClient {
   Future<String> getLastEndDate(int parentId, String date) async {
     var record =
         await db.rawQuery(Query.lastEndDate, [parentId, parentId, date]);
+    if(record.isEmpty) throw UnavailableException();
     return record.first['payment_datetime'] as String;
   }
+
 }
 
 class PieData extends Equatable {
@@ -279,3 +281,6 @@ class MonthSpending extends Equatable {
   @override
   List<Object?> get props => [amount, month];
 }
+
+
+class UnavailableException implements Exception {}

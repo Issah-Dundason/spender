@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/expenses/expenses_state.dart';
 import 'package:spender/repository/expenditure_repo.dart';
+import 'package:spender/service/database.dart';
 import 'package:spender/util/app_utils.dart';
 
 import '../../model/bill.dart';
@@ -45,80 +46,85 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     var expenditures = await appRepo.getAllBills(date);
     int? year = await appRepo.getYearOfFirstInsert();
     emitter(
-        state.copyWith(transactions: expenditures, yearOfFirstInsert: year));
+      state.copyWith(transactions: expenditures, yearOfFirstInsert: year),
+    );
   }
 
   int _getIndex(Bill bill) {
     return bill.isRecurring.toInt + bill.isGenerated.toInt;
   }
 
-  void _onDelete(BillDeleteEvent event, Emitter<ExpensesState> emit) {
+  void _onDelete(BillDeleteEvent event, Emitter<ExpensesState> emit) async {
     emit(state.copyWith(deleteState: DeleteState.deleting));
-    _removers[_getIndex(event.bill)].remove(appRepo, event);
+    await _removers[_getIndex(event.bill)].remove(appRepo, event);
     emit(state.copyWith(deleteState: DeleteState.deleted));
   }
 }
 
 class BillRemover {
-  void remove(AppRepository repo, BillDeleteEvent event) {
-    repo.deleteBill(event.bill.id!);
+  Future<void> remove(AppRepository repo, BillDeleteEvent event) async {
+    await repo.deleteBill(event.bill.id!);
   }
 }
 
 class RecurringBillRemover implements BillRemover {
   @override
-  void remove(AppRepository repo, BillDeleteEvent event) {
+  Future<void> remove(AppRepository repo, BillDeleteEvent event) async {
     if (event.method == DeleteMethod.single) {
-      _onDeleteSingle(repo, event.bill);
+      await _onDeleteSingle(repo, event.bill);
       return;
     }
-    _onDeleteMultiple(repo, event.bill);
+    await _onDeleteMultiple(repo, event.bill);
   }
 
-  void _onDeleteSingle(AppRepository repo, Bill bill) {
-
+  Future<void> _onDeleteSingle(AppRepository repo, Bill bill) async {
     if (bill.isLast) {
-      _onDeleteMultiple(repo, bill);
+      await _onDeleteMultiple(repo, bill);
       return;
     }
 
     if (bill.exceptionId != null) {
-      repo.deleteGenerated(bill.exceptionId!);
+      await repo.deleteGenerated(bill.exceptionId!);
       return;
     }
 
     DateTime date = DateTime.parse(bill.paymentDateTime);
     var exceptionDate = DateFormat('yyyy-MM-dd').format(date);
 
-    repo.createException({
+    await repo.createException({
       Bill.columnExceptionInstanceDate: exceptionDate,
       Bill.columnExceptionParentId: bill.id,
       "deleted": 1
     });
   }
 
-  void _onDeleteMultiple(AppRepository repo, Bill bill) {
-    repo.deleteBill(bill.id!);
-    repo.deleteAllExceptionsForParent(bill.id!);
+  Future<void> _onDeleteMultiple(AppRepository repo, Bill bill) async {
+    await repo.deleteBill(bill.id!);
+    await repo.deleteAllExceptionsForParent(bill.id!);
   }
 }
 
 class GeneratedBillRemover implements BillRemover {
   @override
-  void remove(AppRepository repo, BillDeleteEvent event) {
+  Future<void> remove(AppRepository repo, BillDeleteEvent event) async {
     if (event.method == DeleteMethod.multiple) {
-      _deleteMultipleBills(repo, event.bill);
+      await _deleteMultipleBills(repo, event.bill);
       return;
     }
-    _deleteSingleBill(repo, event.bill);
+    await _deleteSingleBill(repo, event.bill);
   }
 
-  void _deleteSingleBill(AppRepository repo, Bill bill) async {
-
-    if (bill.isLast) {
-      var end = await getLastDay(bill, repo);
-      repo.deleteParentExceptionAfterDate(
-          bill.parentId!, end.toIso8601String());
+  Future<void> _deleteSingleBill(AppRepository repo, Bill bill) async {
+    try {
+      if (bill.isLast) {
+        var end = await getLastDay(bill, repo);
+        await repo.deleteParentExceptionAfterDate(
+            bill.parentId!, end.toIso8601String());
+        return;
+      }
+    } on UnavailableException {
+      await repo.deleteBill(bill.parentId!);
+      await repo.deleteAllExceptionsForParent(bill.parentId!);
       return;
     }
 
@@ -137,14 +143,18 @@ class GeneratedBillRemover implements BillRemover {
     });
   }
 
-  void _deleteMultipleBills(AppRepository repo, Bill bill) async {
+  Future<void> _deleteMultipleBills(AppRepository repo, Bill bill) async {
+    try {
+      DateTime end = await getLastDay(bill, repo);
 
-    DateTime end = await getLastDay(bill, repo);
-
-    repo.deleteParentExceptionAfterDate(
-      bill.parentId!,
-      end.toIso8601String(),
-    );
+      await repo.deleteParentExceptionAfterDate(
+            bill.parentId!,
+            end.toIso8601String(),
+          );
+    } on UnavailableException {
+      await repo.deleteBill(bill.parentId!);
+      await repo.deleteAllExceptionsForParent(bill.parentId!);
+    }
   }
 
   Future<DateTime> getLastDay(Bill bill, AppRepository repo) async {

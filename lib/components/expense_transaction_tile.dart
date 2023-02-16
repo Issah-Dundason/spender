@@ -245,7 +245,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
     var ans =
         await showDialog(context: context, builder: (_) => buildDeleteDialog());
 
-    if (ans == true || !mounted) return;
+    if (ans == null || ans == DeleteMethod.single || !mounted) return;
 
     context.read<ExpensesBloc>().add(BillDeleteEvent(bill: widget.bill));
   }

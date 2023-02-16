@@ -80,6 +80,7 @@ void main() async {
   });
 
   group('can delete bills (SINGLE DELETE)', () {
+    const waitTime =  Duration(milliseconds: 20);
     late Bill firstTestBill;
     late Bill secondTestBill;
     late Bill thirdTestBill;
@@ -95,7 +96,7 @@ void main() async {
           var repo = AppRepository(dbClient);
           return ExpensesBloc(appRepo: repo);
         },
-        wait: const Duration(milliseconds: 5),
+        wait: waitTime,
         act: (bloc) {
           bloc.add(BillDeleteEvent(bill: firstTestBill));
         },
@@ -107,12 +108,13 @@ void main() async {
           }));
         });
 
+
     blocTest('deletion of last recurrent(daily) bill updates parents end date',
         setUp: () async {
           var repo = AppRepository(dbClient);
           secondTestBill = (await repo.getAllBills('2023-04-15')).first;
         },
-        wait: const Duration(milliseconds: 5),
+        wait: waitTime,
         build: () {
           var repo = AppRepository(dbClient);
           return ExpensesBloc(appRepo: repo);
@@ -137,7 +139,7 @@ void main() async {
           var repo = AppRepository(dbClient);
           thirdTestBill = (await repo.getAllBills('2023-04-23')).first;
         },
-        wait: const Duration(milliseconds: 5),
+        wait: waitTime,
         build: () {
           var repo = AppRepository(dbClient);
           return ExpensesBloc(appRepo: repo);
@@ -171,7 +173,7 @@ void main() async {
         return ExpensesBloc(appRepo: repo);
       },
       expect: verifyDeletionStateChanges,
-      wait: const Duration(milliseconds: 5),
+      wait: waitTime,
       verify: (bloc) {
         var repo = AppRepository(dbClient);
 
@@ -207,7 +209,7 @@ void main() async {
         return ExpensesBloc(appRepo: repo);
       },
       expect: verifyDeletionStateChanges,
-      wait: const Duration(milliseconds: 5),
+      wait: waitTime,
       verify: (bloc) {
         var repo = AppRepository(dbClient);
 
@@ -229,6 +231,8 @@ void main() async {
     late Bill firstTestBill;
     late Bill secondTestBill;
 
+    const waitTime = Duration(milliseconds: 20);
+
     blocTest('multiple deletion of generated bills changes end date of parent',
         setUp: () async {
           var repo = AppRepository(dbClient);
@@ -239,7 +243,7 @@ void main() async {
           return ExpensesBloc(appRepo: repo);
         },
         expect: verifyDeletionStateChanges,
-        wait: const Duration(milliseconds: 5),
+        wait: waitTime,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
 
@@ -273,7 +277,7 @@ void main() async {
           return ExpensesBloc(appRepo: repo);
         },
         expect: verifyDeletionStateChanges,
-        wait: const Duration(milliseconds: 5),
+        wait: waitTime,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
           expect(true, !secondTestBill.isGenerated);
@@ -286,7 +290,6 @@ void main() async {
         act: (bloc) => bloc.add(BillDeleteEvent(
             bill: secondTestBill, method: DeleteMethod.multiple)));
   });
-
 
 }
 

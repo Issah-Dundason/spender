@@ -85,19 +85,19 @@ class AppRepository {
     await _dbClient.updateException(exceptionId, json);
   }
 
-  void createException(Map<String, dynamic> json) async {
+  Future<void> createException(Map<String, dynamic> json) async {
    await _dbClient.createException(json);
   }
 
-  void deleteParentExceptionAfterDate(int parentId, String endDate)  {
-  _dbClient.deleteParentExceptionAfterDate(parentId, endDate);
+  Future<void> deleteParentExceptionAfterDate(int parentId, String endDate)  async {
+  await _dbClient.deleteParentExceptionAfterDate(parentId, endDate);
   }
 
-  void deleteAllExceptionsForParent(int i) async {
+  Future<void> deleteAllExceptionsForParent(int i) async {
     await _dbClient.deleteAllExceptionsForParent(i);
   }
 
-  void deleteGenerated(int exceptionId) async {
+  Future<void> deleteGenerated(int exceptionId) async {
     await _dbClient.deleteGeneratedException(exceptionId);
   }
 
