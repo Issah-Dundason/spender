@@ -4,6 +4,7 @@ import '../../model/bill.dart';
 
 enum DeleteState { none, deleting, deleted }
 
+
 class ExpensesState extends Equatable {
   final List<Bill> transactions;
   final DateTime selectedDate;

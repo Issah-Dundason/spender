@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -12,7 +13,8 @@ class DatabaseClient {
   static const int _version = 2;
   static const String _databaseName = "spender.app";
 
-  late final Database _db;
+  @protected
+  late final Database db;
 
   Future<DatabaseClient> init() async {
     await _openDatabase();
@@ -21,7 +23,7 @@ class DatabaseClient {
 
   Future _openDatabase() async {
     var dir = await getApplicationDocumentsDirectory();
-    _db = await openDatabase("${dir.path}/$_databaseName",
+    db = await openDatabase("${dir.path}/$_databaseName",
         version: _version, onCreate: _create);
   }
 
@@ -31,21 +33,23 @@ class DatabaseClient {
     await db.execute(Query.budgetTable);
     await db.execute(Query.expenditureExceptionTable);
 
-    await db.insert("bill_type", {"name": "Food", "image": "food.svg"});
+    await db.insert(BillType.tableName, {"name": "Food", "image": "food.svg"});
+    await db.insert(BillType.tableName,
+        {"name": "Clothing & beauty", "image": "clothing.svg"});
     await db.insert(
-        "bill_type", {"name": "Clothing & beauty", "image": "clothing.svg"});
+        BillType.tableName, {"name": "Investment", "image": "investment.svg"});
+    await db.insert(
+        BillType.tableName, {"name": "Health", "image": "medicine.svg"});
+    await db.insert(BillType.tableName,
+        {"name": "Electricity", "image": "electricity.svg"});
+    await db.insert(BillType.tableName,
+        {"name": "Transportation", "image": "transportation.svg"});
     await db
-        .insert("bill_type", {"name": "Investment", "image": "investment.svg"});
-    await db.insert("bill_type", {"name": "Health", "image": "medicine.svg"});
-    await db.insert(
-        "bill_type", {"name": "Electricity", "image": "electricity.svg"});
-    await db.insert(
-        "bill_type", {"name": "Transportation", "image": "transportation.svg"});
-    await db.insert("bill_type", {"name": "Other", "image": "other.svg"});
+        .insert(BillType.tableName, {"name": "Other", "image": "other.svg"});
   }
 
   Future<Financials?> getFinancials(String date) async {
-    var result = await _db.rawQuery(
+    var result = await db.rawQuery(
         Query.financialsQuery, [DateTime.now().toIso8601String(), date, date]);
 
     if (result.isEmpty) {
@@ -56,16 +60,16 @@ class DatabaseClient {
   }
 
   Future saveBudget(Budget budget) async {
-    await _db.insert("budget", budget.toMap());
+    await db.insert("budget", budget.toMap());
   }
 
   Future saveBill(Map<String, dynamic> map) async {
-    await _db.insert("expenditure", map);
+    await db.insert(Bill.tableName, map);
   }
 
   Future<List<Bill>> getBillAtWithLimit(DateTime dateTime, int limit) async {
     var date = DateFormat("yyyy-MM-dd").format(dateTime);
-    var result = await _db.rawQuery(Query.getExpenditureWithLimitQuery(),
+    var result = await db.rawQuery(Query.getExpenditureWithLimitQuery(),
         [date, dateTime.toIso8601String(), limit]);
     return result.map((record) {
       Map<String, dynamic> modified = Map.from(record);
@@ -79,55 +83,55 @@ class DatabaseClient {
   }
 
   Future<bool> didTransactionOccurOnDay(String day) async {
-    var results = await _db.rawQuery(Query.didTransactionOccurQuery, [day]);
+    var results = await db.rawQuery(Query.didTransactionOccurQuery, [day]);
     return results.isNotEmpty;
   }
 
   Future deleteBill(int id) async {
-    await _db.delete("expenditure", where: "id = ?", whereArgs: [id]);
+    await db.delete(Bill.tableName, where: "id = ?", whereArgs: [id]);
   }
 
   Future updateBill(int id, Map<String, dynamic> expenditure) async {
-    await _db
-        .update("expenditure", expenditure, where: "id = ?", whereArgs: [id]);
+    await db
+        .update(Bill.tableName, expenditure, where: "id = ?", whereArgs: [id]);
   }
 
   Future<void> createException(Map<String, dynamic> json) async {
-    await _db.insert('expenditure_exception', json);
+    await db.insert('expenditure_exception', json);
   }
 
   Future<int?> getYearOfFirstBudget() async {
     var result =
-        await _db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
+        await db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
            FROM budget ORDER BY date LIMIT 1''');
     if (result.isNotEmpty) return Sqflite.firstIntValue(result);
     return null;
   }
 
   Future<bool> budgetExists(String yearMonth) async {
-    var records = await _db.query("budget",
+    var records = await db.query("budget",
         where: "strftime('%Y-%m', date) = ?", whereArgs: [yearMonth]);
     return records.length == 1;
   }
 
   Future updateBudget(Budget budget) async {
-    await _db.update("budget", budget.toMap(),
+    await db.update("budget", budget.toMap(),
         where: "id = ?", whereArgs: [budget.id]);
   }
 
   Future deleteBudget(Budget budget) async {
-    await _db.delete("budget", where: "id = ?", whereArgs: [budget.id]);
+    await db.delete("budget", where: "id = ?", whereArgs: [budget.id]);
   }
 
   Future<Budget?> getBudget(String yearMonth) async {
-    var result = await _db.query("budget",
+    var result = await db.query("budget",
         where: "strftime('%Y-%m', date) = ?", whereArgs: [yearMonth]);
     if (result.isEmpty) return null;
     return Budget.fromMap(result[0]);
   }
 
   Future<List<Budget>> getBudgets(String year) async {
-    var result = await _db.query("budget",
+    var result = await db.query("budget",
         where: "strftime('%Y', date) = ?",
         orderBy: "date ASC",
         whereArgs: [year]);
@@ -136,8 +140,7 @@ class DatabaseClient {
   }
 
   Future<List<Bill>> getBillByDate(String date) async {
-
-    var result = await _db.rawQuery(Query.expenditureByDateQuery, [date]);
+    var result = await db.rawQuery(Query.expenditureByDateQuery, [date]);
 
     return result.map((record) {
       Map<String, dynamic> modified = Map.from(record);
@@ -151,7 +154,7 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getPieData(String format, String date) async {
-    var records = await _db.rawQuery(
+    var records = await db.rawQuery(
         Query.pieQuery(format, date), [DateTime.now().toIso8601String()]);
 
     return records
@@ -161,7 +164,7 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getOverallPieData() async {
-    var records = await _db.rawQuery(
+    var records = await db.rawQuery(
         Query.overallPieDataQuery, [DateTime.now().toIso8601String()]);
     return records
         .map((record) =>
@@ -170,7 +173,7 @@ class DatabaseClient {
   }
 
   Future<List<BillType>> getProductTypes() async {
-    var result = await _db.query("bill_type");
+    var result = await db.query("bill_type");
     return result
         .map((record) => BillType(record["id"] as int, record["name"] as String,
             record["image"] as String))
@@ -178,7 +181,7 @@ class DatabaseClient {
   }
 
   Future<int?> getYearOfFirstInsert() async {
-    var result = await _db.rawQuery(
+    var result = await db.rawQuery(
         "SELECT payment_datetime as edate FROM expenditure ORDER BY payment_datetime ASC LIMIT 1");
     if (result.isEmpty) return null;
     var date = DateTime.parse(result[0]['edate'] as String);
@@ -188,7 +191,7 @@ class DatabaseClient {
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
     String dateTime = DateTime.now().toIso8601String();
     var result =
-        await _db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
+        await db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
     return result
         .map((record) => MonthSpending(
             int.parse(record["month"] as String), record["amount"] as int))
@@ -197,27 +200,43 @@ class DatabaseClient {
 
   Future<void> updateException(
       int exceptionId, Map<String, dynamic> json) async {
-    await _db.update('expenditure_exception', json,
+    await db.update('expenditure_exception', json,
         where: 'id = ?', whereArgs: [exceptionId]);
   }
 
-  void deleteParentExceptionAfterDate(int parentId, String endDate) async {
-    await _db.update('expenditure', {Bill.columnEndDate: endDate},
+  Future<void> deleteParentExceptionAfterDate(int parentId, String endDate) async {
+    await db.update('expenditure', {Bill.columnEndDate: endDate},
         where: 'id = ?', whereArgs: [parentId]);
-    await _db.delete('expenditure_exception',
-        where:
-            '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
-        whereArgs: [parentId, endDate]);
+    await db.delete(
+      'expenditure_exception',
+      where:
+          '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
+      whereArgs: [parentId, endDate],
+    );
   }
 
   Future<void> deleteAllExceptionsForParent(int parentId) async {
-    await _db.delete('expenditure_exception',
-        where: '${Bill.columnExceptionParentId} = ?', whereArgs: [parentId]);
+    await db.delete(
+      'expenditure_exception',
+      where: '${Bill.columnExceptionParentId} = ?',
+      whereArgs: [parentId],
+    );
   }
 
   Future<void> deleteGeneratedException(int exceptionId) async {
-    await _db.update('expenditure_exception', {'deleted': 1},
-        where: "id = ?", whereArgs: [exceptionId]);
+    await db.update(
+      'expenditure_exception',
+      {'deleted': 1},
+      where: "id = ?",
+      whereArgs: [exceptionId],
+    );
+  }
+
+  Future<String> getLastEndDate(int parentId, String date) async {
+    var record =
+        await db.rawQuery(Query.lastEndDate, [parentId, parentId, date]);
+    if(record.isEmpty) throw UnavailableException();
+    return record.first['payment_datetime'] as String;
   }
 
 }
@@ -262,3 +281,6 @@ class MonthSpending extends Equatable {
   @override
   List<Object?> get props => [amount, month];
 }
+
+
+class UnavailableException implements Exception {}

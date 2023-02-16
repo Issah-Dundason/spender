@@ -24,17 +24,11 @@ enum DeleteMethod {
   multiple
 }
 
-class RecurrentDeleteEvent extends ExpensesEvent {
+class BillDeleteEvent extends ExpensesEvent {
  final DeleteMethod method;
  final Bill bill;
 
- RecurrentDeleteEvent({this.method = DeleteMethod.single, required this.bill});
-}
-
-class NonRecurringDelete extends ExpensesEvent {
-  final Bill bill;
-
-  NonRecurringDelete(this.bill);
+ BillDeleteEvent({this.method = DeleteMethod.single, required this.bill});
 }
 
 

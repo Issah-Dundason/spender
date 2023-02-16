@@ -16,16 +16,15 @@ class EditableTransactionTile extends StatefulWidget {
   final Color? tileColor;
   final Color? textColor;
   final Color? iconColor;
+  final Bill bill;
 
-  const EditableTransactionTile(
-      {Key? key,
-      required this.expenditure,
-      this.tileColor = const Color(0xFFB5A7B8),
-      this.textColor = const Color(0xFFFFFFFF),
-      this.iconColor = const Color(0xFFFFFFFF)})
-      : super(key: key);
-
-  final Bill expenditure;
+  const EditableTransactionTile({
+    Key? key,
+    required this.bill,
+    this.tileColor = const Color(0xFFB5A7B8),
+    this.textColor = const Color(0xFFFFFFFF),
+    this.iconColor = const Color(0xFFFFFFFF),
+  }) : super(key: key);
 
   @override
   State<EditableTransactionTile> createState() =>
@@ -68,10 +67,10 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                           color: Theme.of(context).colorScheme.secondary),
                       children: [
                         TextSpan(
-                            text: NumberFormat.compact()
-                                .format(widget.expenditure.cash),
-                            style: const TextStyle(
-                                fontSize: 17, color: Colors.black))
+                          text: NumberFormat.compact().format(widget.bill.cash),
+                          style: const TextStyle(
+                              fontSize: 17, color: Colors.black),
+                        )
                       ]),
                 )),
             Padding(
@@ -85,7 +84,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: SvgPicture.asset(
-                      'assets/images/bills/${widget.expenditure.type.image}',
+                      'assets/images/bills/${widget.bill.type.image}',
                       fit: BoxFit.scaleDown,
                       width: 40,
                       height: 40,
@@ -105,7 +104,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                           width: MediaQuery.of(context).size.width * 0.5,
                           child: Text(
                             overflow: TextOverflow.clip,
-                            'Bill: ${widget.expenditure.title}',
+                            'Bill: ${widget.bill.title}',
                             style: TextStyle(
                                 fontSize: 16, color: widget.textColor),
                           ),
@@ -115,12 +114,12 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                         ),
                         Text(
                           overflow: TextOverflow.clip,
-                          widget.expenditure.formattedDate,
+                          widget.bill.formattedDate,
                           style:
                               TextStyle(fontSize: 16, color: widget.textColor),
                         ),
                         Visibility(
-                            visible: widget.expenditure.isRecurring,
+                            visible: widget.bill.isRecurring,
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -138,12 +137,10 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                                     ),
                                     Text(
                                       toBeginningOfSentenceCase(
-                                              widget.expenditure.pattern.name)
-                                          as String,
+                                          widget.bill.pattern.name) as String,
                                       style: const TextStyle(fontSize: 18),
                                     ),
-                                    DateTime.parse(widget
-                                                .expenditure.paymentDateTime)
+                                    DateTime.parse(widget.bill.paymentDateTime)
                                             .isAfter(DateTime.now())
                                         ? Row(
                                             children: [
@@ -195,12 +192,12 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
       actions: [
         TextButton(
             onPressed: () {
-              Navigator.pop(context, true);
+              Navigator.pop(context, DeleteMethod.multiple);
             },
             child: const Text('Yes')),
         TextButton(
             onPressed: () {
-              Navigator.pop(context, false);
+              Navigator.pop(context, DeleteMethod.single);
             },
             child: const Text('No'))
       ],
@@ -224,39 +221,32 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
               return BillBloc(appRepo: appRepo);
             },
             child: BillView(
-              bill: widget.expenditure,
+              bill: widget.bill,
               billTypes: billTypes,
             ))));
   }
 
   void onDelete() async {
-    var isRecurring = widget.expenditure.isRecurring;
-    if (isRecurring) {
+    var isRecurring = widget.bill.isRecurring;
 
+    if (isRecurring && !widget.bill.isLast) {
       var ans = await showDialog(
           context: context,
           builder: (_) =>
               buildDeleteDialog(message: 'Should delete future events?'));
 
-      if (ans == true) {
-        if(!mounted) return;
-        context.read<ExpensesBloc>().add(RecurrentDeleteEvent(
-            bill: widget.expenditure, method: DeleteMethod.multiple));
-      }
+      if (ans == null || !mounted) return;
+      var event = BillDeleteEvent(method: ans, bill: widget.bill);
 
-      if (ans == false) {
-        if(!mounted) return;
-        context.read<ExpensesBloc>().add(RecurrentDeleteEvent(
-            bill: widget.expenditure));
-      }
-
+      context.read<ExpensesBloc>().add(event);
       return;
     }
+
     var ans =
         await showDialog(context: context, builder: (_) => buildDeleteDialog());
-    if (ans != true) return;
 
-    if(!mounted) return;
-    context.read<ExpensesBloc>().add(NonRecurringDelete(widget.expenditure));
+    if (ans == null || ans == DeleteMethod.single || !mounted) return;
+
+    context.read<ExpensesBloc>().add(BillDeleteEvent(bill: widget.bill));
   }
 }
