@@ -156,5 +156,4 @@ class TestDatabaseClient extends DatabaseClient {
       await repo.saveBill(Bill.fromJson(json));
     }
   }
-
 }
