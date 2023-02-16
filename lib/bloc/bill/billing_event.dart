@@ -26,3 +26,12 @@ class NonRecurringUpdateEvent extends BillEvent {
 
   NonRecurringUpdateEvent(this.update);
 }
+
+
+class BillUpdateEvent extends BillEvent {
+  final String oldPaymentDate;
+  final Bill update;
+  final UpdateMethod method;
+
+  BillUpdateEvent(this.oldPaymentDate, this.update, [this.method = UpdateMethod.single]);
+}

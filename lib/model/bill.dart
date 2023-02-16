@@ -166,7 +166,7 @@ class Bill extends Equatable {
   }
 
   bool get isLast {
-    if(!isRecurring) return true;
+    if(!isRecurring || endDate == null) return true;
     var billDate = DateTime.parse(paymentDateTime);
     var end = DateTime.parse(endDate!);
     return DateUtils.isSameDay(billDate, end);

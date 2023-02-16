@@ -12,10 +12,10 @@ import '../database/test_database.dart';
 
 void main() async {
   sqfliteFfiInit();
-  late TestDatabaseClient dbClient;
+  late  ExpensesBlocDatabaseClient dbClient;
 
   setUpAll(() async {
-    dbClient = await TestDatabaseClient().init();
+    dbClient = await  ExpensesBlocDatabaseClient().init();
   });
 
   group('can retrieve bills', () {

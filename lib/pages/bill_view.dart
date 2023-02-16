@@ -602,17 +602,18 @@ class _BillViewState extends State<BillView>
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
 
     Bill update = widget.bill!.copyWith(
-        id: widget.bill!.id,
-        title: bill,
-        description: description,
-        paymentDateTime: date.toIso8601String(),
-        exceptionId: widget.bill!.exceptionId,
-        amount: amount,
-        parentId: widget.bill!.parentId,
-        type: _billType,
-        priority: _priority,
-        pattern: _selectedRecurrence,
-        endDate: _endDate?.toIso8601String());
+      id: widget.bill!.id,
+      title: bill,
+      description: description,
+      paymentDateTime: date.toIso8601String(),
+      exceptionId: widget.bill!.exceptionId,
+      amount: amount,
+      parentId: widget.bill!.parentId,
+      type: _billType,
+      priority: _priority,
+      pattern: _selectedRecurrence,
+      endDate: _endDate?.toIso8601String(),
+    );
 
     var changedFields = Bill.differentFields(update, widget.bill!);
 
@@ -636,7 +637,7 @@ class _BillViewState extends State<BillView>
       return;
     }
 
-    if (widget.bill!.isRecurring) {
+    if (widget.bill!.isRecurring && !widget.bill!.isLast) {
       var ans = await updateQuestionAns('Should future events be updated?');
       if (ans == null) return;
 
@@ -647,6 +648,12 @@ class _BillViewState extends State<BillView>
         return;
       }
 
+      var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update);
+      sendEvent(event);
+      return;
+    }
+
+    if(widget.bill!.isRecurring) {
       var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update);
       sendEvent(event);
       return;

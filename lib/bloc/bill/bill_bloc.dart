@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:spender/bloc/bill/billing_event.dart';
 import 'package:spender/model/bill.dart';
+import 'package:spender/service/database.dart';
 
 import '../../repository/expenditure_repo.dart';
 import 'billing_state.dart';
@@ -15,77 +19,106 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     on<NonRecurringUpdateEvent>(_onNonRecurrenceUpdate);
   }
 
-  _onBillSave(BillSaveEvent e, Emitter<BillingState> emitter) async {
+  void _onBillSave(BillSaveEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
     await appRepo.saveBill(e.expenditure);
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
-  _onNonRecurrenceUpdate(
+  void _onNonRecurrenceUpdate(
       NonRecurringUpdateEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
     await appRepo.updateBill(e.update.id!, e.update.toNewBillJson());
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
-  _onRecurrenceUpdate(
+  void _onRecurrenceUpdate(
       RecurrenceUpdateEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
 
-    if (e.updateMethod == UpdateMethod.single && e.update.isGenerated) {
-      updateSingleGeneratedInstance(e.instanceDate, e.update);
-    } else if (e.updateMethod == UpdateMethod.multiple &&
-        e.update.isGenerated) {
-      updateMultipleGeneratedInstance(e.instanceDate, e.update);
-    } else if (e.updateMethod == UpdateMethod.single &&
-        !e.update.isGenerated) {
-      updateSingleInstance(e.instanceDate, e.update);
-    } else {
-      updateMultiple(e.instanceDate, e.update);
+    if (e.update.isGenerated) {
+      await updateGenerated(e);
+      return;
     }
+    await updateActualBillInstance(e);
 
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
-  void updateSingleGeneratedInstance(String instanceDate, Bill update) async {
+  Future<void> updateGenerated(RecurrenceUpdateEvent e) async {
+    if(e.updateMethod == UpdateMethod.single) {
+      await updateSingleGeneratedInstance(e.instanceDate, e.update);
+      return;
+    }
+    await updateMultipleGeneratedInstance(e.instanceDate, e.update);
+  }
+
+  Future<void> updateActualBillInstance(RecurrenceUpdateEvent e) async {
+    if(e.updateMethod == UpdateMethod.single) {
+      await updateSingleInstance(e.instanceDate, e.update);
+      return;
+    }
+    updateMultiple(e.instanceDate, e.update);
+  }
+
+  Future<void> updateSingleGeneratedInstance(String instanceDate, Bill update) async {
     if (update.exceptionId != null) {
       var exceptJson = update.toExceptionJson(instanceDate);
-      appRepo.updateException(update.exceptionId!, exceptJson);
-      appRepo.deleteParentExceptionAfterDate(update.parentId!, update.endDate!);
+      await appRepo.updateException(update.exceptionId!, exceptJson);
+      await appRepo.deleteParentExceptionAfterDate(update.parentId!, update.endDate!);
       return;
     }
     var exceptJson = update.toExceptionJson(instanceDate);
-    appRepo.createException(exceptJson);
-    appRepo.deleteParentExceptionAfterDate(update.parentId!, update.endDate!);
+    await appRepo.createException(exceptJson);
+    await appRepo.deleteParentExceptionAfterDate(update.parentId!, update.endDate!);
   }
 
-  void updateMultipleGeneratedInstance(String instanceDate, Bill update) async {
-    var parentEndDate = DateUtils.dateOnly(DateTime.parse(instanceDate))
-        .subtract(const Duration(days: 1));
-    parentEndDate = parentEndDate.add(const Duration(hours: 23, minutes: 59));
+  Future<void> updateMultipleGeneratedInstance(String instanceDate, Bill update) async {
 
-    appRepo.deleteParentExceptionAfterDate(
-        update.parentId!, parentEndDate.toIso8601String());
+    try {
+      DateTime end = await getLastDay(update);
+
+      await appRepo.deleteParentExceptionAfterDate(
+        update.parentId!,
+        end.toIso8601String(),
+      );
+    } on UnavailableException {
+      await appRepo.deleteBill(update.parentId!);
+      await appRepo.deleteAllExceptionsForParent(update.parentId!);
+    }
 
     await appRepo.saveBill(update);
   }
 
-  void updateSingleInstance(String instanceDate, Bill update) {
+  Future<DateTime> getLastDay(Bill bill) async {
+    var billDate = DateTime.parse(bill.paymentDateTime);
+    String date = DateFormat('yyyy-MM-dd').format(billDate);
+    var lastPaymentDate = await appRepo.getLastEndDate(bill.parentId!, date);
+
+    var lastDate = DateUtils.dateOnly(DateTime.parse(lastPaymentDate));
+
+    var end = lastDate.add(const Duration(hours: 23, minutes: 59));
+    return end;
+  }
+
+  Future<void> updateSingleInstance(String instanceDate, Bill update) async {
     if (update.exceptionId != null) {
       var exceptJson = update.toExceptionJson(instanceDate);
       exceptJson[Bill.columnExceptionParentId] = update.id;
-      appRepo.updateException(update.exceptionId!, exceptJson);
-      appRepo.deleteParentExceptionAfterDate(update.id!, update.endDate!);
+      await appRepo.updateException(update.exceptionId!, exceptJson);
+      await appRepo.deleteParentExceptionAfterDate(update.id!, update.endDate!);
       return;
     }
     var exceptJson = update.toExceptionJson(instanceDate);
     exceptJson[Bill.columnExceptionParentId] = update.id;
-    appRepo.createException(exceptJson);
-    appRepo.deleteParentExceptionAfterDate(update.id!, update.endDate!);
+    await appRepo.createException(exceptJson);
+    await appRepo.deleteParentExceptionAfterDate(update.id!, update.endDate!);
   }
 
-  void updateMultiple(String instanceDate, Bill update) {
-    appRepo.updateBill(update.id!, update.toNewBillJson());
-    appRepo.deleteAllExceptionsForParent(update.id!);
+  Future<void> updateMultiple(String instanceDate, Bill update) async {
+    await appRepo.updateBill(update.id!, update.toNewBillJson());
+    await appRepo.deleteAllExceptionsForParent(update.id!);
   }
+
 }
+
