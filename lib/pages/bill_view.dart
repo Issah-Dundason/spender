@@ -55,7 +55,6 @@ class _BillViewState extends State<BillView>
         TextEditingController(text: widget.bill?.description);
     _amountController = TextEditingController();
 
-
     if (widget.bill != null) {
       _endDate = widget.bill!.endDate != null
           ? DateTime.parse(widget.bill!.endDate as String)
@@ -547,9 +546,9 @@ class _BillViewState extends State<BillView>
         return;
       }
 
-      if (date == null) return;
-      if (widget.bill!.isGenerated) return;
-      if (widget.bill?.endDate == null) return;
+      if (date == null ||
+          widget.bill!.isGenerated ||
+          widget.bill?.endDate == null) return;
 
       var start =
           DateUtils.dateOnly(DateTime.parse(widget.bill!.paymentDateTime));
@@ -632,6 +631,7 @@ class _BillViewState extends State<BillView>
       if (ans == null || !ans) return;
       var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update,
           updateMethod: UpdateMethod.multiple);
+
       sendEvent(event);
       return;
     }

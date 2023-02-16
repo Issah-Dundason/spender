@@ -5,6 +5,8 @@ part 'bill_type.g.dart';
 
 @JsonSerializable()
 class BillType extends Equatable {
+  static const String tableName = "bill_type";
+
   @JsonKey(name: "bill_type")
   final int id;
 
@@ -19,7 +21,7 @@ class BillType extends Equatable {
   factory BillType.fromMap(Map<String, dynamic> json) =>
       _$BillTypeFromJson(json);
 
-  toMap() => {"id": id, "name": name};
+  Map<String, dynamic> toJson() => _$BillTypeToJson(this);
 
   @override
   List<Object?> get props => [id, name];

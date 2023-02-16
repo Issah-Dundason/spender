@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
 class Budget extends Equatable {
+  static const String tableName = "budget";
   final int? id;
   final int amount;
 

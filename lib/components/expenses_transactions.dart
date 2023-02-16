@@ -38,7 +38,7 @@ class ExpensesTransactions extends StatelessWidget {
             children: [
               ...state.transactions.map((e) {
                 return EditableTransactionTile(
-                  expenditure: e,
+                  bill: e,
                   textColor: Colors.black,
                   iconColor: Colors.black,
                   tileColor: Colors.grey[300],
