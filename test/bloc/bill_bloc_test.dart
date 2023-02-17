@@ -37,7 +37,7 @@ void main() {
       bloc.add(BillSaveEvent(bill));
     },
     wait: const Duration(milliseconds: 20),
-    expect: verifySavingState,
+    expect: verifyStateChanges,
     verify: (bloc) {
       var repo = AppRepository(dbClient);
       for (int i = 1; i <= 5; i++) {
@@ -53,8 +53,11 @@ void main() {
 
   group('can update generated bill', () {
     late Bill firstTest;
+    late Bill secondTest;
+    late Bill thirdTest;
 
-    blocTest('Updating a generated bill creates exception (new payment date can\'t be a future date)',
+    blocTest(
+        'Updating a generated bill creates exception (new payment date can\'t be a future date)',
         setUp: () async {
           var repo = AppRepository(dbClient);
           firstTest = (await repo.getAllBills('2023-02-02')).first;
@@ -63,13 +66,13 @@ void main() {
           var repo = AppRepository(dbClient);
           return BillBloc(appRepo: repo);
         },
-        wait: const Duration(milliseconds: 80),
+        wait: const Duration(milliseconds: 20),
         act: (bloc) {
           var bill =
               firstTest.copyWith(paymentDateTime: '2023-01-28', amount: 30);
           bloc.add(RecurrenceUpdateEvent(firstTest.paymentDateTime, bill));
         },
-        expect: verifySavingState,
+        expect: verifyStateChanges,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
           repo.getAllBills('2023-01-28').then(expectAsync1((bills) {
@@ -78,10 +81,74 @@ void main() {
             expect(30, bill.amount);
           }));
         });
+
+    blocTest('can update an exception',
+        setUp: () async {
+          var repo = AppRepository(dbClient);
+          var bill = (await repo.getAllBills('2023-02-03')).first;
+          var update = bill.copyWith(amount: 10);
+          await repo.createException(update.toExceptionJson('2023-02-03'));
+          secondTest = (await repo.getAllBills('2023-02-03')).first;
+        },
+        wait: const Duration(milliseconds: 20),
+        act: (bloc) {
+          var bill = secondTest.copyWith(amount: 12);
+          var event = RecurrenceUpdateEvent(secondTest.paymentDateTime, bill);
+          bloc.add(event);
+        },
+        expect: verifyStateChanges,
+        build: () {
+          return BillBloc(appRepo: AppRepository(dbClient));
+        },
+        verify: (bloc) {
+          var repo = AppRepository(dbClient);
+          repo.getAllBills('2023-02-03').then(expectAsync1((bills) {
+            var bill = bills.first;
+            expect(12, bill.amount);
+            expect(true, bill.exceptionId != null);
+          }));
+        });
+
+    blocTest(
+      'can update generated bill and its future bills',
+      setUp: () async {
+        thirdTest =
+            (await AppRepository(dbClient).getAllBills('2023-02-14')).first;
+      },
+      wait: const Duration(seconds: 2),
+      build: () {
+        return BillBloc(appRepo: AppRepository(dbClient));
+      },
+      act: (bloc) {
+        var bill =
+            thirdTest.copyWith(amount: 15, paymentType: PaymentType.momo);
+        bloc.add(
+            RecurrenceUpdateEvent('2023-02-14', bill, UpdateMethod.multiple));
+      },
+      expect: verifyStateChanges,
+      verify: (bloc) {
+        var repo = AppRepository(dbClient);
+        repo.getAllBills('2023-02-13').then(expectAsync1((bills) {
+          var bill = bills.first;
+          expect(
+              true,
+              equals(DateUtils.isSameDay(DateTime.parse('2023-02-13'),
+                  DateTime.parse(bill.endDate!))));
+        }));
+
+        for (var date in ['2023-02-14', '2023-02-15', '2023-02-16']) {
+          repo.getAllBills(date).then(expectAsync1((bills) {
+            var bill = bills.first;
+            expect(bill.amount, 15);
+            expect(bill.paymentType, PaymentType.momo);
+          }));
+        }
+      },
+    );
   });
 }
 
-verifySavingState() {
+verifyStateChanges() {
   return [
     predicate<BillingState>((state) {
       return state.processingState == ProcessingState.pending;

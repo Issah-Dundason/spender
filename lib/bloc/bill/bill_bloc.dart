@@ -94,6 +94,8 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     String date = DateFormat('yyyy-MM-dd').format(billDate);
     var lastPaymentDate = await appRepo.getLastEndDate(bill.parentId!, date);
 
+    print('last payment date: $lastPaymentDate');
+
     var lastDate = DateUtils.dateOnly(DateTime.parse(lastPaymentDate));
 
     var end = lastDate.add(const Duration(hours: 23, minutes: 59));
