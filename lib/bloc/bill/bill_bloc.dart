@@ -21,7 +21,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
 
   void _onBillSave(BillSaveEvent e, Emitter<BillingState> emitter) async {
     emitter(const BillingState(processingState: ProcessingState.pending));
-    await appRepo.saveBill(e.expenditure);
+    await appRepo.saveBill(e.bill);
     emitter(const BillingState(processingState: ProcessingState.done));
   }
 
@@ -38,12 +38,11 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
 
     if (e.update.isGenerated) {
       await updateGenerated(e);
-      return;
+    } else {
+      await updateActualBillInstance(e);
     }
-    await updateActualBillInstance(e);
-
     emitter(const BillingState(processingState: ProcessingState.done));
-  }
+ }
 
   Future<void> updateGenerated(RecurrenceUpdateEvent e) async {
     if(e.updateMethod == UpdateMethod.single) {

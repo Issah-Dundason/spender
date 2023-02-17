@@ -530,11 +530,18 @@ class _BillViewState extends State<BillView>
 
   void _onDate() async {
     _hideKeypad();
+    var lastDate = DateTime.now().add(const Duration(days: 365 * 7));
+    var isRecurring = widget.bill?.isRecurring;
+
+    if(isRecurring != null && isRecurring) {
+      lastDate = DateTime.parse(widget.bill!.paymentDateTime);
+    }
+
     var date = await showDatePicker(
         context: context,
         initialDate: _selectedDate,
         firstDate: DateTime(199),
-        lastDate: DateTime.now().add(const Duration(days: 365 * 7)));
+        lastDate: lastDate);
     setState(() {
       _selectedDate = date ?? _selectedDate;
 
@@ -631,7 +638,7 @@ class _BillViewState extends State<BillView>
           '''This change will modify all future events\nAre you sure?''');
       if (ans == null || !ans) return;
       var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update,
-          updateMethod: UpdateMethod.multiple);
+          UpdateMethod.multiple);
 
       sendEvent(event);
       return;
@@ -643,7 +650,7 @@ class _BillViewState extends State<BillView>
 
       if (ans == true) {
         var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update,
-            updateMethod: UpdateMethod.multiple);
+            UpdateMethod.multiple);
         sendEvent(event);
         return;
       }
