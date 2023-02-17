@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:spender/bloc/bill/billing_event.dart';
 import 'package:spender/model/bill.dart';
 import 'package:spender/service/database.dart';
@@ -85,19 +84,12 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
       await appRepo.deleteBill(update.parentId!);
       await appRepo.deleteAllExceptionsForParent(update.parentId!);
     }
-
     await appRepo.saveBill(update);
   }
 
   Future<DateTime> getLastDay(Bill bill) async {
-    var billDate = DateTime.parse(bill.paymentDateTime);
-    String date = DateFormat('yyyy-MM-dd').format(billDate);
-    var lastPaymentDate = await appRepo.getLastEndDate(bill.parentId!, date);
-
-    print('last payment date: $lastPaymentDate');
-
+    var lastPaymentDate = await appRepo.getLastEndDate(bill.parentId!, bill.paymentDateTime);
     var lastDate = DateUtils.dateOnly(DateTime.parse(lastPaymentDate));
-
     var end = lastDate.add(const Duration(hours: 23, minutes: 59));
     return end;
   }
