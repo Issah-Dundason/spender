@@ -156,7 +156,7 @@ class Bill extends Equatable {
   factory Bill.fromJson(Map<String, dynamic> json) => _$BillFromJson(json);
 
   String get formattedDate {
-    return DateFormat('EEE,dd MMM yyyy')
+    return DateFormat('EEE, dd MMM yyyy')
         .format(DateTime.parse(paymentDateTime));
   }
 
