@@ -16,13 +16,24 @@ user with a graphical understanding of their expenses.
     <li>:point_right: Beautiful UI</li>
 </ul>
 
+### To be added:
+<li>Export reports</li>
+
 ### State Manager
 <a href="https://pub.dev/packages/flutter_bloc">Bloc</a>
 
+### Assets
+<p>
+    <a href="https://www.svgrepo.com/">SVG Repo</a>
+</p>
+<p>
+<a href="https://syaluiux.gumroad.com/l/Xnix500">Xnix Icon pack</a>
+</p>
+
 Preview
-
-
-<img src="./snapshots/snap.png" style="display: block; margin-left: auto; margin-right:auto; width: 50%"/>
+<p style="display: block; margin-left: auto; margin-right:auto; width: 50%">
+<img src="./snapshots/snap.png"/>
+</p>
 
 ### Tech Stack
 Mobile App: Flutter | dart
