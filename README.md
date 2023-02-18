@@ -31,8 +31,8 @@ user with a graphical understanding of their expenses.
 </p>
 
 Preview
-<p style="display: block; margin-left: auto; margin-right:auto; width: 50%">
-<img src="./snapshots/snap.png"/>
+<p >
+<img src="./snapshots/snap.png" style="margin-left: auto; margin-right:auto; width: 50%; display: inline-block;"/>
 </p>
 
 ### Tech Stack
