@@ -1,13 +1,14 @@
 import 'package:path_provider/path_provider.dart';
 import 'package:spender/model/bill.dart';
+import 'package:spender/model/bill_type.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
 import 'package:spender/service/queries.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-class TestDatabaseClient extends DatabaseClient {
-  static const String _databaseName = "spenderTest.app";
+class ExpensesBlocDatabaseClient extends DatabaseClient {
+  static const String _databaseName = "spenderExpensesBlocTest.app";
 
   //add types before saving
   var testJson = [
@@ -114,7 +115,7 @@ class TestDatabaseClient extends DatabaseClient {
   ];
 
   @override
-  Future<TestDatabaseClient> init() async {
+  Future< ExpensesBlocDatabaseClient> init() async {
     await _openDatabase();
     return this;
   }
@@ -150,6 +151,84 @@ class TestDatabaseClient extends DatabaseClient {
     AppRepository repo = AppRepository(this);
 
     var types = await repo.getBillTypes();
+
+    for (var json in testJson) {
+      json['type'] = types[0].toJson();
+      await repo.saveBill(Bill.fromJson(json));
+    }
+  }
+}
+
+class BillBlocDatabaseClient extends DatabaseClient {
+  static const String _databaseName = "spenderBillBlocTest.app";
+
+  late List<BillType> billTypes;
+
+  //add types before saving
+  var testJson = [
+
+    //for updating generated bill
+    {
+      'title': 'Bill 2',
+      'priority': 'need',
+      'payment_type': 'cash',
+      'pattern': 1,
+      'payment_datetime': '2023-02-01T23:00:00.000',
+      'amount': 200,
+      'end_date': '2023-02-04T23:59:00.000',
+    },
+    //for testing non recurring bill retrieval,
+    {
+      'title': 'Bill 3',
+      'priority': 'need',
+      'payment_type': 'cash',
+      'pattern': 1,
+      'payment_datetime': '2023-02-13T23:00:00.000',
+      'amount': 200,
+      'end_date': '2023-02-16T23:59:00.000',
+    },
+  ];
+
+  @override
+  Future<BillBlocDatabaseClient> init() async {
+    await _openDatabase();
+    return this;
+  }
+
+  Future<void> _openDatabase() async {
+    var dir = await getApplicationDocumentsDirectory();
+    db = await databaseFactoryFfi.openDatabase("${dir.path}/$_databaseName");
+    await _create(db);
+  }
+
+  Future<void> _create(Database db) async {
+    await db.execute(Query.billTypeTable);
+    await db.execute(Query.expenditureTable);
+    await db.execute(Query.budgetTable);
+    await db.execute(Query.expenditureExceptionTable);
+
+    await db.delete('bill_type');
+    await db.delete('expenditure');
+    await db.delete('budget');
+
+    await db.insert("bill_type", {"name": "Food", "image": "food.svg"});
+    await db.insert(
+        "bill_type", {"name": "Clothing & beauty", "image": "clothing.svg"});
+    await db
+        .insert("bill_type", {"name": "Investment", "image": "investment.svg"});
+    await db.insert("bill_type", {"name": "Health", "image": "medicine.svg"});
+    await db.insert(
+        "bill_type", {"name": "Electricity", "image": "electricity.svg"});
+    await db.insert(
+        "bill_type", {"name": "Transportation", "image": "transportation.svg"});
+    await db.insert("bill_type", {"name": "Other", "image": "other.svg"});
+
+    AppRepository repo = AppRepository(this);
+
+    var types = await repo.getBillTypes();
+    billTypes = types;
+
+
 
     for (var json in testJson) {
       json['type'] = types[0].toJson();

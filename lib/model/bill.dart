@@ -156,7 +156,7 @@ class Bill extends Equatable {
   factory Bill.fromJson(Map<String, dynamic> json) => _$BillFromJson(json);
 
   String get formattedDate {
-    return DateFormat('EEE,dd MMM yyyy')
+    return DateFormat('EEE, dd MMM yyyy')
         .format(DateTime.parse(paymentDateTime));
   }
 
@@ -166,7 +166,7 @@ class Bill extends Equatable {
   }
 
   bool get isLast {
-    if(!isRecurring) return true;
+    if(!isRecurring || endDate == null) return true;
     var billDate = DateTime.parse(paymentDateTime);
     var end = DateTime.parse(endDate!);
     return DateUtils.isSameDay(billDate, end);

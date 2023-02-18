@@ -75,7 +75,7 @@ class PieChartPage extends StatelessWidget {
                                     )
                                   ],
                                 ),
-                                radius: size.width * 0.15,
+                                radius: size.width * 0.12,
                                 color: colors[i++]),
                           )
                         ])),
