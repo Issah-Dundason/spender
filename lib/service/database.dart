@@ -234,7 +234,7 @@ class DatabaseClient {
 
   Future<String> getLastEndDate(int parentId, String date) async {
     var record =
-        await db.rawQuery(Query.lastEndDate, [parentId, parentId, date]);
+        await db.rawQuery(Query.lastEndDate, [date, parentId, parentId,]);
     if(record.isEmpty) throw UnavailableException();
     return record.first['payment_datetime'] as String;
   }

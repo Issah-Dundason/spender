@@ -7,9 +7,9 @@ abstract class BillEvent {
 }
 
 class BillSaveEvent extends BillEvent {
-  final Bill expenditure;
+  final Bill bill;
 
-  const BillSaveEvent(this.expenditure);
+  const BillSaveEvent(this.bill);
 }
 
 class RecurrenceUpdateEvent extends BillEvent {
@@ -17,8 +17,8 @@ class RecurrenceUpdateEvent extends BillEvent {
   final Bill update;
   final UpdateMethod updateMethod;
 
-  const RecurrenceUpdateEvent(this.instanceDate, this.update,
-      {this.updateMethod = UpdateMethod.single});
+  RecurrenceUpdateEvent(this.instanceDate, this.update,
+      [this.updateMethod = UpdateMethod.single]);
 }
 
 class NonRecurringUpdateEvent extends BillEvent {

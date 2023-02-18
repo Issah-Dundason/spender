@@ -57,7 +57,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                 )),
             Positioned(
                 right: 20,
-                bottom: 15,
+                bottom: 12,
                 child: RichText(
                   textWidthBasis: TextWidthBasis.longestLine,
                   text: TextSpan(
@@ -86,12 +86,12 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                     child: SvgPicture.asset(
                       'assets/images/bills/${widget.bill.type.image}',
                       fit: BoxFit.scaleDown,
-                      width: 40,
-                      height: 40,
+                      width: 45,
+                      height: 45,
                     ),
                   ),
                   const SizedBox(
-                    width: 20,
+                    width: 17,
                   ),
                   Expanded(
                     flex: 2,
@@ -104,13 +104,13 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                           width: MediaQuery.of(context).size.width * 0.5,
                           child: Text(
                             overflow: TextOverflow.clip,
-                            'Bill: ${widget.bill.title}',
+                            widget.bill.title,
                             style: TextStyle(
                                 fontSize: 16, color: widget.textColor),
                           ),
                         ),
                         const SizedBox(
-                          height: 10,
+                          height: 20,
                         ),
                         Text(
                           overflow: TextOverflow.clip,

@@ -158,12 +158,8 @@ class GeneratedBillRemover implements BillRemover {
   }
 
   Future<DateTime> getLastDay(Bill bill, AppRepository repo) async {
-    var billDate = DateTime.parse(bill.paymentDateTime);
-    String date = DateFormat('yyyy-MM-dd').format(billDate);
-    var lastPaymentDate = await repo.getLastEndDate(bill.parentId!, date);
-
+    var lastPaymentDate = await repo.getLastEndDate(bill.parentId!, bill.paymentDateTime);
     var lastDate = DateUtils.dateOnly(DateTime.parse(lastPaymentDate));
-
     var end = lastDate.add(const Duration(hours: 23, minutes: 59));
     return end;
   }

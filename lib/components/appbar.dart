@@ -5,31 +5,35 @@ import 'package:spender/pages/profile_page.dart';
 
 class TopBar {
   static AppBar getAppBar(
-          BuildContext context, String text, String assetName, Function() func) =>
-      AppBar(
+          BuildContext context, String text, String assetName, Function() func) {
+     return AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
         centerTitle: true,
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent, // <-- SEE HERE
         ),
-        leading: GestureDetector(
-          onTap: func,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0, top: 4, bottom: 4),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(15)),
-              child: SvgPicture.asset('assets/images/avatar/$assetName'),
-            ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 4, bottom: 4),
+          child: Container(
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(15)),
+            child: SvgPicture.asset('assets/images/avatar/$assetName'),
           ),
         ),
         title: Text(
           text,
         ),
         foregroundColor: Colors.black,
-      );
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 5),
+            child: IconButton(onPressed: func, icon: const Icon(Icons.settings),
+            color: Theme.of(context).colorScheme.primary,),
+          )
+        ],
+      ); }
 
   static Route createRoute() {
     return PageRouteBuilder(

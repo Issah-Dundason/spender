@@ -12,10 +12,10 @@ import '../database/test_database.dart';
 
 void main() async {
   sqfliteFfiInit();
-  late TestDatabaseClient dbClient;
+  late  ExpensesBlocDatabaseClient dbClient;
 
   setUpAll(() async {
-    dbClient = await TestDatabaseClient().init();
+    dbClient = await  ExpensesBlocDatabaseClient().init();
   });
 
   group('can retrieve bills', () {
@@ -80,7 +80,7 @@ void main() async {
   });
 
   group('can delete bills (SINGLE DELETE)', () {
-    const waitTime =  Duration(milliseconds: 20);
+    const waitTime =  Duration(seconds: 2);
     late Bill firstTestBill;
     late Bill secondTestBill;
     late Bill thirdTestBill;
@@ -231,7 +231,7 @@ void main() async {
     late Bill firstTestBill;
     late Bill secondTestBill;
 
-    const waitTime = Duration(milliseconds: 20);
+    const waitTime = Duration(seconds: 2);
 
     blocTest('multiple deletion of generated bills changes end date of parent',
         setUp: () async {

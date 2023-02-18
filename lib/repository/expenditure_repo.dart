@@ -81,7 +81,7 @@ class AppRepository {
     return _dbClient.saveBill(expenditure.toNewBillJson());
   }
 
-  void updateException(int exceptionId, Map<String, dynamic> json) async {
+  Future<void> updateException(int exceptionId, Map<String, dynamic> json) async {
     await _dbClient.updateException(exceptionId, json);
   }
 

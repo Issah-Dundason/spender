@@ -274,6 +274,11 @@ class _BillViewState extends State<BillView>
                                             if (double.parse(s!) < 1) {
                                               return '0 is not allowed';
                                             }
+
+                                            if(s.trim().length > 10) {
+                                              return 'can\'t contain more than 10 characters';
+                                            }
+
                                             return null;
                                           },
                                           decoration: const InputDecoration(
@@ -530,11 +535,18 @@ class _BillViewState extends State<BillView>
 
   void _onDate() async {
     _hideKeypad();
+    var lastDate = DateTime.now().add(const Duration(days: 365 * 7));
+    var isRecurring = widget.bill?.isRecurring;
+
+    if (isRecurring != null && isRecurring) {
+      lastDate = DateTime.parse(widget.bill!.paymentDateTime);
+    }
+
     var date = await showDatePicker(
         context: context,
         initialDate: _selectedDate,
         firstDate: DateTime(199),
-        lastDate: DateTime.now().add(const Duration(days: 365 * 7)));
+        lastDate: lastDate);
     setState(() {
       _selectedDate = date ?? _selectedDate;
 
@@ -602,17 +614,19 @@ class _BillViewState extends State<BillView>
         _selectedDate.day, _selectedTime.hour, _selectedDate.minute);
 
     Bill update = widget.bill!.copyWith(
-        id: widget.bill!.id,
-        title: bill,
-        description: description,
-        paymentDateTime: date.toIso8601String(),
-        exceptionId: widget.bill!.exceptionId,
-        amount: amount,
-        parentId: widget.bill!.parentId,
-        type: _billType,
-        priority: _priority,
-        pattern: _selectedRecurrence,
-        endDate: _endDate?.toIso8601String());
+      id: widget.bill!.id,
+      title: bill,
+      description: description,
+      paymentDateTime: date.toIso8601String(),
+      exceptionId: widget.bill!.exceptionId,
+      amount: amount,
+      parentId: widget.bill!.parentId,
+      type: _billType,
+      priority: _priority,
+      pattern: _selectedRecurrence,
+      paymentType: _paymentType,
+      endDate: _endDate?.toIso8601String(),
+    );
 
     var changedFields = Bill.differentFields(update, widget.bill!);
 
@@ -629,24 +643,30 @@ class _BillViewState extends State<BillView>
       var ans = await updateQuestionAns(
           '''This change will modify all future events\nAre you sure?''');
       if (ans == null || !ans) return;
-      var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update,
-          updateMethod: UpdateMethod.multiple);
+      var event = RecurrenceUpdateEvent(
+          widget.bill!.paymentDateTime, update, UpdateMethod.multiple);
 
       sendEvent(event);
       return;
     }
 
-    if (widget.bill!.isRecurring) {
+    if (widget.bill!.isRecurring && !widget.bill!.isLast) {
       var ans = await updateQuestionAns('Should future events be updated?');
       if (ans == null) return;
 
       if (ans == true) {
-        var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update,
-            updateMethod: UpdateMethod.multiple);
+        var event = RecurrenceUpdateEvent(
+            widget.bill!.paymentDateTime, update, UpdateMethod.multiple);
         sendEvent(event);
         return;
       }
 
+      var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update);
+      sendEvent(event);
+      return;
+    }
+
+    if (widget.bill!.isRecurring) {
       var event = RecurrenceUpdateEvent(widget.bill!.paymentDateTime, update);
       sendEvent(event);
       return;
@@ -739,6 +759,18 @@ class _BillViewState extends State<BillView>
     setState(() => _showKeypad = false);
   }
 
+  void _onEndDate() async {
+    var date = await showDatePicker(
+        context: context,
+        initialDate: _endDate!,
+        firstDate: _selectedDate,
+        lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
+    setState(
+      () => _endDate =
+          date?.add(const Duration(hours: 23, minutes: 59)) ?? _endDate,
+    );
+  }
+
   @override
   void dispose() {
     _amountController.dispose();
@@ -746,15 +778,5 @@ class _BillViewState extends State<BillView>
     _billController.dispose();
     _animController.dispose();
     super.dispose();
-  }
-
-  void _onEndDate() async {
-    var date = await showDatePicker(
-        context: context,
-        initialDate: _endDate!,
-        firstDate: _selectedDate,
-        lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
-    setState(() => _endDate =
-        date?.add(const Duration(hours: 23, minutes: 59)) ?? _endDate);
   }
 }

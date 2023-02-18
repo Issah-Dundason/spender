@@ -38,7 +38,9 @@ class _BudgetUpdateState extends State<BudgetUpdate> {
                     },
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                          RegExp(r'^(\d+)?\.?\d{0,2}'))
+                          RegExp(r'^(\d+)?\.?\d{0,2}')),
+                      LengthLimitingTextInputFormatter(
+                          10),
                     ],
                     keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
