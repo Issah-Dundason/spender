@@ -11,7 +11,7 @@ class TopBar {
         elevation: 0,
         centerTitle: true,
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent, // <-- SEE HERE
+          statusBarColor: Colors.transparent,
         ),
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0, top: 4, bottom: 4),
