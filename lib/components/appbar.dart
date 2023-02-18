@@ -5,8 +5,8 @@ import 'package:spender/pages/profile_page.dart';
 
 class TopBar {
   static AppBar getAppBar(
-          BuildContext context, String text, String assetName, Function() func) =>
-      AppBar(
+          BuildContext context, String text, String assetName, Function() func) {
+     return AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
         centerTitle: true,
@@ -33,7 +33,7 @@ class TopBar {
             color: Theme.of(context).colorScheme.primary,),
           )
         ],
-      );
+      ); }
 
   static Route createRoute() {
     return PageRouteBuilder(
