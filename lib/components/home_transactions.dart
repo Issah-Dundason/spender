@@ -13,13 +13,16 @@ import '../bloc/home/home_bloc.dart';
 import '../util/app_utils.dart';
 
 class HomeTransactions extends StatelessWidget {
-  const HomeTransactions({Key? key}) : super(key: key);
+  final int horizontalCardsCount;
+
+  const HomeTransactions({Key? key, this.horizontalCardsCount = 1}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -42,18 +45,25 @@ class HomeTransactions extends StatelessWidget {
             if (state.transactionsToday.isEmpty)
               const _NoTransaction()
             else
-              ...state.transactionsToday.map((t) {
-                return GestureDetector(
-                  onTap: () => _onTransactionTap(context, t),
-                  child: TransactionTile(
-                    image: t.type.image,
-                    bill: t.title,
-                    type: t.paymentType.name,
-                    amount: AppUtils.amountPresented(t.amount),
-                    date: t.formattedDate,
-                  ),
-                );
-              }).toList()
+              GridView.builder(
+                shrinkWrap: true,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: horizontalCardsCount, mainAxisExtent: 90,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 15),
+                itemCount: state.transactionsToday.length,
+                itemBuilder: (BuildContext context, int index) {
+                var t = state.transactionsToday[index];
+                 return GestureDetector(
+                   onTap: () => _onTransactionTap(context, t),
+                   child: TransactionTile(
+                     image: t.type.image,
+                     bill: t.title,
+                     type: t.paymentType.name,
+                     amount: AppUtils.amountPresented(t.amount),
+                     date: t.formattedDate,
+                   ),
+                 );
+                },)
           ],
         );
       },

@@ -59,16 +59,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 BlocBuilder<HomeBloc, HomeState>(
                   builder: (context, state) {
-                    return ElevatedButton(
-                      onPressed: _handleDialogPressed,
-                      style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12))),
-                      child: Text("Year-${state.analysisYear}"),
-                    );
+                    return HomeYearBtn(year: state.analysisYear);
                   },
                 )
               ],
@@ -86,6 +77,33 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+
+}
+
+class HomeYearBtn extends StatefulWidget {
+  final int year;
+
+  const HomeYearBtn({Key? key, required this.year}) : super(key: key);
+
+  @override
+  State<HomeYearBtn> createState() => _HomeYearBtnState();
+}
+
+class _HomeYearBtnState extends State<HomeYearBtn> {
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: _handleDialogPressed,
+      style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor:
+          Theme.of(context).colorScheme.secondary,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12))),
+      child: Text("Year-${widget.year}"),
+    );
+  }
+
   void _handleDialogPressed() async {
     var state = context.read<HomeBloc>().state;
     DateTime firstYear = state.firstEverRecordYear != null
@@ -94,13 +112,13 @@ class _HomePageState extends State<HomePage> {
     var result = await showDialog(
         context: context,
         builder: (_) => YearPickerDialog(
-              selectedDate: DateTime(state.analysisYear),
-              firstDate: firstYear,
-              lastDate: DateTime.now(),
-              onChange: (t) {
-                Navigator.pop(context, t.year);
-              },
-            ));
+          selectedDate: DateTime(state.analysisYear),
+          firstDate: firstYear,
+          lastDate: DateTime.now(),
+          onChange: (t) {
+            Navigator.pop(context, t.year);
+          },
+        ));
     if (!mounted || result == null) return;
     context.read<HomeBloc>().add(HomeAnalysisDateChangeEvent(result));
   }

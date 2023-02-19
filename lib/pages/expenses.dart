@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -22,10 +24,11 @@ class _ExpensesPageState extends State<ExpensesPage> {
   final PageController _pageController = PageController();
   int _pageCount = 0;
   late DateTime _startDate;
+  late StreamSubscription subscription;
 
   @override
   void initState() {
-    context.read<ExpensesBloc>().stream.listen((state) {
+    subscription = context.read<ExpensesBloc>().stream.listen((state) {
       var start = state.yearOfFirstInsert == null
           ? DateUtils.dateOnly(DateTime(DateTime.now().year))
           : DateUtils.dateOnly(DateTime(state.yearOfFirstInsert!));
@@ -131,6 +134,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
   @override
   void dispose() {
     _pageController.dispose();
+    subscription.cancel();
     super.dispose();
   }
 }

@@ -7,6 +7,7 @@ import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
 import 'package:spender/components/home_chart.dart';
+import 'package:spender/components/home_transactions.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/model/bill_type.dart';
 import 'package:spender/pages/profile_page.dart';
@@ -107,28 +108,29 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                             child: const Text(
                               'Home',
                               textAlign: TextAlign.left,
+                                style: TextStyle(fontSize: 19)
                             )),
                         TextButton(
                             onPressed: () =>
                                 changeView(context, AppTab.expenses),
                             style: getStyle(AppTab.expenses, state, context),
-                            child: const Text('Expenses')),
+                            child: const Text('Expenses', style: TextStyle(fontSize: 19),)),
                         TextButton(
                             onPressed: () => changeView(context, AppTab.add),
                             style: getStyle(AppTab.add, state, context),
-                            child: const Text('Add Bill')),
+                            child: const Text('Add Bill', style: TextStyle(fontSize: 19))),
                         TextButton(
                             onPressed: () =>
                                 changeView(context, AppTab.settings),
                             style: getStyle(AppTab.settings, state, context),
-                            child: const Text('Settings'))
+                            child: const Text('Settings', style: TextStyle(fontSize: 19)))
                       ],
                     ),
                   )),
               // Container(width: 10, color: Colors.blue,),
               Flexible(
                 fit: FlexFit.tight,
-                flex: 4,
+                flex: 3,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
@@ -177,11 +179,12 @@ class _WiderWidthViewState extends State<WiderWidthView> {
   ButtonStyle? getStyle(AppTab actual, AppTab selected, BuildContext context) {
     if (actual != selected) return null;
     return TextButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         minimumSize: const Size.fromHeight(40),
         padding: EdgeInsets.zero,
         foregroundColor: Colors.white,
-        shape: const StadiumBorder());
+        //shape: const StadiumBorder()
+    );
   }
 
   void changeView(BuildContext context, AppTab tab) {
@@ -194,59 +197,76 @@ class WiderScreenHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Flexible(
-            flex: 2,
-            child: BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) {
-                return Container(
-                  color: Theme.of(context).colorScheme.background,
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            if (state.currentFinancials == null)
-                              const Text(
-                                  'Set a budget for this month in settings')
-                            else
-                              Column(
-                                children: [
-                                  const Text('Month Summary'),
-                                  const SizedBox(height: 13),
-                                  Wrap(
-                                    children: [
-                                      WiderScreenHomeCard(
-                                          title: 'Budget',
-                                          amount:
-                                              state.currentFinancials!.budget),
-                                      const SizedBox(width: 14),
-                                      WiderScreenHomeCard(
-                                          title: 'Amount left',
-                                          amount:
-                                              state.currentFinancials!.balance),
-                                      const SizedBox(width: 14),
-                                      WiderScreenHomeCard(
-                                          title: 'Amount spent',
-                                          amount: state
-                                              .currentFinancials!.amountSpent)
-                                    ],
-                                  )
-                                ],
-                              ),
-                           const  Divider(),
-                            ChartWidget(state: state)
-                          ],
-                        ),
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        return Container(
+          color: Theme.of(context).colorScheme.background,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    if (state.currentFinancials == null)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 40.0),
+                        child: Text(
+                            'Set a budget for this month in settings'),
                       )
-                    ],
-                  ),
-                );
-              },
-            )),
-        Flexible(child: Container(color: Colors.blue))
-      ],
+                    else
+                      Column(
+                        children: [
+                          const SizedBox(height: 15,),
+                          const Text('Month Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                          const SizedBox(height: 13),
+                          Wrap(
+                            children: [
+                              WiderScreenHomeCard(
+                                  title: 'Budget',
+                                  amount:
+                                      state.currentFinancials!.budget),
+                              const SizedBox(width: 14),
+                              WiderScreenHomeCard(
+                                  title: 'Amount left',
+                                  amount:
+                                      state.currentFinancials!.balance),
+                              const SizedBox(width: 14),
+                              WiderScreenHomeCard(
+                                  title: 'Amount spent',
+                                  amount: state
+                                      .currentFinancials!.amountSpent)
+                            ],
+                          )
+                        ],
+                      ),
+                    const SizedBox(height: 40),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Analytics (Amount Spent)",
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                          HomeYearBtn(year: state.analysisYear)
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: ChartWidget(state: state),
+                    ),
+                    const SizedBox(height: 20)
+                  ],
+                ),
+              ),
+              const SliverFillRemaining(child:
+              HomeTransactions(horizontalCardsCount: 2,),)
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -267,9 +287,10 @@ class WiderScreenHomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(15),
+      constraints: const BoxConstraints(minWidth: 200),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(10),
           gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: const Alignment(0.8, 1),
@@ -283,11 +304,11 @@ class WiderScreenHomeCard extends StatelessWidget {
           children: [
             Text(
               '$title: ',
-              style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+              style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 10),
             Text('₵ ${AppUtils.amountPresented(amount)}',
-                style: TextStyle(color: textColor, fontWeight: FontWeight.w500))
+                style: TextStyle(color: textColor, fontWeight: FontWeight.w500, fontSize: 16))
           ],
         ),
       ),
