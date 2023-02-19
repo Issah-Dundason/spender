@@ -1,19 +1,23 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
+import 'package:spender/components/home_chart.dart';
 import 'package:spender/icons/icons.dart';
 import 'package:spender/model/bill_type.dart';
 import 'package:spender/pages/profile_page.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:spender/util/app_utils.dart';
 import '../bloc/app/app_cubit.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../bloc/expenses/expenses_bloc.dart';
 import '../bloc/expenses/expenses_event.dart';
+import '../bloc/home/home_state.dart';
 import '../bloc/profile/profile_bloc.dart';
 import 'bill_view.dart';
 import 'expenses.dart';
@@ -144,7 +148,9 @@ class _WiderWidthViewState extends State<WiderWidthView> {
     var pages = {
       AppTab.home: const WiderScreenHome(),
       AppTab.expenses: const WiderScreenExpenses(),
-      AppTab.settings: const AppProfile(showAppbar: false,)
+      AppTab.settings: const AppProfile(
+        showAppbar: false,
+      )
     };
 
     if (pages.containsKey(tab)) return pages[tab]!;
@@ -188,7 +194,104 @@ class WiderScreenHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Row(
+      children: [
+        Flexible(
+            flex: 2,
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                return Container(
+                  color: Theme.of(context).colorScheme.background,
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Column(
+                          children: [
+                            if (state.currentFinancials == null)
+                              const Text(
+                                  'Set a budget for this month in settings')
+                            else
+                              Column(
+                                children: [
+                                  const Text('Month Summary'),
+                                  const SizedBox(height: 13),
+                                  Wrap(
+                                    children: [
+                                      WiderScreenHomeCard(
+                                          title: 'Budget',
+                                          amount:
+                                              state.currentFinancials!.budget),
+                                      const SizedBox(width: 14),
+                                      WiderScreenHomeCard(
+                                          title: 'Amount left',
+                                          amount:
+                                              state.currentFinancials!.balance),
+                                      const SizedBox(width: 14),
+                                      WiderScreenHomeCard(
+                                          title: 'Amount spent',
+                                          amount: state
+                                              .currentFinancials!.amountSpent)
+                                    ],
+                                  )
+                                ],
+                              ),
+                           const  Divider(),
+                            ChartWidget(state: state)
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            )),
+        Flexible(child: Container(color: Colors.blue))
+      ],
+    );
+  }
+}
+
+class WiderScreenHomeCard extends StatelessWidget {
+  final String title;
+  final int amount;
+  final Color textColor;
+
+  const WiderScreenHomeCard(
+      {Key? key,
+      required this.title,
+      required this.amount,
+      this.textColor = Colors.white})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: const Alignment(0.8, 1),
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.secondary
+              ])),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 1.2),
+        child: Column(
+          children: [
+            Text(
+              '$title: ',
+              style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text('₵ ${AppUtils.amountPresented(amount)}',
+                style: TextStyle(color: textColor, fontWeight: FontWeight.w500))
+          ],
+        ),
+      ),
+    );
   }
 }
 
