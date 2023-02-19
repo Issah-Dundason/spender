@@ -13,15 +13,7 @@ class TopBar {
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
         ),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 8.0, top: 4, bottom: 4),
-          child: Container(
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(15)),
-            child: SvgPicture.asset('assets/images/avatar/$assetName'),
-          ),
-        ),
+        leading: ProfileIcon(assetName: assetName,),
         title: Text(
           text,
         ),
@@ -47,5 +39,27 @@ class TopBar {
         position: offsetAnimation,
           child: child);
     });
+  }
+}
+
+class ProfileIcon extends StatelessWidget {
+  final String assetName;
+  final EdgeInsets padding;
+  const ProfileIcon({
+    Key? key, required this.assetName,
+    this.padding = const EdgeInsets.only(left: 8.0, top: 4, bottom: 4)
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: padding,
+      child: Container(
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(15)),
+        child: SvgPicture.asset('assets/images/avatar/$assetName'),
+      ),
+    );
   }
 }

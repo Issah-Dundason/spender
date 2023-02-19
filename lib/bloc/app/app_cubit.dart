@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 
-enum AppTab { home, expenses}
+enum AppTab { home, expenses, settings, add}
 
 class AppCubit extends Cubit<AppTab> {
   AppCubit() : super(AppTab.home);
