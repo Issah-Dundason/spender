@@ -14,10 +14,13 @@ import '../util/calculation.dart';
 import '../components/custom_key_pad.dart';
 
 class BillView extends StatefulWidget {
+  final bool showAppBar;
   final List<BillType> billTypes;
   final Bill? bill;
 
-  const BillView({Key? key, required this.billTypes, this.bill})
+  const BillView({Key? key,
+    this.showAppBar = true,
+    required this.billTypes, this.bill})
       : super(key: key);
 
   @override
@@ -80,17 +83,17 @@ class _BillViewState extends State<BillView>
 
   @override
   Widget build(BuildContext context) {
-    var keysHeight = MediaQuery.of(context).size.height * 0.4;
+    var keysHeight = MediaQuery.of(context).size.height * 0.48;
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(
+      appBar: widget.showAppBar ? AppBar(
         centerTitle: true,
         title: const Text('Bill'),
         foregroundColor: Colors.black,
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.background,
-      ),
+      ): null,
       body: WillPopScope(
         onWillPop: () async {
           if (!_showKeypad) return true;

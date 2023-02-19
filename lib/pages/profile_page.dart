@@ -12,7 +12,9 @@ import '../components/avatar_change.dart';
 import '../components/budget_table.dart';
 
 class AppProfile extends StatelessWidget {
-  const AppProfile({Key? key}) : super(key: key);
+  final bool showAppbar;
+
+  const AppProfile({Key? key, this.showAppbar = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,30 +22,33 @@ class AppProfile extends StatelessWidget {
         lazy: true,
         create: (_) => BudgetReviewBloc(appRepo: context.read<AppRepository>())
           ..add(InitializeEvent()),
-        child: const ProfileView());
+        child:  _ProfileView(showAppbar: showAppbar,));
   }
 }
 
-class ProfileView extends StatefulWidget {
-  const ProfileView({
+class _ProfileView extends StatefulWidget {
+  final bool showAppbar;
+
+  const _ProfileView({
     Key? key,
+    this.showAppbar = true
   }) : super(key: key);
 
   @override
-  State<ProfileView> createState() => _ProfileViewState();
+  State<_ProfileView> createState() => _ProfileViewState();
 }
 
-class _ProfileViewState extends State<ProfileView> {
+class _ProfileViewState extends State<_ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: widget.showAppbar ? AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
         foregroundColor: Colors.black,
         title: const Text('Profile'),
         centerTitle: true,
-      ),
+      ): null,
       backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocListener<BudgetReviewBloc, BudgetReviewState>(
         listener: (context, state) {

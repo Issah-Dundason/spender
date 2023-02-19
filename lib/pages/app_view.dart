@@ -1,12 +1,13 @@
 import 'dart:async';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/components/appbar.dart';
 import 'package:spender/icons/icons.dart';
+import 'package:spender/model/bill_type.dart';
+import 'package:spender/pages/profile_page.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import '../bloc/app/app_cubit.dart';
@@ -61,19 +62,27 @@ class _AppViewState extends State<AppView> {
   }
 }
 
-class WiderWidthView extends StatelessWidget {
+class WiderWidthView extends StatefulWidget {
   const WiderWidthView({Key? key}) : super(key: key);
 
+  @override
+  State<WiderWidthView> createState() => _WiderWidthViewState();
+}
+
+class _WiderWidthViewState extends State<WiderWidthView> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppTab>(
       builder: (context, state) {
         final profileState = context.select((ProfileBloc bloc) => bloc.state);
+
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
             elevation: 0,
-            leading: ProfileIcon(assetName: profileState.currentAvatar,),
+            leading: ProfileIcon(
+              assetName: profileState.currentAvatar,
+            ),
             title: const Text('Tracedi'),
             backgroundColor: Colors.white,
             centerTitle: true,
@@ -86,25 +95,27 @@ class WiderWidthView extends StatelessWidget {
                   flex: 1,
                   child: Container(
                     color: Colors.white,
-                    child: Column(
+                    child: ListView(
                       children: [
                         TextButton(
-                            onPressed: () => setState(context, AppTab.home),
+                            onPressed: () => changeView(context, AppTab.home),
                             style: getStyle(AppTab.home, state, context),
                             child: const Text(
                               'Home',
                               textAlign: TextAlign.left,
                             )),
                         TextButton(
-                            onPressed: () => setState(context, AppTab.expenses),
+                            onPressed: () =>
+                                changeView(context, AppTab.expenses),
                             style: getStyle(AppTab.expenses, state, context),
                             child: const Text('Expenses')),
                         TextButton(
-                            onPressed: () => setState(context, AppTab.add),
+                            onPressed: () => changeView(context, AppTab.add),
                             style: getStyle(AppTab.add, state, context),
                             child: const Text('Add Bill')),
                         TextButton(
-                            onPressed: () => setState(context, AppTab.settings),
+                            onPressed: () =>
+                                changeView(context, AppTab.settings),
                             style: getStyle(AppTab.settings, state, context),
                             child: const Text('Settings'))
                       ],
@@ -112,13 +123,16 @@ class WiderWidthView extends StatelessWidget {
                   )),
               // Container(width: 10, color: Colors.blue,),
               Flexible(
-                  fit: FlexFit.tight,
-                  flex: 4,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(left: BorderSide(color: Colors.grey.shade300)))
-                    ),
-                  )
+                fit: FlexFit.tight,
+                flex: 4,
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border(
+                    left: BorderSide(color: Colors.grey.shade300),
+                  )),
+                  child: getDisplayWidget(state),
+                ),
+              )
             ],
           ),
         );
@@ -126,19 +140,66 @@ class WiderWidthView extends StatelessWidget {
     );
   }
 
-  ButtonStyle? getStyle(AppTab actual, AppTab selected, BuildContext context) {
-    if(actual != selected) return null;
-    return TextButton.styleFrom(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      minimumSize: const Size.fromHeight(40),
-      padding: EdgeInsets.zero,
-      foregroundColor: Colors.white,
-       shape: const StadiumBorder()
-    );
+  Widget getDisplayWidget(AppTab tab) {
+    var pages = {
+      AppTab.home: const WiderScreenHome(),
+      AppTab.expenses: const WiderScreenExpenses(),
+      AppTab.settings: const AppProfile(showAppbar: false,)
+    };
+
+    if (pages.containsKey(tab)) return pages[tab]!;
+
+    var repo = context.read<AppRepository>();
+    return FutureBuilder<List<BillType>>(
+        future: repo.getBillTypes(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return BlocProvider(
+            create: (_) => BillBloc(appRepo: repo),
+            child: BillView(
+              showAppBar: false,
+              billTypes: snapshot.requireData,
+            ),
+          );
+        });
   }
 
-  void setState(BuildContext context, AppTab tab) {
+  ButtonStyle? getStyle(AppTab actual, AppTab selected, BuildContext context) {
+    if (actual != selected) return null;
+    return TextButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        minimumSize: const Size.fromHeight(40),
+        padding: EdgeInsets.zero,
+        foregroundColor: Colors.white,
+        shape: const StadiumBorder());
+  }
+
+  void changeView(BuildContext context, AppTab tab) {
     context.read<AppCubit>().currentState = tab;
+  }
+}
+
+class WiderScreenHome extends StatelessWidget {
+  const WiderScreenHome({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class WiderScreenExpenses extends StatelessWidget {
+  const WiderScreenExpenses({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Expenses'),
+    );
   }
 }
 
