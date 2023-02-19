@@ -22,6 +22,11 @@ class AppTheme {
           background: backgroundColor,
           primaryContainer: cardColor,
           tertiary: tertiaryColor),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.grey.shade400
+        )
+      ),
       iconTheme: const IconThemeData(color: tertiaryColor),
       inputDecorationTheme: InputDecorationTheme(
           filled: true,

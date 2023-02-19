@@ -479,7 +479,7 @@ class _BillViewState extends State<BillView>
                               children: [
                                 CustomKeys(
                                   height: keysHeight,
-                                  width: width * 0.7,
+                                  width: width * 0.72,
                                   onKeyTapped: _onAmountChanged,
                                 ),
                               ],
