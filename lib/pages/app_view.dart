@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
@@ -57,6 +58,14 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
+    var query = MediaQuery.of(context).size;
+
+    if(query.width < 450 || query.height < 450) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp
+      ]);
+    }
+
     return LayoutBuilder(
       builder: (context, constraint) {
         if (constraint.maxWidth > 450) {
@@ -282,7 +291,7 @@ class WiderScreenHome extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: HomeTransactions(horizontalCardsCount: 2,),
-              ),)
+              ),),
             ],
           ),
         );

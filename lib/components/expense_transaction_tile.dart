@@ -12,6 +12,8 @@ class EditableTransactionTile extends StatefulWidget {
   final Color? textColor;
   final Color? iconColor;
   final Bill bill;
+  final double imageSize;
+  final double textSize;
   final Function(Bill)? onTap;
 
   const EditableTransactionTile({
@@ -20,7 +22,9 @@ class EditableTransactionTile extends StatefulWidget {
     this.tileColor = const Color(0xFFB5A7B8),
     this.textColor = const Color(0xFFFFFFFF),
     this.iconColor = const Color(0xFFFFFFFF),
-    this.onTap
+    this.onTap,
+    this.imageSize = 45,
+    this.textSize = 16
   }) : super(key: key);
 
   @override
@@ -80,8 +84,8 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                   child: SvgPicture.asset(
                     'assets/images/bills/${widget.bill.type.image}',
                     fit: BoxFit.scaleDown,
-                    width: 45,
-                    height: 45,
+                    width: widget.imageSize,
+                    height: widget.imageSize,
                   ),
                 ),
                 const SizedBox(
@@ -100,7 +104,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                           overflow: TextOverflow.clip,
                           widget.bill.title,
                           style: TextStyle(
-                              fontSize: 16, color: widget.textColor),
+                              fontSize: widget.textSize, color: widget.textColor),
                         ),
                       ),
                       const SizedBox(
@@ -110,7 +114,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
                         overflow: TextOverflow.clip,
                         widget.bill.formattedDate,
                         style:
-                            TextStyle(fontSize: 16, color: widget.textColor),
+                            TextStyle(fontSize: widget.textSize, color: widget.textColor),
                       ),
                       Visibility(
                           visible: widget.bill.isRecurring,
