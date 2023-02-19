@@ -12,14 +12,17 @@ import 'package:spender/icons/icons.dart';
 import 'package:spender/model/bill_type.dart';
 import 'package:spender/pages/profile_page.dart';
 import 'package:spender/repository/expenditure_repo.dart';
-import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:intl/intl.dart' show NumberFormat, toBeginningOfSentenceCase;
 import 'package:spender/util/app_utils.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../bloc/app/app_cubit.dart';
 import '../bloc/bill/bill_bloc.dart';
 import '../bloc/expenses/expenses_bloc.dart';
 import '../bloc/expenses/expenses_event.dart';
+import '../bloc/expenses/expenses_state.dart';
 import '../bloc/home/home_state.dart';
 import '../bloc/profile/profile_bloc.dart';
+import '../components/expenses_calendar.dart';
 import 'bill_view.dart';
 import 'expenses.dart';
 import 'home_page.dart';
@@ -61,6 +64,7 @@ class _AppViewState extends State<AppView> {
         if (index == 2 || index == 3) {
           context.read<AppCubit>().currentState = AppTab.home;
         }
+        context.read<ExpensesBloc>().add(const LoadEvent());
         return const NarrowWidthView();
       },
     );
@@ -114,16 +118,16 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                             onPressed: () =>
                                 changeView(context, AppTab.expenses),
                             style: getStyle(AppTab.expenses, state, context),
-                            child: const Text('Expenses', style: TextStyle(fontSize: 19),)),
+                            child: const Text('Expenses', style: TextStyle(fontSize: 16),)),
                         TextButton(
                             onPressed: () => changeView(context, AppTab.add),
                             style: getStyle(AppTab.add, state, context),
-                            child: const Text('Add Bill', style: TextStyle(fontSize: 19))),
+                            child: const Text('Add Bill', style: TextStyle(fontSize: 16))),
                         TextButton(
                             onPressed: () =>
                                 changeView(context, AppTab.settings),
                             style: getStyle(AppTab.settings, state, context),
-                            child: const Text('Settings', style: TextStyle(fontSize: 19)))
+                            child: const Text('Settings', style: TextStyle(fontSize: 16)))
                       ],
                     ),
                   )),
@@ -183,7 +187,7 @@ class _WiderWidthViewState extends State<WiderWidthView> {
         minimumSize: const Size.fromHeight(40),
         padding: EdgeInsets.zero,
         foregroundColor: Colors.white,
-        //shape: const StadiumBorder()
+        shape: const StadiumBorder()
     );
   }
 
@@ -261,8 +265,11 @@ class WiderScreenHome extends StatelessWidget {
                   ],
                 ),
               ),
-              const SliverFillRemaining(child:
-              HomeTransactions(horizontalCardsCount: 2,),)
+              const SliverToBoxAdapter(child:
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: HomeTransactions(horizontalCardsCount: 2,),
+              ),)
             ],
           ),
         );
@@ -307,7 +314,7 @@ class WiderScreenHomeCard extends StatelessWidget {
               style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 10),
-            Text('₵ ${AppUtils.amountPresented(amount)}',
+            Text('₵ ${NumberFormat().format(AppUtils.amountPresented(amount))}',
                 style: TextStyle(color: textColor, fontWeight: FontWeight.w500, fontSize: 16))
           ],
         ),
@@ -321,8 +328,32 @@ class WiderScreenExpenses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Expenses'),
+    return ListView(
+      children: [
+        Row(children: [
+          Flexible(
+            flex: 3,
+            child: Container(color: Colors.yellow),),
+          Flexible(flex: 2,
+              child: BlocBuilder<ExpensesBloc, ExpensesState>(
+                builder: (context, state) {
+                  if (state.yearOfFirstInsert == null && !state.initialized) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return TransactionCalendar(
+                      selectedDay: state.selectedDate,
+                      calendarFormat: CalendarFormat.month,
+                      firstYear:
+                      state.yearOfFirstInsert ?? DateTime.now().year,
+                      onDateSelected: (date, focus) {
+                        context
+                            .read<ExpensesBloc>()
+                            .add(ChangeDateEvent(date));
+                      });
+                },
+              ))
+        ],),
+      ],
     );
   }
 }

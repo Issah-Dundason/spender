@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:spender/bloc/expenses/expenses_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../repository/expenditure_repo.dart';
 
 class TransactionCalendar extends StatelessWidget {
+  final CalendarFormat calendarFormat;
   const TransactionCalendar(
-      {Key? key, required this.selectedDay, this.onDateSelected,required this.firstYear})
+      {Key? key,
+        required this.selectedDay,
+        this.onDateSelected,
+        required this.firstYear,
+        this.calendarFormat = CalendarFormat.week
+      })
       : super(key: key);
 
   final DateTime selectedDay;
@@ -24,7 +29,7 @@ class TransactionCalendar extends StatelessWidget {
       focusedDay: selectedDay,
       firstDay:DateTime(firstYear),
       lastDay: last,
-      calendarFormat: CalendarFormat.week,
+      calendarFormat: calendarFormat,
       calendarBuilders: CalendarBuilders(
           defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder,
       ),
