@@ -360,18 +360,16 @@ class WiderScreenExpenses extends StatelessWidget {
               if (state.yearOfFirstInsert == null && !state.initialized) {
                 return const Center(child: CircularProgressIndicator());
               }
-              return SingleChildScrollView(
-                child: TransactionCalendar(
-                    selectedDay: state.selectedDate,
-                    calendarFormat: CalendarFormat.month,
-                    firstYear:
-                    state.yearOfFirstInsert ?? DateTime.now().year,
-                    onDateSelected: (date, focus) {
-                      context
-                          .read<ExpensesBloc>()
-                          .add(ChangeDateEvent(date));
-                    }),
-              );
+              return TransactionCalendar(
+                  selectedDay: state.selectedDate,
+                  calendarFormat: CalendarFormat.month,
+                  firstYear:
+                  state.yearOfFirstInsert ?? DateTime.now().year,
+                  onDateSelected: (date, focus) {
+                    context
+                        .read<ExpensesBloc>()
+                        .add(ChangeDateEvent(date));
+                  });
             },
           ))
     ],);

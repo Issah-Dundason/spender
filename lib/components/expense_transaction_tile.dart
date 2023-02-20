@@ -14,7 +14,6 @@ class EditableTransactionTile extends StatefulWidget {
   final Bill bill;
   final double imageSize;
   final double textSize;
-  final Function(Bill)? onTap;
 
   const EditableTransactionTile({
     Key? key,
@@ -22,7 +21,6 @@ class EditableTransactionTile extends StatefulWidget {
     this.tileColor = const Color(0xFFB5A7B8),
     this.textColor = const Color(0xFFFFFFFF),
     this.iconColor = const Color(0xFFFFFFFF),
-    this.onTap,
     this.imageSize = 45,
     this.textSize = 16
   }) : super(key: key);
@@ -44,15 +42,6 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
-          Positioned(
-              right: 3,
-              child: IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: widget.iconColor,
-                ),
-                onPressed: onDelete,
-              )),
           Positioned(
               right: 20,
               bottom: 12,
@@ -168,6 +157,13 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
               ],
             ),
           ),
+          Positioned(
+              right: 10,
+              top: 5,
+              child: GestureDetector(
+                onTap: onDelete,
+                child: const Icon(Icons.close, size: 30,),
+              )),
         ],
       ),
     );
@@ -186,12 +182,12 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
             onPressed: () {
               Navigator.pop(context, DeleteMethod.multiple);
             },
-            child: const Text('Yes')),
+            child:  Text('Yes', style: TextStyle(color:Theme.of(context).colorScheme.primary),)),
         TextButton(
             onPressed: () {
               Navigator.pop(context, DeleteMethod.single);
             },
-            child: const Text('No'))
+            child:  Text('No', style: TextStyle(color:Theme.of(context).colorScheme.primary)))
       ],
     );
   }

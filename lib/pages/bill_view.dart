@@ -700,11 +700,11 @@ class _BillViewState extends State<BillView>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(_, true),
-              child: const Text('Yes'),
+              child:  Text('Yes', style: TextStyle(color:Theme.of(context).colorScheme.primary),),
             ),
             TextButton(
               onPressed: () => Navigator.pop(_, false),
-              child: const Text('No'),
+              child:  Text('No', style: TextStyle(color:Theme.of(context).colorScheme.primary),),
             )
           ],
         );

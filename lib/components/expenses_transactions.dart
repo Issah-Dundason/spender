@@ -48,6 +48,7 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
             children: [
               ...state.transactions.map((e) {
                 return GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onTap: () => showUpdate(e),
                   child: EditableTransactionTile(
                     bill: e,

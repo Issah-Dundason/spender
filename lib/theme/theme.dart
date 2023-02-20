@@ -24,7 +24,7 @@ class AppTheme {
           tertiary: tertiaryColor),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: Colors.grey.shade400
+          foregroundColor: Colors.white
         )
       ),
       iconTheme: const IconThemeData(color: tertiaryColor),
