@@ -25,10 +25,10 @@ import '../bloc/home/home_state.dart';
 import '../bloc/profile/profile_bloc.dart';
 import '../components/expenses_calendar.dart';
 import '../components/expenses_transactions.dart';
-import '../model/bill.dart';
 import 'bill_view.dart';
 import 'expenses.dart';
 import 'home_page.dart';
+import 'dart:math' as math;
 
 class AppView extends StatefulWidget {
   const AppView({Key? key}) : super(key: key);
@@ -355,25 +355,249 @@ class WiderScreenExpenses extends StatelessWidget {
         flex: 3,
         child: ExpensesTransactions(),),
       Flexible(flex: 2,
-          child: BlocBuilder<ExpensesBloc, ExpensesState>(
-            builder: (context, state) {
-              if (state.yearOfFirstInsert == null && !state.initialized) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return TransactionCalendar(
-                  selectedDay: state.selectedDate,
-                  calendarFormat: CalendarFormat.month,
-                  firstYear:
-                  state.yearOfFirstInsert ?? DateTime.now().year,
-                  onDateSelected: (date, focus) {
-                    context
-                        .read<ExpensesBloc>()
-                        .add(ChangeDateEvent(date));
-                  });
-            },
+          child: Column(
+            children: [
+              BlocBuilder<ExpensesBloc, ExpensesState>(
+                builder: (context, state) {
+                  if (state.yearOfFirstInsert == null && !state.initialized) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return TransactionCalendar(
+                      selectedDay: state.selectedDate,
+                      calendarFormat: CalendarFormat.month,
+                      firstYear:
+                      state.yearOfFirstInsert ?? DateTime.now().year,
+                      onDateSelected: (date, focus) {
+                        context
+                            .read<ExpensesBloc>()
+                            .add(ChangeDateEvent(date));
+                      });
+                },
+              ),
+              const Clock()
+            ],
           ))
     ],);
   }
+}
+
+class Clock extends StatelessWidget {
+  const Clock({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(15.0),
+      child: AspectRatio(aspectRatio: 1.0,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration:  BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(width: 12, color: Colors.grey.shade300),
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration:  BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(width: 12, color: Colors.grey.shade300),
+              ),
+            ),
+           // const CircleAvatar(radius: 12,),
+            const ClockFace(),
+            const ClockHands()
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ClockFace extends StatelessWidget {
+  const ClockFace({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: CustomPaint(
+            painter: ClockNumberPainter(),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class ClockNumberPainter extends CustomPainter {
+
+  final hourTickLength = 15.0;
+  final minuteTickLength = 9.0;
+
+  final hourTickWidth = 3.0;
+  final minuteTickWidth = 1.5;
+
+  late Paint tickPaint;
+
+  ClockNumberPainter() {
+    tickPaint = Paint()..color = Colors.blueGrey..strokeWidth = 10;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+   const angle = 2 * math.pi / 60;
+   final radius = size.width / 2;
+
+   canvas.save();
+
+
+   canvas.translate(radius, radius);
+   canvas.rotate(1.5 * math.pi);
+
+    for(var i = 0; i < 60; i++) {
+      var markLength = i % 5 == 0 ? hourTickLength: minuteTickLength;
+      tickPaint.strokeWidth = i % 5 == 0 ? hourTickWidth : minuteTickWidth;
+
+      canvas.drawLine(Offset(-radius + 20, 0), Offset(-radius + 20 + markLength, 0), tickPaint);
+      canvas.rotate(angle);
+    }
+
+   canvas.restore();
+
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+   return false;
+  }
+}
+
+class ClockHands extends StatefulWidget {
+  const ClockHands({Key? key}) : super(key: key);
+
+  @override
+  State<ClockHands> createState() => _ClockHandsState();
+}
+
+class _ClockHandsState extends State<ClockHands> {
+  late Timer _timer;
+  late DateTime dateTime;
+
+  @override
+  void initState() {
+    super.initState();
+    dateTime = DateTime.now();
+    _timer = Timer.periodic(const Duration(seconds: 1), _setTime);
+  }
+
+  void _setTime(Timer timer) {
+    setState(() {
+      dateTime = DateTime.now();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: CustomPaint(painter: ClockHandPainter(hours: dateTime.hour, minutes: dateTime.minute),),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+}
+
+
+class ClockHandPainter extends CustomPainter {
+  late Paint handPainter;
+  int hours;
+  int minutes;
+
+
+  ClockHandPainter({required this.hours, required this.minutes}) {
+    handPainter = Paint()..color = Colors.grey.shade500;
+    handPainter.style = PaintingStyle.fill;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final radius = size.width / 2;
+
+    canvas.save();
+    canvas.translate(radius, radius);
+    canvas.rotate(1.5 * math.pi);
+
+    canvas.save();
+
+    int hr = hours % 12;
+
+    var hourAngle = hr * (math.pi / 6);
+    var totalHrAngle = hourAngle + (minutes / 60)  * (math.pi / 6);
+
+    canvas.rotate(totalHrAngle);
+
+    Path path =  Path();
+
+    var bubbleBtm = radius * 0.042;
+
+    path.moveTo(bubbleBtm, - bubbleBtm);
+
+    path.quadraticBezierTo(0, 0, bubbleBtm, bubbleBtm);
+
+    path.lineTo(radius * 0.7, 0);
+
+    path.close();
+
+    canvas.drawPath(path, handPainter);
+
+    canvas.restore();
+
+    canvas.save();
+
+    var minuteAngle = (2 * math.pi / 60) * minutes;
+    canvas.rotate(minuteAngle);
+
+    path =  Path();
+
+    bubbleBtm = radius * 0.042;
+
+    path.moveTo(bubbleBtm, - bubbleBtm);
+
+    path.quadraticBezierTo(0, 0, bubbleBtm, bubbleBtm);
+
+    path.lineTo(radius * 0.4, 0);
+
+    path.close();
+
+    canvas.drawPath(path, handPainter);
+
+    canvas.restore();
+
+
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+
 }
 
 class NarrowWidthView extends StatefulWidget {
