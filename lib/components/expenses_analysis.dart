@@ -74,12 +74,12 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
 
     if(!mounted) return;
 
+    context.read<StatsBloc>().add(FilterChangeEvent(_options));
+
     await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (_) => PieChartPage(
-                  pieData: pieData,
-                )));
+            builder: (_) => PieChartPage()));
   }
 
   void showChart(FilterOptions? options) {
