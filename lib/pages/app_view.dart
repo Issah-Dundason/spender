@@ -53,7 +53,7 @@ class _AppViewState extends State<AppView> {
           return const WiderWidthView();
         }
         int index = context.read<AppCubit>().state.index;
-        if (index == 2 || index == 3) {
+        if (index == 2 || index == 3 || index == 4) {
           context.read<AppCubit>().currentState = AppTab.home;
         }
         context.read<ExpensesBloc>().add(const LoadEvent());

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/pages/wide_screen/wide_screen_statistic.dart';
 
 import '../../bloc/app/app_cubit.dart';
 import '../../bloc/bill/bill_bloc.dart';
@@ -15,7 +16,6 @@ import '../wide_screen/wide_screen_expenses.dart';
 import '../wide_screen/wide_screen_home.dart';
 
 class WiderWidthView extends StatefulWidget {
-
   const WiderWidthView({Key? key}) : super(key: key);
 
   @override
@@ -23,7 +23,6 @@ class WiderWidthView extends StatefulWidget {
 }
 
 class _WiderWidthViewState extends State<WiderWidthView> {
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppTab>(
@@ -53,57 +52,57 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                             begin: Alignment.topLeft,
                             end: const Alignment(0.8, 1),
                             colors: [
-                              Theme.of(context).colorScheme.primary,
-                              Theme.of(context).colorScheme.secondary
-                            ])),
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.secondary
+                        ])),
                     child: Theme(
                       data: ThemeData(
-                          textButtonTheme:TextButtonThemeData(
+                          textButtonTheme: TextButtonThemeData(
                               style: TextButton.styleFrom(
-                                  foregroundColor: Colors.white
-                              )
-                          )
-                      ),
+                                  foregroundColor: Colors.white,
+                                  textStyle: const TextStyle(fontSize: 16)))),
                       child: ListView(
                         children: [
                           TextButton(
                               onPressed: () {
-                                context.read<HomeBloc>().add(const HomeInitializationEvent());
+                                context
+                                    .read<HomeBloc>()
+                                    .add(const HomeInitializationEvent());
                                 changeView(context, AppTab.home);
                               },
                               style: getStyle(AppTab.home, state, context),
-                              child: const Text(
-                                  'Home',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(fontSize: 19)
-                              )),
+                              child: const Text('Home')),
                           TextButton(
                               onPressed: () =>
                                   changeView(context, AppTab.expenses),
                               style: getStyle(AppTab.expenses, state, context),
-                              child: const Text('Expenses', style: TextStyle(fontSize: 16),)),
+                              child: const Text('Expenses')),
                           TextButton(
                               onPressed: () => changeView(context, AppTab.add),
                               style: getStyle(AppTab.add, state, context),
-                              child: const Text('Add Bill', style: TextStyle(fontSize: 16))),
+                              child: const Text('Add Bill')),
+                          TextButton(
+                              onPressed: () =>
+                                  changeView(context, AppTab.statistics),
+                              style: getStyle(AppTab.statistics, state, context),
+                              child: const Text('Statistics')),
                           TextButton(
                               onPressed: () =>
                                   changeView(context, AppTab.settings),
                               style: getStyle(AppTab.settings, state, context),
-                              child: const Text('Settings', style: TextStyle(fontSize: 16)))
+                              child: const Text('Settings'))
                         ],
                       ),
                     ),
                   )),
-              // Container(width: 10, color: Colors.blue,),
               Flexible(
                 fit: FlexFit.tight,
                 flex: 3,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
-                        left: BorderSide(color: Colors.grey.shade300),
-                      )),
+                    left: BorderSide(color: Colors.grey.shade300),
+                  )),
                   child: getDisplayWidget(state),
                 ),
               )
@@ -120,7 +119,8 @@ class _WiderWidthViewState extends State<WiderWidthView> {
       AppTab.expenses: const WiderScreenExpenses(),
       AppTab.settings: const AppProfile(
         showAppbar: false,
-      )
+      ),
+      AppTab.statistics: const WideScreenStats()
     };
 
     if (pages.containsKey(tab)) return pages[tab]!;
