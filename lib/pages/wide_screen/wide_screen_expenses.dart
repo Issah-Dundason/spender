@@ -21,7 +21,7 @@ class WiderScreenExpenses extends StatelessWidget {
           flex: 3,
           child: ExpensesTransactions(),),
         Flexible(flex: 2,
-            child: Column(
+            child: ListView(
               children: [
                 BlocBuilder<ExpensesBloc, ExpensesState>(
                   builder: (context, state) {
