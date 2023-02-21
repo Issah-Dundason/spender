@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../bloc/stats/statistics.dart';
 import '../pages/pie_chart_page.dart';
 import '../repository/expenditure_repo.dart';
 import '../service/database.dart';
 
 const optionsRep = ['Current Month', 'Current Year', 'Last Year', 'Overall'];
-
-enum FilterOptions { currentMonth, currentYear, lastYear, overall }
 
 extension on FilterOptions {
   get name => optionsRep[index];
@@ -71,27 +70,7 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
     var repo = context.read<AppRepository>();
     late List<PieData> pieData;
 
-    if (_options == FilterOptions.currentMonth) {
-      String dbFormat = '\'%Y-%m\'';
-      String date = DateFormat('yyyy-MM').format(DateTime.now());
-      pieData = await repo.getPieData(dbFormat, date);
-    }
-
-    if (_options == FilterOptions.currentYear) {
-      String dbFormat = '\'%Y\'';
-      String date = '${DateTime.now().year}';
-      pieData = await repo.getPieData(dbFormat, date);
-    }
-
-    if (_options == FilterOptions.lastYear) {
-      String dbFormat = '\'%Y\'';
-      String date = '${DateTime.now().year - 1}';
-      pieData = await repo.getPieData(dbFormat, date);
-    }
-
-    if (_options == FilterOptions.overall) {
-      pieData = await repo.getOverallPieData();
-    }
+   pieData = await getPieData(repo, _options);
 
     if(!mounted) return;
 
