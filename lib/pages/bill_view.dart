@@ -83,8 +83,17 @@ class _BillViewState extends State<BillView>
 
   @override
   Widget build(BuildContext context) {
-    var keysHeight = MediaQuery.of(context).size.height * 0.48;
-    var width = MediaQuery.of(context).size.width;
+    var media = MediaQuery.of(context).size;
+
+    var keysHeight = media.height * 0.48;
+    var calcWidth = media.width * 0.72;
+
+    if(media.width > 449.5 && media.height > 449.5) {
+      calcWidth = media.width * 0.5;
+      keysHeight = media.height * 0.4;
+    }
+
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: widget.showAppBar ? AppBar(
@@ -464,7 +473,6 @@ class _BillViewState extends State<BillView>
                 animation: _animController,
                 builder: (_, widget) {
                   var yFactor = 1 - _animController.value;
-
                   return Transform.translate(
                     offset: Offset(0, yFactor * 30),
                     child: Visibility(
@@ -479,7 +487,7 @@ class _BillViewState extends State<BillView>
                               children: [
                                 CustomKeys(
                                   height: keysHeight,
-                                  width: width * 0.72,
+                                  width: calcWidth,
                                   onKeyTapped: _onAmountChanged,
                                 ),
                               ],
