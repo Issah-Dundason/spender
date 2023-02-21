@@ -163,11 +163,7 @@ class ReceiptClipper extends CustomClipper<Path> {
     squareLength = (size.width / 200) * squareLength;
 
     Path path = Path()..moveTo(0, 0);
-
-    for (double i = 0; i <= size.width - squareLength; i += squareLength) {
-      path.lineTo(i + (squareLength / 2), squareLength);
-      path.lineTo(i + squareLength, 0);
-    }
+    path.lineTo(size.width, 0);
 
     path.lineTo(size.width, size.height);
     double i = 0;

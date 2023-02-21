@@ -182,12 +182,12 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
             onPressed: () {
               Navigator.pop(context, DeleteMethod.multiple);
             },
-            child:  Text('Yes', style: TextStyle(color:Theme.of(context).colorScheme.primary),)),
+            child:  const Text('Yes')),
         TextButton(
             onPressed: () {
               Navigator.pop(context, DeleteMethod.single);
             },
-            child:  Text('No', style: TextStyle(color:Theme.of(context).colorScheme.primary)))
+            child:  const Text('No'))
       ],
     );
   }

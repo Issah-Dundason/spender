@@ -124,34 +124,43 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                               Theme.of(context).colorScheme.primary,
                               Theme.of(context).colorScheme.secondary
                             ])),
-                    child: ListView(
-                      children: [
-                        TextButton(
-                            onPressed: () {
-                              context.read<HomeBloc>().add(const HomeInitializationEvent());
-                              changeView(context, AppTab.home);
-                            },
-                            style: getStyle(AppTab.home, state, context),
-                            child: const Text(
-                              'Home',
-                              textAlign: TextAlign.left,
-                                style: TextStyle(fontSize: 19)
-                            )),
-                        TextButton(
-                            onPressed: () =>
-                                changeView(context, AppTab.expenses),
-                            style: getStyle(AppTab.expenses, state, context),
-                            child: const Text('Expenses', style: TextStyle(fontSize: 16),)),
-                        TextButton(
-                            onPressed: () => changeView(context, AppTab.add),
-                            style: getStyle(AppTab.add, state, context),
-                            child: const Text('Add Bill', style: TextStyle(fontSize: 16))),
-                        TextButton(
-                            onPressed: () =>
-                                changeView(context, AppTab.settings),
-                            style: getStyle(AppTab.settings, state, context),
-                            child: const Text('Settings', style: TextStyle(fontSize: 16)))
-                      ],
+                    child: Theme(
+                      data: ThemeData(
+                        textButtonTheme:TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white
+                          )
+                        )
+                      ),
+                      child: ListView(
+                        children: [
+                          TextButton(
+                              onPressed: () {
+                                context.read<HomeBloc>().add(const HomeInitializationEvent());
+                                changeView(context, AppTab.home);
+                              },
+                              style: getStyle(AppTab.home, state, context),
+                              child: const Text(
+                                'Home',
+                                textAlign: TextAlign.left,
+                                  style: TextStyle(fontSize: 19)
+                              )),
+                          TextButton(
+                              onPressed: () =>
+                                  changeView(context, AppTab.expenses),
+                              style: getStyle(AppTab.expenses, state, context),
+                              child: const Text('Expenses', style: TextStyle(fontSize: 16),)),
+                          TextButton(
+                              onPressed: () => changeView(context, AppTab.add),
+                              style: getStyle(AppTab.add, state, context),
+                              child: const Text('Add Bill', style: TextStyle(fontSize: 16))),
+                          TextButton(
+                              onPressed: () =>
+                                  changeView(context, AppTab.settings),
+                              style: getStyle(AppTab.settings, state, context),
+                              child: const Text('Settings', style: TextStyle(fontSize: 16)))
+                        ],
+                      ),
                     ),
                   )),
               // Container(width: 10, color: Colors.blue,),
@@ -350,34 +359,37 @@ class WiderScreenExpenses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      const Flexible(
-        flex: 3,
-        child: ExpensesTransactions(),),
-      Flexible(flex: 2,
-          child: Column(
-            children: [
-              BlocBuilder<ExpensesBloc, ExpensesState>(
-                builder: (context, state) {
-                  if (state.yearOfFirstInsert == null && !state.initialized) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return TransactionCalendar(
-                      selectedDay: state.selectedDate,
-                      calendarFormat: CalendarFormat.month,
-                      firstYear:
-                      state.yearOfFirstInsert ?? DateTime.now().year,
-                      onDateSelected: (date, focus) {
-                        context
-                            .read<ExpensesBloc>()
-                            .add(ChangeDateEvent(date));
-                      });
-                },
-              ),
-              const Clock()
-            ],
-          ))
-    ],);
+    return Container(
+      color: Theme.of(context).colorScheme.background,
+      child: Row(children: [
+        const Flexible(
+          flex: 3,
+          child: ExpensesTransactions(),),
+        Flexible(flex: 2,
+            child: Column(
+              children: [
+                BlocBuilder<ExpensesBloc, ExpensesState>(
+                  builder: (context, state) {
+                    if (state.yearOfFirstInsert == null && !state.initialized) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return TransactionCalendar(
+                        selectedDay: state.selectedDate,
+                        calendarFormat: CalendarFormat.month,
+                        firstYear:
+                        state.yearOfFirstInsert ?? DateTime.now().year,
+                        onDateSelected: (date, focus) {
+                          context
+                              .read<ExpensesBloc>()
+                              .add(ChangeDateEvent(date));
+                        });
+                  },
+                ),
+                const Clock()
+              ],
+            ))
+      ],),
+    );
   }
 }
 
@@ -410,7 +422,8 @@ class Clock extends StatelessWidget {
             ),
            // const CircleAvatar(radius: 12,),
             const ClockFace(),
-            const ClockHands()
+            const ClockHands(),
+            const CircleAvatar(radius: 10,)
           ],
         ),
       ),
@@ -526,12 +539,14 @@ class _ClockHandsState extends State<ClockHands> {
 
 class ClockHandPainter extends CustomPainter {
   late Paint handPainter;
+  late Paint minutePainter;
   int hours;
   int minutes;
 
 
   ClockHandPainter({required this.hours, required this.minutes}) {
-    handPainter = Paint()..color = Colors.grey.shade500;
+    handPainter = Paint()..color = Colors.redAccent;
+    minutePainter = Paint()..color = Colors.lightBlue;
     handPainter.style = PaintingStyle.fill;
   }
 
@@ -585,7 +600,7 @@ class ClockHandPainter extends CustomPainter {
 
     path.close();
 
-    canvas.drawPath(path, handPainter);
+    canvas.drawPath(path, minutePainter);
 
     canvas.restore();
 
