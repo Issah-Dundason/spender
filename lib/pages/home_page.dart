@@ -19,59 +19,62 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) {
-                var width = MediaQuery.of(context).size.width;
-                if(state.loadingState == DataLoading.pending) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state.currentFinancials != null) {
-                  return Align(
-                      child: SizedBox(
-                          width: width * 0.8,
-                          child: TotalBudgetCard(
-                            financials: state.currentFinancials!,
-                            backgroundImageWidth: width * 0.68,
-                          )));
-                }
-                return const NoBudgetWidget();
-              },
-            ),
-            const SizedBox(
-              height: 60,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Analytics (Amount Spent)",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                BlocBuilder<HomeBloc, HomeState>(
-                  builder: (context, state) {
-                    return HomeYearBtn(year: state.analysisYear);
-                  },
-                )
-              ],
-            ),
-            const SizedBox(height: 20),
-            BlocBuilder<HomeBloc, HomeState>(
-                builder: (context, state) => ChartWidget(
-                      state: state,
-                    )),
-            const SizedBox(height: 20),
-            const HomeTransactions()
-          ],
+    return RefreshIndicator(
+      onRefresh: () async { context.read<HomeBloc>().add(const HomeInitializationEvent()); },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: ListView(
+            physics: const BouncingScrollPhysics(),
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) {
+                  var width = MediaQuery.of(context).size.width;
+                  if(state.loadingState == DataLoading.pending) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state.currentFinancials != null) {
+                    return Align(
+                        child: SizedBox(
+                            width: width * 0.8,
+                            child: TotalBudgetCard(
+                              financials: state.currentFinancials!,
+                              backgroundImageWidth: width * 0.68,
+                            )));
+                  }
+                  return const NoBudgetWidget();
+                },
+              ),
+              const SizedBox(
+                height: 60,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Analytics (Amount Spent)",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  BlocBuilder<HomeBloc, HomeState>(
+                    builder: (context, state) {
+                      return HomeYearBtn(year: state.analysisYear);
+                    },
+                  )
+                ],
+              ),
+              const SizedBox(height: 20),
+              BlocBuilder<HomeBloc, HomeState>(
+                  builder: (context, state) => ChartWidget(
+                        state: state,
+                      )),
+              const SizedBox(height: 20),
+              const HomeTransactions()
+            ],
+          ),
         ),
       ),
     );

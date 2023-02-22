@@ -14,36 +14,47 @@ class WiderScreenExpenses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).colorScheme.background,
-      child: Row(children: [
-         const Flexible(
-          flex: 3,
-          child: ExpensesTransactions(),),
-        Flexible(flex: 2,
-            child: ListView(
-              children: [
-                BlocBuilder<ExpensesBloc, ExpensesState>(
-                  builder: (context, state) {
-                    if (state.yearOfFirstInsert == null && !state.initialized) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    return TransactionCalendar(
-                        selectedDay: state.selectedDate,
-                        calendarFormat: CalendarFormat.month,
-                        firstYear:
-                        state.yearOfFirstInsert ?? DateTime.now().year,
-                        onDateSelected: (date, focus) {
-                          context
-                              .read<ExpensesBloc>()
-                              .add(ChangeDateEvent(date));
-                        });
-                  },
-                ),
-                const Clock()
-              ],
-            ))
-      ],),
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<ExpensesBloc>().add(const LoadEvent());
+      },
+      child: Container(
+        color: Theme.of(context).colorScheme.background,
+        child: Row(
+          children: [
+            const Flexible(
+              flex: 3,
+              child: ExpensesTransactions(),
+            ),
+            Flexible(
+                flex: 2,
+                child: ListView(
+                  children: [
+                    BlocBuilder<ExpensesBloc, ExpensesState>(
+                      builder: (context, state) {
+                        if (state.yearOfFirstInsert == null &&
+                            !state.initialized) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        return TransactionCalendar(
+                            selectedDay: state.selectedDate,
+                            calendarFormat: CalendarFormat.month,
+                            firstYear:
+                                state.yearOfFirstInsert ?? DateTime.now().year,
+                            onDateSelected: (date, focus) {
+                              context
+                                  .read<ExpensesBloc>()
+                                  .add(ChangeDateEvent(date));
+                            });
+                      },
+                    ),
+                    const Clock()
+                  ],
+                ))
+          ],
+        ),
+      ),
     );
   }
 }
