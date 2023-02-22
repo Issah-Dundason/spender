@@ -79,7 +79,7 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
     await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (_) => PieChartPage()));
+            builder: (_) => const  PieChartPage()));
   }
 
   void showChart(FilterOptions? options) {

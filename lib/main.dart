@@ -53,6 +53,10 @@ class Spender extends StatelessWidget {
           BlocProvider(
               create: (_) => ProfileBloc()
                 ..add(ProfileAvatarChangeEvent(assetName: avatar))),
+          BlocProvider(
+              lazy: false,
+              create: (_) => StatsBloc(appRepo)..add(StartEvent())
+          )
         ],
         child: MaterialApp(
             theme: AppTheme.lightTheme,
@@ -68,10 +72,6 @@ class Spender extends StatelessWidget {
                     create: (_) => ExpensesBloc(appRepo: appRepo)
                       ..add(const OnStartEvent())
                       ..add(const LoadEvent())),
-                BlocProvider(
-                  lazy: false,
-                  create: (_) => StatsBloc(appRepo)..add(StartEvent())
-                )
               ],
               child: const AppView(),
             )),
