@@ -1,21 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
-import 'package:spender/components/appbar.dart';
-import 'package:spender/icons/icons.dart';
-import 'package:spender/repository/expenditure_repo.dart';
-import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:spender/pages/screens/narrow.dart';
+import 'package:spender/pages/screens/wide.dart';
 import '../bloc/app/app_cubit.dart';
-import '../bloc/bill/bill_bloc.dart';
 import '../bloc/expenses/expenses_bloc.dart';
 import '../bloc/expenses/expenses_event.dart';
-import '../bloc/profile/profile_bloc.dart';
-import 'bill_view.dart';
-import 'expenses.dart';
-import 'home_page.dart';
 
 class AppView extends StatefulWidget {
   const AppView({Key? key}) : super(key: key);
@@ -45,98 +39,27 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedTab = context.select((AppCubit bloc) => bloc.state);
-    final profileState = context.select((ProfileBloc bloc) => bloc.state);
-    return Scaffold(
-      appBar: TopBar.getAppBar(
-          context,
-          toBeginningOfSentenceCase(selectedTab.name) as String,
-          profileState.currentAvatar, () async {
-        await Navigator.of(context).push(TopBar.createRoute());
-        if (!mounted) return;
-        context.read<HomeBloc>().add(const HomeInitializationEvent());
-      }),
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: IndexedStack(
-        index: selectedTab.index,
-        children: const [HomePage(), ExpensesPage()],
-      ),
-      bottomNavigationBar: const _MainBottomAppBar(),
-    );
-  }
-}
+    var query = MediaQuery.of(context).size;
 
-class _MainBottomAppBar extends StatefulWidget {
-  const _MainBottomAppBar({Key? key}) : super(key: key);
+    if(query.width < 450 || query.height < 450) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp
+      ]);
+    }
 
-  @override
-  State<_MainBottomAppBar> createState() => _MainBottomAppBarState();
-}
-
-class _MainBottomAppBarState extends State<_MainBottomAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit, AppTab>(
-      builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                  color: state == AppTab.home
-                      ? Theme.of(context).colorScheme.secondary
-                      : null,
-                  iconSize: 40,
-                  alignment: Alignment.center,
-                  splashRadius: 30,
-                  onPressed: () =>
-                      context.read<AppCubit>().currentState = AppTab.home,
-                  icon: const Icon(HomeIcon.icon)),
-              CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                  child: IconButton(
-                      splashRadius: 30,
-                      onPressed: _addBill,
-                      icon: const Icon(AddIcon.icon))),
-              IconButton(
-                  color: state == AppTab.expenses
-                      ? Theme.of(context).colorScheme.secondary
-                      : null,
-                  iconSize: 40,
-                  splashRadius: 30,
-                  onPressed: () =>
-                      context.read<AppCubit>().currentState = AppTab.expenses,
-                  icon: const Icon(
-                    CardIcon.icon,
-                  )),
-            ],
-          ),
-        );
+    return LayoutBuilder(
+      builder: (context, constraint) {
+        if (constraint.maxWidth > 450) {
+          return const WiderWidthView();
+        }
+        int index = context.read<AppCubit>().state.index;
+        if (index == 2 || index == 3 || index == 4) {
+          context.read<AppCubit>().currentState = AppTab.home;
+        }
+        context.read<ExpensesBloc>().add(const LoadEvent());
+        return const NarrowWidthView();
       },
     );
   }
-
-  void _addBill() async {
-    await _showAddBillView();
-    if (!mounted) return;
-    context.read<ExpensesBloc>().add(const LoadEvent());
-    context.read<HomeBloc>().add(const HomeInitializationEvent());
-  }
-
-  Future<dynamic> _showAddBillView() async {
-    var appRepo = context.read<AppRepository>();
-    var billTypes = await appRepo.getBillTypes();
-
-    if (!mounted) return;
-
-    return Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => BlocProvider(
-            create: (_) {
-              return BillBloc(appRepo: appRepo);
-            },
-            child: BillView(
-              billTypes: billTypes,
-            ))));
-  }
 }
+

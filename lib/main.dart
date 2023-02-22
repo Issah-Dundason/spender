@@ -15,6 +15,7 @@ import 'package:spender/theme/theme.dart';
 
 import 'bloc/app/app_cubit.dart';
 import 'bloc/profile/profile_bloc.dart';
+import 'bloc/stats/statistics.dart';
 import 'model/budget.dart';
 
 void main() async {
@@ -66,7 +67,11 @@ class Spender extends StatelessWidget {
                     lazy: false,
                     create: (_) => ExpensesBloc(appRepo: appRepo)
                       ..add(const OnStartEvent())
-                      ..add(const LoadEvent()))
+                      ..add(const LoadEvent())),
+                BlocProvider(
+                  lazy: false,
+                  create: (_) => StatsBloc(appRepo)..add(StartEvent())
+                )
               ],
               child: const AppView(),
             )),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -22,31 +24,34 @@ class _ExpensesPageState extends State<ExpensesPage> {
   final PageController _pageController = PageController();
   int _pageCount = 0;
   late DateTime _startDate;
+  late StreamSubscription _subscription;
 
   @override
   void initState() {
-    context.read<ExpensesBloc>().stream.listen((state) {
-      var start = state.yearOfFirstInsert == null
-          ? DateUtils.dateOnly(DateTime(DateTime.now().year))
-          : DateUtils.dateOnly(DateTime(state.yearOfFirstInsert!));
+    _subscription = context.read<ExpensesBloc>().stream.listen(onExpensesChange);
+    super.initState();
+  }
 
-      var end =
-          DateUtils.dateOnly(DateTime.now()).add(const Duration(days: 365 * 7));
+  void onExpensesChange(state) {
+    var start = state.yearOfFirstInsert == null
+        ? DateUtils.dateOnly(DateTime(DateTime.now().year))
+        : DateUtils.dateOnly(DateTime(state.yearOfFirstInsert!));
 
-      int days = end.difference(start).inDays;
+    var end =
+        DateUtils.dateOnly(DateTime.now()).add(const Duration(days: 365 * 7));
 
-      var current =
-          DateUtils.dateOnly(state.selectedDate).difference(start).inDays;
+    int days = end.difference(start).inDays;
 
-      setState(() {
-        _pageCount = days + 1;
-        _startDate = start;
-        Future.delayed(Duration.zero, () {
-          _pageController.jumpToPage(current);
-        });
+    var current =
+        DateUtils.dateOnly(state.selectedDate).difference(start).inDays;
+
+    setState(() {
+      _pageCount = days + 1;
+      _startDate = start;
+      Future.delayed(Duration.zero, () {
+        _pageController.jumpToPage(current);
       });
     });
-    super.initState();
   }
 
   @override
@@ -119,8 +124,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
               bloc.add(ChangeDateEvent(nextDate));
             },
             itemBuilder: (_, i) {
-              return const Align(
-                  alignment: Alignment.center, child: ExpensesTransactions());
+              return const ExpensesTransactions();
             },
           ))
         ],
@@ -129,8 +133,16 @@ class _ExpensesPageState extends State<ExpensesPage> {
   }
 
   @override
+  void didUpdateWidget(covariant ExpensesPage oldWidget) {
+    _subscription.cancel();
+    _subscription = context.read<ExpensesBloc>().stream.listen(onExpensesChange);
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
+    _subscription.cancel();
     super.dispose();
   }
 }

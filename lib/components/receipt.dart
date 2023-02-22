@@ -24,7 +24,11 @@ class Receipt extends StatelessWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Image.asset('assets/images/background/receipt_bg.png', width: 180, height: 180,),
+              Image.asset(
+                'assets/images/background/receipt_bg.png',
+                width: 180,
+                height: 180,
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -129,9 +133,10 @@ class Receipt extends StatelessWidget {
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
                                 border: Border(
-                                    top: buildBorderSide(context),
-                                    left: buildBorderSide(context),
-                                    right: buildBorderSide(context))),
+                              top: buildBorderSide(context),
+                              left: buildBorderSide(context),
+                              right: buildBorderSide(context),
+                            )),
                             child: Text(expenditure.formattedDate)),
                       ),
                     ),
@@ -158,11 +163,7 @@ class ReceiptClipper extends CustomClipper<Path> {
     squareLength = (size.width / 200) * squareLength;
 
     Path path = Path()..moveTo(0, 0);
-
-    for (double i = 0; i <= size.width - squareLength; i += squareLength) {
-      path.lineTo(i + (squareLength / 2), squareLength);
-      path.lineTo(i + squareLength, 0);
-    }
+    path.lineTo(size.width, 0);
 
     path.lineTo(size.width, size.height);
     double i = 0;
