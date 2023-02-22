@@ -26,7 +26,6 @@ class _HomePageState extends State<HomePage> {
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: ListView(
-            physics: const BouncingScrollPhysics(),
             children: [
               const SizedBox(
                 height: 20,
