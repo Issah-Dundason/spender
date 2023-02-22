@@ -43,22 +43,34 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
               ),
             );
           }
-          return ListView(
-            physics: const BouncingScrollPhysics(),
-            children: [
-              ...state.transactions.map((e) {
-                return GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () => showUpdate(e),
-                  child: EditableTransactionTile(
-                    bill: e,
-                    textColor: Colors.black,
-                    iconColor: Colors.black,
-                    tileColor: Colors.grey[300],
-                  ),
-                );
-              }).toList()
-            ],
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<ExpensesBloc>().add(const LoadEvent());
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              decoration:  BoxDecoration(
+                  color: Theme.of(context).colorScheme.background,
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24))),
+              child: ListView(
+                children: [
+                  ...state.transactions.map((e) {
+                    return GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () => showUpdate(e),
+                      child: EditableTransactionTile(
+                        bill: e,
+                        textColor: Colors.black,
+                        iconColor: Colors.black,
+                        tileColor: Colors.grey[300],
+                      ),
+                    );
+                  }).toList()
+                ],
+              ),
+            ),
           );
         },
       ),
