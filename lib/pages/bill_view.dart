@@ -720,10 +720,10 @@ class _BillViewState extends State<BillView>
 
   ButtonStyle _getButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(40),
+        minimumSize: const Size.fromHeight(55),
         backgroundColor: Theme.of(context).colorScheme.secondary,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)));
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)));
   }
 
   void _showErrorDialog(BuildContext context) async {
