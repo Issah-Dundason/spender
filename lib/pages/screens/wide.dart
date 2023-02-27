@@ -8,6 +8,7 @@ import '../../bloc/home/home_bloc.dart';
 import '../../bloc/home/home_event.dart';
 import '../../bloc/profile/profile_bloc.dart';
 import '../../components/appbar.dart';
+import '../../icons/icons.dart';
 import '../../model/bill_type.dart';
 import '../../repository/expenditure_repo.dart';
 import '../bill_view.dart';
@@ -29,10 +30,19 @@ class _WiderWidthViewState extends State<WiderWidthView> {
       builder: (context, state) {
         final profileState = context.select((ProfileBloc bloc) => bloc.state);
 
+        var width = MediaQuery.of(context).size.width;
+        var showText = true;
+        var flex = 3;
+
+        if (width < 921) {
+          showText = false;
+          flex = 8;
+        }
+
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            elevation: 0,
+            elevation: 2,
             leading: ProfileIcon(
               assetName: profileState.currentAvatar,
             ),
@@ -46,6 +56,7 @@ class _WiderWidthViewState extends State<WiderWidthView> {
             children: [
               Flexible(
                   flex: 1,
+                  fit: FlexFit.tight,
                   child: Container(
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -61,43 +72,118 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                               style: TextButton.styleFrom(
                                   foregroundColor: Colors.white,
                                   textStyle: const TextStyle(fontSize: 16)))),
-                      child: ListView(
+                      child: Column(
                         children: [
-                          TextButton(
-                              onPressed: () {
-                                context
-                                    .read<HomeBloc>()
-                                    .add(const HomeInitializationEvent());
-                                changeView(context, AppTab.home);
-                              },
-                              style: getStyle(AppTab.home, state, context),
-                              child: const Text('Home')),
-                          TextButton(
-                              onPressed: () =>
-                                  changeView(context, AppTab.expenses),
-                              style: getStyle(AppTab.expenses, state, context),
-                              child: const Text('Expenses')),
-                          TextButton(
-                              onPressed: () => changeView(context, AppTab.add),
-                              style: getStyle(AppTab.add, state, context),
-                              child: const Text('Add Bill')),
-                          TextButton(
-                              onPressed: () =>
-                                  changeView(context, AppTab.statistics),
-                              style: getStyle(AppTab.statistics, state, context),
-                              child: const Text('Statistics')),
-                          TextButton(
-                              onPressed: () =>
-                                  changeView(context, AppTab.settings),
-                              style: getStyle(AppTab.settings, state, context),
-                              child: const Text('Settings'))
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Visibility(
+                                visible: showText,
+                                child: TextButton(
+                                    onPressed: onHome,
+                                    style:
+                                        getStyle(AppTab.home, state, context),
+                                    child: const Text('Home')),
+                              ),
+                              Visibility(
+                                  visible: !showText,
+                                  child: IconButton(
+                                      onPressed: onHome,
+                                      icon: const Icon(HomeIcon.icon)))
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Visibility(
+                                visible: showText,
+                                child: TextButton(
+                                    onPressed: () =>
+                                        changeView(context, AppTab.expenses),
+                                    style: getStyle(
+                                        AppTab.expenses, state, context),
+                                    child: const Text('Expenses')),
+                              ),
+                              Visibility(
+                                visible: !showText,
+                                child: IconButton(
+                                  onPressed: () =>
+                                      changeView(context, AppTab.expenses),
+                                  icon: const Icon(CardIcon.icon),
+                                ),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Visibility(
+                                visible: showText,
+                                child: TextButton(
+                                    onPressed: () =>
+                                        changeView(context, AppTab.add),
+                                    style: getStyle(AppTab.add, state, context),
+                                    child: const Text('Add Bill')),
+                              ),
+                              Visibility(
+                                  visible: !showText,
+                                  child: IconButton(
+                                      onPressed: () =>
+                                          changeView(context, AppTab.add),
+                                      icon: const Icon(Icons.add)))
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Visibility(
+                                visible: showText,
+                                child: TextButton(
+                                    onPressed: () =>
+                                        changeView(context, AppTab.statistics),
+                                    style: getStyle(
+                                        AppTab.statistics, state, context),
+                                    child: const Text('Statistics')),
+                              ),
+                              Visibility(
+                                visible: !showText,
+                                child: IconButton(
+                                  onPressed: () =>
+                                      changeView(context, AppTab.statistics),
+                                  icon: const Icon(Icons.area_chart),
+                                ),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Visibility(
+                                visible: showText,
+                                child: TextButton(
+                                    onPressed: () =>
+                                        changeView(context, AppTab.settings),
+                                    style: getStyle(
+                                        AppTab.settings, state, context),
+                                    child: const Text('Settings')),
+                              ),
+                              Visibility(
+                                visible: !showText,
+                                child: IconButton(
+                                  onPressed: () =>
+                                      changeView(context, AppTab.settings),
+                                  icon: const Icon(Icons.settings),
+                                ),
+                              )
+                            ],
+                          )
                         ],
                       ),
                     ),
                   )),
               Flexible(
                 fit: FlexFit.tight,
-                flex: 3,
+                flex: flex,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
@@ -144,11 +230,24 @@ class _WiderWidthViewState extends State<WiderWidthView> {
         });
   }
 
+  void onHome() {
+    context.read<HomeBloc>().add(const HomeInitializationEvent());
+    changeView(context, AppTab.home);
+  }
+
+  void onSetting() {}
+
+  void onStats() {}
+
+  void onAdd() {}
+
+  void onExpenses() {}
+
   ButtonStyle? getStyle(AppTab actual, AppTab selected, BuildContext context) {
     if (actual != selected) return null;
     return TextButton.styleFrom(
       backgroundColor: Theme.of(context).colorScheme.secondary,
-      minimumSize: const Size.fromHeight(40),
+      //minimumSize: const Size.fromHeight(40, ),
       padding: EdgeInsets.zero,
       foregroundColor: Colors.white,
     );

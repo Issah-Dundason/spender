@@ -62,6 +62,12 @@ class StatChart extends StatelessWidget {
     var sum = pieData.fold(
         0, (previousValue, element) => previousValue + element.amount);
 
+    var r = 0.35;
+
+    if(size.width > 640) r = 0.15;
+
+    if(size.width > 800) r = 0.07;
+
     return Container(
       child: pieData.isEmpty
           ? const Center(
@@ -75,9 +81,10 @@ class StatChart extends StatelessWidget {
                   height: 124,
                 ),
                 SizedBox(
-                  width: size.width * 0.35,
-                  height: size.width * 0.35,
-                  child: PieChart(PieChartData(
+                  width: size.width * r,
+                  height: size.width * r,
+                  child: PieChart(
+                      PieChartData(
                       centerSpaceRadius: 60,
                       sectionsSpace: 0,
                       sections: [
@@ -102,13 +109,13 @@ class StatChart extends StatelessWidget {
                                   )
                                 ],
                               ),
-                              radius: size.width * 0.12,
+                              radius: size.width * r,
                               color: colors[i++]),
                         )
                       ])),
                 ),
                 const SizedBox(
-                  height: 150,
+                  height: 140,
                 ),
                 Align(
                   alignment: Alignment.center,

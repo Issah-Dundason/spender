@@ -115,7 +115,7 @@ class ExpensesBlocDatabaseClient extends DatabaseClient {
   ];
 
   @override
-  Future< ExpensesBlocDatabaseClient> init() async {
+  Future<ExpensesBlocDatabaseClient> init() async {
     await _openDatabase();
     return this;
   }
@@ -166,7 +166,6 @@ class BillBlocDatabaseClient extends DatabaseClient {
 
   //add types before saving
   var testJson = [
-
     //for updating generated bill
     {
       'title': 'Bill 2',
@@ -227,8 +226,6 @@ class BillBlocDatabaseClient extends DatabaseClient {
 
     var types = await repo.getBillTypes();
     billTypes = types;
-
-
 
     for (var json in testJson) {
       json['type'] = types[0].toJson();

@@ -14,10 +14,19 @@ class WiderScreenHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return RefreshIndicator(
       onRefresh: () async { context.read<HomeBloc>().add(const HomeInitializationEvent()); },
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
+
+          var width = MediaQuery.of(context).size.width;
+          var count = 2;
+
+          if(width < 801) {
+            count = 1;
+          }
+
           return Container(
             color: Theme.of(context).colorScheme.background,
             child: CustomScrollView(
@@ -38,6 +47,7 @@ class WiderScreenHome extends StatelessWidget {
                             const Text('Month Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
                             const SizedBox(height: 13),
                             Wrap(
+                              runSpacing: 15,
                               children: [
                                 WiderScreenHomeCard(
                                     title: 'Budget',
@@ -73,17 +83,17 @@ class WiderScreenHome extends StatelessWidget {
                       ),
                       const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: ChartWidget(state: state),
                       ),
                       const SizedBox(height: 20)
                     ],
                   ),
                 ),
-                const SliverToBoxAdapter(child:
+                 SliverToBoxAdapter(child:
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: HomeTransactions(horizontalCardsCount: 2,),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: HomeTransactions(horizontalCardsCount: count,),
                 ),),
               ],
             ),

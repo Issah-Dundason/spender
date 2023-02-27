@@ -7,18 +7,19 @@ import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
 import 'package:spender/bloc/home/home_event.dart';
 import 'package:spender/bloc/profile/profile_event.dart';
-import 'package:spender/model/bill.dart';
 import 'package:spender/pages/app_view.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
 import 'package:spender/theme/theme.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'bloc/app/app_cubit.dart';
 import 'bloc/profile/profile_bloc.dart';
 import 'bloc/stats/statistics.dart';
-import 'model/budget.dart';
 
 void main() async {
+  sqfliteFfiInit();
+
   WidgetsFlutterBinding.ensureInitialized();
 
   DatabaseClient dbClient = await DatabaseClient().init();
@@ -54,9 +55,7 @@ class Spender extends StatelessWidget {
               create: (_) => ProfileBloc()
                 ..add(ProfileAvatarChangeEvent(assetName: avatar))),
           BlocProvider(
-              lazy: false,
-              create: (_) => StatsBloc(appRepo)..add(StartEvent())
-          )
+              lazy: false, create: (_) => StatsBloc(appRepo)..add(StartEvent()))
         ],
         child: MaterialApp(
             theme: AppTheme.lightTheme,

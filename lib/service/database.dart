@@ -9,6 +9,8 @@ import '../model/budget.dart';
 import '../model/bill.dart';
 import 'queries.dart';
 
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
 class DatabaseClient {
   static const int _version = 2;
   static const String _databaseName = "spender.app";
@@ -22,9 +24,10 @@ class DatabaseClient {
   }
 
   Future _openDatabase() async {
+    var databaseFactory = databaseFactoryFfi;
     var dir = await getApplicationDocumentsDirectory();
-    db = await openDatabase("${dir.path}/$_databaseName",
-        version: _version, onCreate: _create);
+    db = await databaseFactory.openDatabase("${dir.path}/$_databaseName",
+        options: OpenDatabaseOptions(onCreate: _create, version: _version));
   }
 
   Future _create(Database db, int i) async {
@@ -204,7 +207,8 @@ class DatabaseClient {
         where: 'id = ?', whereArgs: [exceptionId]);
   }
 
-  Future<void> deleteParentExceptionAfterDate(int parentId, String endDate) async {
+  Future<void> deleteParentExceptionAfterDate(
+      int parentId, String endDate) async {
     await db.update('expenditure', {Bill.columnEndDate: endDate},
         where: 'id = ?', whereArgs: [parentId]);
     await db.delete(
@@ -233,12 +237,14 @@ class DatabaseClient {
   }
 
   Future<String> getLastEndDate(int parentId, String date) async {
-    var record =
-        await db.rawQuery(Query.lastEndDate, [date, parentId, parentId,]);
-    if(record.isEmpty) throw UnavailableException();
+    var record = await db.rawQuery(Query.lastEndDate, [
+      date,
+      parentId,
+      parentId,
+    ]);
+    if (record.isEmpty) throw UnavailableException();
     return record.first['payment_datetime'] as String;
   }
-
 }
 
 class PieData extends Equatable {
@@ -281,6 +287,5 @@ class MonthSpending extends Equatable {
   @override
   List<Object?> get props => [amount, month];
 }
-
 
 class UnavailableException implements Exception {}

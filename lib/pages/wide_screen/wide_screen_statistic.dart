@@ -21,7 +21,8 @@ class WideScreenStats extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              Row(
+              Wrap(
+                runSpacing: 10,
                 children: [
                   StatButton(
                     text: 'Current Month',
@@ -62,6 +63,7 @@ class WideScreenStats extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 30,),
               Expanded(child: StatChart(pieData: state.pieData))
             ],
           ),

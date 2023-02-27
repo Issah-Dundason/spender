@@ -132,6 +132,7 @@ class _BillViewState extends State<BillView>
                           SliverToBoxAdapter(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 const SizedBox(
                                   height: 20,
@@ -224,7 +225,6 @@ class _BillViewState extends State<BillView>
                                   height: 50,
                                 ),
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
                                         flex: 4,
@@ -265,7 +265,6 @@ class _BillViewState extends State<BillView>
                                   height: 35,
                                 ),
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
                                         flex: 4,
@@ -321,7 +320,6 @@ class _BillViewState extends State<BillView>
                                   height: 35,
                                 ),
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
                                         flex: 4,

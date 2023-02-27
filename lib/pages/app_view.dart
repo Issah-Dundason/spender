@@ -41,15 +41,15 @@ class _AppViewState extends State<AppView> {
   Widget build(BuildContext context) {
     var query = MediaQuery.of(context).size;
 
-    if(query.width < 450 || query.height < 450) {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp
-      ]);
+    if (query.width < 717 || query.height < 717) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
 
     return LayoutBuilder(
       builder: (context, constraint) {
-        if (constraint.maxWidth > 450) {
+        print('const: ${constraint.maxWidth}');
+
+        if (constraint.maxWidth > 717) {
           return const WiderWidthView();
         }
         int index = context.read<AppCubit>().state.index;
@@ -62,4 +62,3 @@ class _AppViewState extends State<AppView> {
     );
   }
 }
-
