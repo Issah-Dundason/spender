@@ -456,7 +456,7 @@ class _BillViewState extends State<BillView>
                                                   : "Update")),
                                         ),
                                   const SizedBox(
-                                    height: 5,
+                                    height: 15,
                                   )
                                 ]),
                           )
