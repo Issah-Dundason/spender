@@ -70,10 +70,11 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                       data: ThemeData(
                           textButtonTheme: TextButtonThemeData(
                               style: TextButton.styleFrom(
-                                  foregroundColor: Colors.white,
+                                  foregroundColor: Colors.black,
                                   textStyle: const TextStyle(fontSize: 16)))),
                       child: Column(
                         children: [
+                          const SizedBox(height: 15,),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -89,9 +90,10 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                                   visible: !showText,
                                   child: IconButton(
                                       onPressed: onHome,
-                                      icon: const Icon(HomeIcon.icon)))
+                                      icon:  Icon(HomeIcon.icon, color: getAppColor(state == AppTab.home))))
                             ],
                           ),
+                          const SizedBox(height: 15,),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -109,11 +111,12 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                                 child: IconButton(
                                   onPressed: () =>
                                       changeView(context, AppTab.expenses),
-                                  icon: const Icon(CardIcon.icon),
+                                  icon:  Icon(CardIcon.icon, color: getAppColor(state == AppTab.expenses)),
                                 ),
                               )
                             ],
                           ),
+                          const SizedBox(height: 15,),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -130,9 +133,10 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                                   child: IconButton(
                                       onPressed: () =>
                                           changeView(context, AppTab.add),
-                                      icon: const Icon(Icons.add)))
+                                      icon:  Icon(Icons.add, color: getAppColor(state == AppTab.add),)))
                             ],
                           ),
+                          const SizedBox(height: 15,),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -150,11 +154,12 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                                 child: IconButton(
                                   onPressed: () =>
                                       changeView(context, AppTab.statistics),
-                                  icon: const Icon(Icons.area_chart),
+                                  icon:  Icon(Icons.area_chart, color: getAppColor(state == AppTab.statistics)),
                                 ),
                               )
                             ],
                           ),
+                          const SizedBox(height: 15,),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -172,7 +177,7 @@ class _WiderWidthViewState extends State<WiderWidthView> {
                                 child: IconButton(
                                   onPressed: () =>
                                       changeView(context, AppTab.settings),
-                                  icon: const Icon(Icons.settings),
+                                  icon:  Icon(Icons.settings, color: getAppColor(state == AppTab.settings),),
                                 ),
                               )
                             ],
@@ -235,19 +240,13 @@ class _WiderWidthViewState extends State<WiderWidthView> {
     changeView(context, AppTab.home);
   }
 
-  void onSetting() {}
-
-  void onStats() {}
-
-  void onAdd() {}
-
-  void onExpenses() {}
+ Color getAppColor(selected) {
+    return selected ? Colors.white : Colors.black;
+ }
 
   ButtonStyle? getStyle(AppTab actual, AppTab selected, BuildContext context) {
     if (actual != selected) return null;
     return TextButton.styleFrom(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-      //minimumSize: const Size.fromHeight(40, ),
       padding: EdgeInsets.zero,
       foregroundColor: Colors.white,
     );

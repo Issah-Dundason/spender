@@ -28,7 +28,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
 
   @override
   void initState() {
-    _subscription = context.read<ExpensesBloc>().stream.listen(onExpensesChange);
+    _subscription =
+        context.read<ExpensesBloc>().stream.listen(onExpensesChange);
     super.initState();
   }
 
@@ -135,7 +136,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
   @override
   void didUpdateWidget(covariant ExpensesPage oldWidget) {
     _subscription.cancel();
-    _subscription = context.read<ExpensesBloc>().stream.listen(onExpensesChange);
+    _subscription =
+        context.read<ExpensesBloc>().stream.listen(onExpensesChange);
     super.didUpdateWidget(oldWidget);
   }
 

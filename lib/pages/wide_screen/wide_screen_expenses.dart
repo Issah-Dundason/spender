@@ -19,7 +19,10 @@ class WiderScreenExpenses extends StatelessWidget {
         children: [
           const Flexible(
             flex: 3,
-            child: ExpensesTransactions(),
+            child: Padding(
+              padding: EdgeInsets.only(top: 15.0),
+              child: ExpensesTransactions(),
+            ),
           ),
           Flexible(
               flex: 2,
