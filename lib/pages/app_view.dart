@@ -49,6 +49,8 @@ class _AppViewState extends State<AppView> {
     return LayoutBuilder(
       builder: (context, constraint) {
 
+        print('const: ${constraint.maxWidth}');
+
         if (constraint.maxWidth > 717) {
           return const WiderWidthView();
         }

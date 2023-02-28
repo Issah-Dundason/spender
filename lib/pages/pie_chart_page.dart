@@ -83,6 +83,10 @@ class StatChart extends StatelessWidget {
       infoBoxWidth = 1;
     }
 
+    if(width > 1000) {
+      circleRadius = 0.11;
+    }
+
 
     var sum = pieData.fold(
         0, (previousValue, element) => previousValue + element.amount);
