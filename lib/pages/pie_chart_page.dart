@@ -60,20 +60,29 @@ class StatChart extends StatelessWidget {
 
     var size = MediaQuery.of(context).size;
 
-    var r = 0.9;
+    var infoBoxWidth = 0.9;
 
     var width = size.width;
 
     var boxWidth = width * 0.04;
 
+    var circleRadius = 0.15;
+
+
+
 
     if(width > 600) {
       boxWidth = 20;
-      r = 0.6;
+      infoBoxWidth = 0.6;
     }
 
     if(width > 770) {
-      r = 0.4;
+      infoBoxWidth = 0.4;
+    }
+
+    if(width < 400) {
+      circleRadius = 0.19;
+      infoBoxWidth = 1;
     }
 
 
@@ -99,18 +108,20 @@ class StatChart extends StatelessWidget {
                 sectionsSpace: 0,
                 sections: [
                   ...pieData.map(
-                        (e) => PieChartSectionData(
+                        (e) {
+                          return PieChartSectionData(
                         value: e.amount.toDouble(),
                         showTitle: false,
                         badgeWidget: Text(
                           '${((e.amount / sum) * 100).toStringAsFixed(2)}%',
-                          style: const TextStyle(
+                          style:  const TextStyle(
                               color: Colors.white,
                               fontSize: 19,
                               fontWeight: FontWeight.bold),
                         ),
-                        radius: size.width * 0.15,
-                        color: colors[i++]),
+                        radius: size.width * circleRadius,
+                        color: colors[i++]);
+                        },
                   )
                 ])),
           ),
@@ -120,7 +131,7 @@ class StatChart extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: SizedBox(
-              width: size.width * r,
+              width: size.width * infoBoxWidth,
               child: Container(
                 color: Colors.grey.shade200,
                 child: Table(
@@ -133,6 +144,7 @@ class StatChart extends StatelessWidget {
                           Text(
                             e.billType.name,
                             textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                                 color: Colors.grey, fontSize: 18),
                           ),
