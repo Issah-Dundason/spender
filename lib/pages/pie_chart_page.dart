@@ -75,7 +75,7 @@ class StatChart extends StatelessWidget {
             height: 124,
           ),
           AspectRatio(
-            aspectRatio: 2,
+            aspectRatio: 2.2,
             child: PieChart(PieChartData(
                 centerSpaceRadius: 60,
                 sectionsSpace: 0,
@@ -130,7 +130,8 @@ class StatChart extends StatelessWidget {
                 ],
               ),
             ),
-          )
+          ),
+          const SizedBox(height: 23,)
         ],
       ),
     );
