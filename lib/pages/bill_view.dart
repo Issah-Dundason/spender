@@ -17,12 +17,11 @@ import '../components/custom_key_pad.dart';
 
 class BillView extends StatefulWidget {
   final bool showAppBar;
-  final List<BillType> billTypes;
   final Bill? bill;
 
   const BillView({Key? key,
     this.showAppBar = true,
-    required this.billTypes, this.bill})
+   this.bill})
       : super(key: key);
 
   @override
@@ -257,7 +256,7 @@ class _BillViewState extends State<BillView>
                                         value: _billType,
                                         onTapped: _hideKeypad,
                                         title: "Bill Type",
-                                        items: widget.billTypes,
+                                        items: state.billTypes,
                                         menuItemBuilder: (t) => Text(t.name),
                                       ),
                                     )

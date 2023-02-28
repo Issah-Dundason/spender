@@ -16,31 +16,37 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     on<BillSaveEvent>(_onBillSave);
     on<RecurrenceUpdateEvent>(_onRecurrenceUpdate);
     on<NonRecurringUpdateEvent>(_onNonRecurrenceUpdate);
+    on<BillInitializationEvent>(_onInit);
+  }
+
+  void _onInit(BillInitializationEvent e, Emitter<BillingState> emitter) async {
+    var types = await appRepo.getBillTypes();
+    emitter(state.copyWith(billTypes: types));
   }
 
   void _onBillSave(BillSaveEvent e, Emitter<BillingState> emitter) async {
-    emitter(const BillingState(processingState: ProcessingState.pending));
+    emitter(state.copyWith(processingState: ProcessingState.pending));
     await appRepo.saveBill(e.bill);
-    emitter(const BillingState(processingState: ProcessingState.done));
+    emitter(state.copyWith(processingState: ProcessingState.done));
   }
 
   void _onNonRecurrenceUpdate(
       NonRecurringUpdateEvent e, Emitter<BillingState> emitter) async {
-    emitter(const BillingState(processingState: ProcessingState.pending));
+    emitter(state.copyWith(processingState: ProcessingState.pending));
     await appRepo.updateBill(e.update.id!, e.update.toNewBillJson());
-    emitter(const BillingState(processingState: ProcessingState.done));
+    emitter(state.copyWith(processingState: ProcessingState.done));
   }
 
   void _onRecurrenceUpdate(
       RecurrenceUpdateEvent e, Emitter<BillingState> emitter) async {
-    emitter(const BillingState(processingState: ProcessingState.pending));
+    emitter(state.copyWith(processingState: ProcessingState.pending));
 
     if (e.update.isGenerated) {
       await updateGenerated(e);
     } else {
       await updateActualBillInstance(e);
     }
-    emitter(const BillingState(processingState: ProcessingState.done));
+    emitter(state.copyWith(processingState: ProcessingState.done));
  }
 
   Future<void> updateGenerated(RecurrenceUpdateEvent e) async {
@@ -112,6 +118,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     await appRepo.updateBill(update.id!, update.toNewBillJson());
     await appRepo.deleteAllExceptionsForParent(update.id!);
   }
+
 
 }
 
