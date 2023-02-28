@@ -109,7 +109,7 @@ class StatChart extends StatelessWidget {
                               fontSize: 19,
                               fontWeight: FontWeight.bold),
                         ),
-                        radius: size.width * 0.08,
+                        radius: size.width * 0.15,
                         color: colors[i++]),
                   )
                 ])),
