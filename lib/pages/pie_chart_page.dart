@@ -68,9 +68,6 @@ class StatChart extends StatelessWidget {
 
     var circleRadius = 0.15;
 
-
-
-
     if(width > 600) {
       boxWidth = 20;
       infoBoxWidth = 0.6;
@@ -80,7 +77,8 @@ class StatChart extends StatelessWidget {
       infoBoxWidth = 0.4;
     }
 
-    if(width < 400) {
+
+    if(width < 500) {
       circleRadius = 0.19;
       infoBoxWidth = 1;
     }
