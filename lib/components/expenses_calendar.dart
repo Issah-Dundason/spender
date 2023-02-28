@@ -52,7 +52,7 @@ class TransactionCalendar extends StatelessWidget {
         return Container(
          width: 34,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(12),
             color: DateUtils.isSameDay(selectedDay, actualDate)
                 ? const Color(0xFFFF250c)
                 : Colors.transparent,

@@ -9,8 +9,6 @@ import '../model/budget.dart';
 import '../model/bill.dart';
 import 'queries.dart';
 
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
 class DatabaseClient {
   static const int _version = 2;
   static const String _databaseName = "spender.app";
@@ -24,10 +22,9 @@ class DatabaseClient {
   }
 
   Future _openDatabase() async {
-    var databaseFactory = databaseFactoryFfi;
     var dir = await getApplicationDocumentsDirectory();
-    db = await databaseFactory.openDatabase("${dir.path}/$_databaseName",
-        options: OpenDatabaseOptions(onCreate: _create, version: _version));
+    db = await openDatabase("${dir.path}/$_databaseName",
+        version: _version, onCreate: _create);
   }
 
   Future _create(Database db, int i) async {
@@ -105,7 +102,7 @@ class DatabaseClient {
 
   Future<int?> getYearOfFirstBudget() async {
     var result =
-        await db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
+    await db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
            FROM budget ORDER BY date LIMIT 1''');
     if (result.isNotEmpty) return Sqflite.firstIntValue(result);
     return null;
@@ -162,7 +159,7 @@ class DatabaseClient {
 
     return records
         .map((record) =>
-            PieData(record['amount'] as int, BillType.fromMap(record)))
+        PieData(record['amount'] as int, BillType.fromMap(record)))
         .toList();
   }
 
@@ -171,7 +168,7 @@ class DatabaseClient {
         Query.overallPieDataQuery, [DateTime.now().toIso8601String()]);
     return records
         .map((record) =>
-            PieData(record['amount'] as int, BillType.fromMap(record)))
+        PieData(record['amount'] as int, BillType.fromMap(record)))
         .toList();
   }
 
@@ -179,7 +176,7 @@ class DatabaseClient {
     var result = await db.query("bill_type");
     return result
         .map((record) => BillType(record["id"] as int, record["name"] as String,
-            record["image"] as String))
+        record["image"] as String))
         .toList();
   }
 
@@ -194,10 +191,10 @@ class DatabaseClient {
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
     String dateTime = DateTime.now().toIso8601String();
     var result =
-        await db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
+    await db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
     return result
         .map((record) => MonthSpending(
-            int.parse(record["month"] as String), record["amount"] as int))
+        int.parse(record["month"] as String), record["amount"] as int))
         .toList();
   }
 
@@ -207,14 +204,13 @@ class DatabaseClient {
         where: 'id = ?', whereArgs: [exceptionId]);
   }
 
-  Future<void> deleteParentExceptionAfterDate(
-      int parentId, String endDate) async {
+  Future<void> deleteParentExceptionAfterDate(int parentId, String endDate) async {
     await db.update('expenditure', {Bill.columnEndDate: endDate},
         where: 'id = ?', whereArgs: [parentId]);
     await db.delete(
       'expenditure_exception',
       where:
-          '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
+      '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
       whereArgs: [parentId, endDate],
     );
   }
@@ -237,14 +233,12 @@ class DatabaseClient {
   }
 
   Future<String> getLastEndDate(int parentId, String date) async {
-    var record = await db.rawQuery(Query.lastEndDate, [
-      date,
-      parentId,
-      parentId,
-    ]);
-    if (record.isEmpty) throw UnavailableException();
+    var record =
+    await db.rawQuery(Query.lastEndDate, [date, parentId, parentId,]);
+    if(record.isEmpty) throw UnavailableException();
     return record.first['payment_datetime'] as String;
   }
+
 }
 
 class PieData extends Equatable {
@@ -287,5 +281,6 @@ class MonthSpending extends Equatable {
   @override
   List<Object?> get props => [amount, month];
 }
+
 
 class UnavailableException implements Exception {}
