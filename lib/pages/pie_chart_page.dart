@@ -47,7 +47,7 @@ class StatChart extends StatelessWidget {
   Widget build(BuildContext context) {
     var prime = Theme.of(context).colorScheme.primary;
 
-    int i = 0;
+    int i = 0, k = 0;
     var colors = [
       const Color(0xFF524F5F),
       prime,
@@ -59,6 +59,33 @@ class StatChart extends StatelessWidget {
     ];
 
     var size = MediaQuery.of(context).size;
+
+    var infoBoxWidth = 0.9;
+
+    var width = size.width;
+
+    var boxWidth = width * 0.04;
+
+    var circleRadius = 0.15;
+
+
+
+
+    if(width > 600) {
+      boxWidth = 20;
+      infoBoxWidth = 0.6;
+    }
+
+    if(width > 770) {
+      infoBoxWidth = 0.4;
+    }
+
+    if(width < 400) {
+      circleRadius = 0.19;
+      infoBoxWidth = 1;
+    }
+
+
     var sum = pieData.fold(
         0, (previousValue, element) => previousValue + element.amount);
 
@@ -75,34 +102,26 @@ class StatChart extends StatelessWidget {
             height: 124,
           ),
           AspectRatio(
-            aspectRatio: 2.2,
+            aspectRatio: 4,
             child: PieChart(PieChartData(
-                centerSpaceRadius: 60,
+                centerSpaceRadius: 30,
                 sectionsSpace: 0,
                 sections: [
                   ...pieData.map(
-                        (e) => PieChartSectionData(
+                        (e) {
+                          return PieChartSectionData(
                         value: e.amount.toDouble(),
                         showTitle: false,
-                        badgePositionPercentageOffset: 1.7,
-                        badgeWidget: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '${((e.amount / sum) * 100).round()}%',
-                              style: const TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              e.billType.name,
-                              style: const TextStyle(
-                                  color: Colors.grey, fontSize: 16),
-                            )
-                          ],
+                        badgeWidget: Text(
+                          '${((e.amount / sum) * 100).toStringAsFixed(2)}%',
+                          style:  const TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold),
                         ),
-                        radius: size.width * 0.12,
-                        color: colors[i++]),
+                        radius: size.width * circleRadius,
+                        color: colors[i++]);
+                        },
                   )
                 ])),
           ),
@@ -112,22 +131,34 @@ class StatChart extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: SizedBox(
-              width: size.width * 0.9,
-              child: Table(
-                children: [
-                  ...pieData.map((e) => TableRow(children: [
-                    Text(
-                      e.billType.name,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: Colors.grey, fontSize: 18),
-                    ),
-                    Text('₵${AppUtils.amountPresented(e.amount)}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            color: Colors.grey, fontSize: 18))
-                  ]))
-                ],
+              width: size.width * infoBoxWidth,
+              child: Container(
+                color: Colors.grey.shade200,
+                child: Table(
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    ...pieData.map((e) => TableRow(children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            e.billType.name,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 18),
+                          ),
+                          const Spacer(),
+                          Container(width: boxWidth, height: boxWidth,color: colors[k++],)
+                        ],
+                      ),
+                      Text('₵${AppUtils.amountPresented(e.amount)}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 18))
+                    ]))
+                  ],
+                ),
               ),
             ),
           ),
