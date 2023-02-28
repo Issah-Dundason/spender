@@ -30,12 +30,6 @@ user with a graphical understanding of their expenses.
 <a href="https://syaluiux.gumroad.com/l/Xnix500">Xnix Icon pack</a>
 </p>
 
-Mobile
-<p >
-<img src="./snapshots/snap.png" style="margin-left: auto; margin-right:auto; width: 50%; display: inline-block;"/>
-</p>
-
-Tablet
 <p >
 <img src="./snapshots/tablet_snap.png" style="margin-left: auto; margin-right:auto; width: 50%; display: inline-block;"/>
 </p>
