@@ -47,7 +47,7 @@ class StatChart extends StatelessWidget {
   Widget build(BuildContext context) {
     var prime = Theme.of(context).colorScheme.primary;
 
-    int i = 0;
+    int i = 0, k = 0;
     var colors = [
       const Color(0xFF524F5F),
       prime,
@@ -58,89 +58,91 @@ class StatChart extends StatelessWidget {
       const Color(0xFFFCDB8C)
     ];
 
+    var r = 0.9;
+
+    var width = MediaQuery.of(context).size.width;
+
+
+    if(width < 770) {
+      r = 0.6;
+    }
+
+    if(width > 770) {
+      r = 0.4;
+    }
+
     var size = MediaQuery.of(context).size;
     var sum = pieData.fold(
         0, (previousValue, element) => previousValue + element.amount);
 
-    var r = 0.35;
-
-    if(size.width > 640) r = 0.15;
-
-    if(size.width > 800) r = 0.07;
-
     return Container(
       child: pieData.isEmpty
           ? const Center(
-              child: Text(
-              'No Available data',
-              style: TextStyle(fontSize: 20),
-            ))
+          child: Text(
+            'No Available data',
+            style: TextStyle(fontSize: 20),
+          ))
           : ListView(
-              children: [
-                const SizedBox(
-                  height: 124,
-                ),
-                SizedBox(
-                  width: size.width * r,
-                  height: size.width * r,
-                  child: PieChart(
-                      PieChartData(
-                      centerSpaceRadius: 60,
-                      sectionsSpace: 0,
-                      sections: [
-                        ...pieData.map(
-                          (e) => PieChartSectionData(
-                              value: e.amount.toDouble(),
-                              showTitle: false,
-                              badgePositionPercentageOffset: 1.7,
-                              badgeWidget: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    '${((e.amount / sum) * 100).round()}%',
-                                    style: const TextStyle(
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    e.billType.name,
-                                    style: const TextStyle(
-                                        color: Colors.grey, fontSize: 16),
-                                  )
-                                ],
-                              ),
-                              radius: size.width * r,
-                              color: colors[i++]),
-                        )
-                      ])),
-                ),
-                const SizedBox(
-                  height: 140,
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: size.width * 0.9,
-                    child: Table(
+        children: [
+          const SizedBox(
+            height: 124,
+          ),
+          AspectRatio(
+            aspectRatio: 5 / 1,
+            child: PieChart(PieChartData(
+                centerSpaceRadius: 30,
+                sectionsSpace: 0,
+                sections: [
+                  ...pieData.map(
+                        (e) => PieChartSectionData(
+                        value: e.amount.toDouble(),
+                        showTitle: false,
+                        badgeWidget: Text(
+                          '${((e.amount / sum) * 100).round()}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        radius: size.width * 0.08,
+                        color: colors[i++]),
+                  )
+                ])),
+          ),
+          const SizedBox(
+            height: 120,
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: SizedBox(
+              width: size.width * r,
+              child: Table(
+                children: [
+                  ...pieData.map((e) => TableRow(children: [
+                    Row(
                       children: [
-                        ...pieData.map((e) => TableRow(children: [
-                              Text(
-                                e.billType.name,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 18),
-                              ),
-                              Text('₵${AppUtils.amountPresented(e.amount)}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Colors.grey, fontSize: 18))
-                            ]))
+                        Text(
+                          e.billType.name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 18),
+                        ),
+                        const SizedBox(width: 4,),
+                        Container(width: 20, height: 20, color: colors[k++],)
                       ],
                     ),
-                  ),
-                )
-              ],
+                    Text('₵${AppUtils.amountPresented(e.amount)}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            color: Colors.grey, fontSize: 18))
+                  ]))
+                ],
+              ),
             ),
+          ),
+          const SizedBox(height: 23,)
+        ],
+      ),
     );
   }
 }
