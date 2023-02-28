@@ -58,9 +58,11 @@ class StatChart extends StatelessWidget {
       const Color(0xFFFCDB8C)
     ];
 
+    var size = MediaQuery.of(context).size;
+
     var r = 0.9;
 
-    var width = MediaQuery.of(context).size.width;
+    var width = size.width;
 
 
     if(width < 770) {
@@ -71,7 +73,7 @@ class StatChart extends StatelessWidget {
       r = 0.4;
     }
 
-    var size = MediaQuery.of(context).size;
+
     var sum = pieData.fold(
         0, (previousValue, element) => previousValue + element.amount);
 
