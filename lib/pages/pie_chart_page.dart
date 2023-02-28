@@ -121,29 +121,32 @@ class StatChart extends StatelessWidget {
             alignment: Alignment.center,
             child: SizedBox(
               width: size.width * r,
-              child: Table(
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  ...pieData.map((e) => TableRow(children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          e.billType.name,
+              child: Container(
+                color: Colors.grey.shade200,
+                child: Table(
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    ...pieData.map((e) => TableRow(children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            e.billType.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 18),
+                          ),
+                          const Spacer(),
+                          Container(width: boxWidth, height: boxWidth,color: colors[k++],)
+                        ],
+                      ),
+                      Text('₵${AppUtils.amountPresented(e.amount)}',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                              color: Colors.grey, fontSize: 18),
-                        ),
-                        const SizedBox(width: 4,),
-                        Container(width: boxWidth, height: boxWidth,color: colors[k++],)
-                      ],
-                    ),
-                    Text('₵${AppUtils.amountPresented(e.amount)}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            color: Colors.grey, fontSize: 18))
-                  ]))
-                ],
+                              color: Colors.grey, fontSize: 18))
+                    ]))
+                  ],
+                ),
               ),
             ),
           ),
