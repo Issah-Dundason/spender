@@ -26,3 +26,5 @@ class NonRecurringUpdateEvent extends BillEvent {
 
   NonRecurringUpdateEvent(this.update);
 }
+
+class BillInitializationEvent extends BillEvent{}

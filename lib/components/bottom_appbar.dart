@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/bill/billing_event.dart';
 
 import '../bloc/app/app_cubit.dart';
 import '../bloc/bill/bill_bloc.dart';
@@ -71,17 +72,14 @@ class _MainBottomAppBarState extends State<MainBottomAppBar> {
 
   Future<dynamic> _showAddBillView() async {
     var appRepo = context.read<AppRepository>();
-    var billTypes = await appRepo.getBillTypes();
 
     if (!mounted) return;
 
     return Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => BlocProvider(
             create: (_) {
-              return BillBloc(appRepo: appRepo);
+              return BillBloc(appRepo: appRepo)..add(BillInitializationEvent());
             },
-            child: BillView(
-              billTypes: billTypes,
-            ))));
+            child: const BillView())));
   }
 }

@@ -84,7 +84,6 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
 
   Future<dynamic> _showAddBillView(Bill bill) async {
     var appRepo = context.read<AppRepository>();
-    var billTypes = await appRepo.getBillTypes();
 
     if (!mounted) return;
 
@@ -95,7 +94,6 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
             },
             child: BillView(
               bill: bill,
-              billTypes: billTypes,
             ))));
   }
 
