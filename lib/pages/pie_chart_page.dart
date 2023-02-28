@@ -103,7 +103,7 @@ class StatChart extends StatelessWidget {
                         value: e.amount.toDouble(),
                         showTitle: false,
                         badgeWidget: Text(
-                          '${((e.amount / sum) * 100).round()}%',
+                          '${((e.amount / sum) * 100).toStringAsFixed(2)}%',
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 19,
@@ -115,7 +115,7 @@ class StatChart extends StatelessWidget {
                 ])),
           ),
           const SizedBox(
-            height: 110,
+            height: 120,
           ),
           Align(
             alignment: Alignment.center,
