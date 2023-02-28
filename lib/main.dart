@@ -11,12 +11,15 @@ import 'package:spender/pages/app_view.dart';
 import 'package:spender/repository/expenditure_repo.dart';
 import 'package:spender/service/database.dart';
 import 'package:spender/theme/theme.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'bloc/app/app_cubit.dart';
 import 'bloc/profile/profile_bloc.dart';
 import 'bloc/stats/statistics.dart';
 
 void main() async {
+  sqfliteFfiInit();
+
   WidgetsFlutterBinding.ensureInitialized();
 
   DatabaseClient dbClient = await DatabaseClient().init();
