@@ -64,8 +64,11 @@ class StatChart extends StatelessWidget {
 
     var width = size.width;
 
+    var boxWidth = width * 0.04;
 
-    if(width < 770) {
+
+    if(width > 600) {
+      boxWidth = 20;
       r = 0.6;
     }
 
@@ -90,7 +93,7 @@ class StatChart extends StatelessWidget {
             height: 124,
           ),
           AspectRatio(
-            aspectRatio: 5 / 1,
+            aspectRatio: 4,
             child: PieChart(PieChartData(
                 centerSpaceRadius: 30,
                 sectionsSpace: 0,
@@ -112,7 +115,7 @@ class StatChart extends StatelessWidget {
                 ])),
           ),
           const SizedBox(
-            height: 120,
+            height: 110,
           ),
           Align(
             alignment: Alignment.center,
@@ -122,6 +125,7 @@ class StatChart extends StatelessWidget {
                 children: [
                   ...pieData.map((e) => TableRow(children: [
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           e.billType.name,
@@ -130,7 +134,7 @@ class StatChart extends StatelessWidget {
                               color: Colors.grey, fontSize: 18),
                         ),
                         const SizedBox(width: 4,),
-                        Container(width: 20, height: 20, color: colors[k++],)
+                        Container(width: boxWidth, height: boxWidth,color: colors[k++],)
                       ],
                     ),
                     Text('₵${AppUtils.amountPresented(e.amount)}',
