@@ -132,6 +132,7 @@ class _BillViewState extends State<BillView>
                           SliverToBoxAdapter(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 const SizedBox(
                                   height: 20,
@@ -224,7 +225,6 @@ class _BillViewState extends State<BillView>
                                   height: 50,
                                 ),
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
                                         flex: 4,
@@ -265,7 +265,6 @@ class _BillViewState extends State<BillView>
                                   height: 35,
                                 ),
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
                                         flex: 4,
@@ -321,7 +320,6 @@ class _BillViewState extends State<BillView>
                                   height: 35,
                                 ),
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
                                         flex: 4,
@@ -458,7 +456,7 @@ class _BillViewState extends State<BillView>
                                                   : "Update")),
                                         ),
                                   const SizedBox(
-                                    height: 5,
+                                    height: 15,
                                   )
                                 ]),
                           )
@@ -722,10 +720,10 @@ class _BillViewState extends State<BillView>
 
   ButtonStyle _getButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(40),
+        minimumSize: const Size.fromHeight(55),
         backgroundColor: Theme.of(context).colorScheme.secondary,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)));
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)));
   }
 
   void _showErrorDialog(BuildContext context) async {

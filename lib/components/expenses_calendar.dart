@@ -37,7 +37,6 @@ class TransactionCalendar extends StatelessWidget {
           formatButtonVisible: false, titleCentered: true),
       calendarStyle: const CalendarStyle(
         isTodayHighlighted: false,
-        //outsideDaysVisible: false,
       ),
     );
   }
@@ -51,9 +50,9 @@ class TransactionCalendar extends StatelessWidget {
       future: appRepo.didTransactionsOnDay(date),
       builder: (context, snapshot) {
         return Container(
-          width: 40,
+         width: 34,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(12),
             color: DateUtils.isSameDay(selectedDay, actualDate)
                 ? const Color(0xFFFF250c)
                 : Colors.transparent,

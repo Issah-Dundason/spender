@@ -102,7 +102,7 @@ class DatabaseClient {
 
   Future<int?> getYearOfFirstBudget() async {
     var result =
-        await db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
+    await db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
            FROM budget ORDER BY date LIMIT 1''');
     if (result.isNotEmpty) return Sqflite.firstIntValue(result);
     return null;
@@ -159,7 +159,7 @@ class DatabaseClient {
 
     return records
         .map((record) =>
-            PieData(record['amount'] as int, BillType.fromMap(record)))
+        PieData(record['amount'] as int, BillType.fromMap(record)))
         .toList();
   }
 
@@ -168,7 +168,7 @@ class DatabaseClient {
         Query.overallPieDataQuery, [DateTime.now().toIso8601String()]);
     return records
         .map((record) =>
-            PieData(record['amount'] as int, BillType.fromMap(record)))
+        PieData(record['amount'] as int, BillType.fromMap(record)))
         .toList();
   }
 
@@ -176,7 +176,7 @@ class DatabaseClient {
     var result = await db.query("bill_type");
     return result
         .map((record) => BillType(record["id"] as int, record["name"] as String,
-            record["image"] as String))
+        record["image"] as String))
         .toList();
   }
 
@@ -191,10 +191,10 @@ class DatabaseClient {
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
     String dateTime = DateTime.now().toIso8601String();
     var result =
-        await db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
+    await db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
     return result
         .map((record) => MonthSpending(
-            int.parse(record["month"] as String), record["amount"] as int))
+        int.parse(record["month"] as String), record["amount"] as int))
         .toList();
   }
 
@@ -210,7 +210,7 @@ class DatabaseClient {
     await db.delete(
       'expenditure_exception',
       where:
-          '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
+      '${Bill.columnExceptionParentId} = ? AND datetime(${Bill.columnPaymentDate}) > datetime(?)',
       whereArgs: [parentId, endDate],
     );
   }
@@ -234,7 +234,7 @@ class DatabaseClient {
 
   Future<String> getLastEndDate(int parentId, String date) async {
     var record =
-        await db.rawQuery(Query.lastEndDate, [date, parentId, parentId,]);
+    await db.rawQuery(Query.lastEndDate, [date, parentId, parentId,]);
     if(record.isEmpty) throw UnavailableException();
     return record.first['payment_datetime'] as String;
   }

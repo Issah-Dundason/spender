@@ -22,7 +22,6 @@ class _ChartWidgetState extends State<ChartWidget> {
   ScrollController scrollController = ScrollController();
 
   void _scrollToRightPosition() async {
-    await Future.value();
 
     int month = 1;
     if (widget.state.monthExpenditures.isNotEmpty) {
@@ -36,7 +35,7 @@ class _ChartWidgetState extends State<ChartWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _scrollToRightPosition();
+    Future.delayed(Duration.zero, _scrollToRightPosition);
     return SizedBox(
       height: 200,
       child: SingleChildScrollView(
@@ -105,7 +104,7 @@ class _ChartWidgetState extends State<ChartWidget> {
           var month = DateTime.now().month;
           var ms = monthSpendings.firstWhere((m) => m.month == value.toInt());
           var r = AppUtils.amountPresented(ms.amount);
-          return Text('₵${NumberFormat().format(r)}',
+          return Text('₵${NumberFormat.compact().format(r)}',
               style: TextStyle(
                 color: value.toInt() == month
                     ? Theme.of(context).colorScheme.primary
