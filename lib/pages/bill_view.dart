@@ -13,6 +13,8 @@ import '../model/bill.dart';
 import '../util/calculation.dart';
 import '../components/custom_key_pad.dart';
 
+ final appBillFormKey = GlobalKey<FormState>();
+
 class BillView extends StatefulWidget {
   final bool showAppBar;
   final List<BillType> billTypes;
@@ -29,7 +31,7 @@ class BillView extends StatefulWidget {
 
 class _BillViewState extends State<BillView>
     with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = appBillFormKey;
 
   late TextEditingController _billController;
   late TextEditingController _amountController;

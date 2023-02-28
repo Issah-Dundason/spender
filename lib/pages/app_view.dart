@@ -19,6 +19,7 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
+
   late Timer timer;
 
   @override
