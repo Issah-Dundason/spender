@@ -157,6 +157,7 @@ class StatChart extends StatelessWidget {
                     ]))
                   ],
                 ),
+
               ),
             ),
           ),
