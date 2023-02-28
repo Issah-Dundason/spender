@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/bill/billing_event.dart';
 
 import '../bloc/bill/bill_bloc.dart';
 import '../bloc/expenses/expenses_bloc.dart';
@@ -90,7 +91,7 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
     return Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => BlocProvider(
             create: (_) {
-              return BillBloc(appRepo: appRepo);
+              return BillBloc(appRepo: appRepo)..add(BillInitializationEvent());
             },
             child: BillView(
               bill: bill,
