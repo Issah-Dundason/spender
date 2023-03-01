@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -86,8 +86,16 @@ class DatabaseClient {
   }
 
   Future<bool> didTransactionOccurOnDay(String day) async {
-    var results = await db.rawQuery(Query.didTransactionOccurQuery, [day]);
-    return results.isNotEmpty;
+
+    var suppliedDate = DateUtils.dateOnly(DateTime.parse(day));
+    var dateTime = suppliedDate.add(const Duration(hours: 23, minutes: 59));
+    var endDate = dateTime.toIso8601String();
+
+    var args = [endDate, suppliedDate.toIso8601String(), endDate, endDate, endDate];
+
+    var queryRecord = await db.rawQuery(Query.dayHasTransactionQuery, args);
+
+    return queryRecord.isNotEmpty;
   }
 
   Future deleteBill(int id) async {
@@ -103,6 +111,7 @@ class DatabaseClient {
     await db.insert('expenditure_exception', json);
   }
 
+  /*correct the query to get right data cos recurring bill can be moved back */
   Future<int?> getYearOfFirstBudget() async {
     var result =
     await db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
@@ -111,19 +120,9 @@ class DatabaseClient {
     return null;
   }
 
-  Future<bool> budgetExists(String yearMonth) async {
-    var records = await db.query("budget",
-        where: "strftime('%Y-%m', date) = ?", whereArgs: [yearMonth]);
-    return records.length == 1;
-  }
-
   Future updateBudget(Budget budget) async {
     await db.update("budget", budget.toMap(),
         where: "id = ?", whereArgs: [budget.id]);
-  }
-
-  Future deleteBudget(Budget budget) async {
-    await db.delete("budget", where: "id = ?", whereArgs: [budget.id]);
   }
 
   Future<Budget?> getBudget(String yearMonth) async {
@@ -143,7 +142,14 @@ class DatabaseClient {
   }
 
   Future<List<Bill>> getBillByDate(String date) async {
-    var result = await db.rawQuery(Query.expenditureByDateQuery, [date]);
+
+    var suppliedDate = DateUtils.dateOnly(DateTime.parse(date));
+    var dateTime = suppliedDate.add(const Duration(hours: 23, minutes: 59));
+    var endDate = dateTime.toIso8601String();
+
+    var args = [endDate, suppliedDate.toIso8601String(), endDate, endDate, endDate];
+
+    var result = await db.rawQuery(Query.billsForDayQuery, args);
 
     return result.map((record) {
       Map<String, dynamic> modified = Map.from(record);
@@ -154,6 +160,7 @@ class DatabaseClient {
       };
       return Bill.fromJson(modified);
     }).toList();
+
   }
 
   Future<List<PieData>> getPieData(String format, String date) async {

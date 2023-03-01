@@ -261,4 +261,161 @@ class Query {
      GROUP BY strftime($format, payment_datetime), s.bill_type 
      HAVING strftime($format, s.payment_datetime) = '$date';
   ''';
+
+  static String recurringDataForDayQuery = '''
+      SELECT * FROM expenditure e WHERE (
+      pattern != 0
+      AND (  (datetime(end_date) >= datetime(?) AND
+              datetime(strftime('%Y-%m-%d', payment_datetime)) <= datetime(?)
+             )   
+         OR
+         (  
+         SELECT CASE WHEN EXISTS(
+            SELECT * FROM expenditure_exception ex 
+            WHERE (
+                e.id == ex.expenditure_id
+                AND 
+              strftime('%Y-%m-%d', ex.payment_datetime) == strftime('%Y-%m-%d', ?)
+            ) 
+         ) THEN CAST(1 AS BIT)
+           ELSE CAST(0 AS BIT) END
+         )
+      ) 
+      )
+      UNION
+      SELECT -1 AS id, 
+                  title, 
+              bill_type, 
+              priority, 
+              payment_type, 
+              description,
+              pattern,
+              CASE WHEN recurringData.id = -1
+              THEN recurringData.parent_id
+              ELSE recurringData.id END AS parent_id,
+              CASE 
+                WHEN pattern = 2 
+                  THEN datetime(payment_datetime, '7 days')
+                WHEN pattern = 3
+                  THEN datetime(payment_datetime, '1 months')
+                ELSE datetime(payment_datetime, '1 days')
+                END
+              AS payment_datetime,
+              amount,
+              end_date
+          FROM recurringData 
+          WHERE
+           CASE 
+                WHEN pattern = 2 
+                  THEN datetime(payment_datetime, '7 days')
+                WHEN pattern = 3
+                  THEN datetime(payment_datetime, '1 months')
+                ELSE datetime(payment_datetime, '1 days')
+                END
+           <= datetime(end_date)
+  ''';
+
+  static String allBillAndExceptionCombined = '''
+      SELECT
+               r.id,	
+             
+            CASE WHEN ed.title IS NOT NULL 
+              THEN ed.title
+            ELSE r.title END AS title,
+            
+            CASE WHEN ed.bill_type IS NOT NULL 
+              THEN ed.bill_type
+            ELSE r.bill_type END AS bill_type,
+            
+            CASE WHEN ed.priority IS NOT NULL 
+              THEN ed.priority
+            ELSE r.priority END AS priority,
+            
+            CASE WHEN ed.payment_type IS NOT NULL 
+              THEN ed.payment_type
+            ELSE r.payment_type END AS payment_type,
+            
+            CASE WHEN ed.description IS NOT NULL 
+              THEN ed.description
+            ELSE r.description END AS description,
+            
+            r.pattern,
+            
+            r.parent_id,
+            
+            CASE WHEN ed.payment_datetime IS NOT NULL 
+              THEN ed.payment_datetime
+            ELSE r.payment_datetime END AS payment_datetime,
+            
+            CASE WHEN ed.amount IS NOT NULL 
+              THEN ed.amount
+            ELSE r.amount END AS amount,
+            
+            ed.id AS exception_id,
+            
+            r.end_date,
+            
+            ed.deleted
+          
+            FROM allBills r
+            LEFT JOIN expenditure_exception ed
+            ON strftime('%Y-%m-%d', r.payment_datetime) == strftime('%Y-%m-%d', ed.instance_date)
+            AND CASE 
+                  WHEN r.id == -1
+                         THEN r.parent_id
+                  ELSE r.id 
+                  END   
+            = ed.expenditure_id
+  ''';
+
+  static String billsForDayQuery = '''
+    WITH RECURSIVE recurringData AS (
+      $recurringDataForDayQuery
+    ), 
+    allBills AS (
+      SELECT * FROM recurringData
+      UNION
+      SELECT * FROM expenditure
+      WHERE strftime('%Y-%m-%d', payment_datetime) = strftime('%Y-%m-%d', ?)
+    ),
+     allBillsAndException AS(
+        $allBillAndExceptionCombined
+    ), filtered AS (
+      SELECT * FROM allBillsAndException WHERE (deleted IS NULL OR deleted = 0)
+    )
+    
+    SELECT filtered.*,
+           bill_type.id AS bill_type,
+           bill_type.name AS bill_name,
+          bill_type.image AS bill_image
+    FROM filtered JOIN bill_type ON filtered.bill_type = bill_type.id
+   WHERE strftime('%Y-%m-%d', payment_datetime) = strftime('%Y-%m-%d', ?)
+   ORDER BY filtered.payment_datetime DESC;
+  ''';
+
+  static String dayHasTransactionQuery = '''
+  WITH RECURSIVE recurringData AS (
+      $recurringDataForDayQuery
+    ), 
+    allBills AS (
+      SELECT * FROM recurringData
+      UNION
+      SELECT * FROM expenditure
+      WHERE strftime('%Y-%m-%d', payment_datetime) = strftime('%Y-%m-%d', ?)
+    ),
+     allBillsAndException AS(
+        $allBillAndExceptionCombined
+    ), filtered AS (
+      SELECT * FROM allBillsAndException WHERE (deleted IS NULL OR deleted = 0)
+    )
+    
+    SELECT filtered.*,
+           bill_type.id AS bill_type,
+           bill_type.name AS bill_name,
+           bill_type.image AS bill_image
+    FROM filtered JOIN bill_type ON filtered.bill_type = bill_type.id
+   WHERE strftime('%Y-%m-%d', payment_datetime) = strftime('%Y-%m-%d', ?)
+   ORDER BY filtered.payment_datetime DESC LIMIT 1;
+  ''';
+
 }
