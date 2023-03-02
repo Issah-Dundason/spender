@@ -565,5 +565,24 @@ class Query {
     ORDER BY strftime('%m', payment_datetime) ASC;
   ''';
 
-
+  static String queryForLastEndDate = '''
+    WITH recurringData AS (
+      SELECT * FROM expenditure WHERE
+      (
+       pattern != 0
+       AND (id = ?)
+      ) UNION
+      $recursionQuery
+    ), allBills AS(
+      SELECT * FROM recurringData
+    ),
+     allBillsAndException AS(
+        $allBillAndExceptionCombined
+    )
+    
+    SELECT payment_dateTime FROM allBillsAndException
+      WHERE
+    datetime(payment_datetime) < datetime(?)
+    ORDER BY datetime(payment_datetime) DESC;
+  ''';
 }

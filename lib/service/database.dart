@@ -286,6 +286,15 @@ class DatabaseClient {
       parentId,
       parentId,
     ]);
+
+    print('last date for query: $date');
+    var args = [parentId, date];
+
+    var queryResults = await db.rawQuery(Query.queryForLastEndDate, args);
+
+    print('Last date: $queryResults');
+    print('actual date: $record');
+
     if (record.isEmpty) throw UnavailableException();
     return record.first['payment_datetime'] as String;
   }
