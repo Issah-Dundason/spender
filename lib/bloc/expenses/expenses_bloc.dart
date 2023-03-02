@@ -57,7 +57,9 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   void _onDelete(BillDeleteEvent event, Emitter<ExpensesState> emit) async {
     emit(state.copyWith(deleteState: DeleteState.deleting));
     await _removers[_getIndex(event.bill)].remove(appRepo, event);
-    emit(state.copyWith(deleteState: DeleteState.deleted));
+    var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
+    var expenditures = await appRepo.getAllBills(date);
+    emit(state.copyWith(deleteState: DeleteState.deleted, transactions: expenditures));
   }
 }
 

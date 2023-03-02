@@ -119,6 +119,5 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     await appRepo.deleteAllExceptionsForParent(update.id!);
   }
 
-
 }
 
