@@ -9,10 +9,6 @@ class AppRepository {
 
   AppRepository(this._dbClient);
 
-  Future<bool> budgetExist(String yearMonth) {
-    return _dbClient.budgetExists(yearMonth);
-  }
-
   Future updateBudget(Budget budget) {
     return _dbClient.updateBudget(budget);
   }
