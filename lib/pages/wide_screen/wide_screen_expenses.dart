@@ -23,6 +23,7 @@ class WiderScreenExpenses extends StatelessWidget {
               padding: const EdgeInsets.only(top: 15.0),
               child: BlocBuilder<ExpensesBloc, ExpensesState>(
                 builder: (context, state) {
+                  print('called');
                   return const ExpensesTransactions();
                 },
               ),
