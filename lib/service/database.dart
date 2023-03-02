@@ -111,7 +111,6 @@ class DatabaseClient {
     await db.insert('expenditure_exception', json);
   }
 
-  /*correct the query to get right data cos recurring bill can be moved back */
   Future<int?> getYearOfFirstBudget() async {
     var result =
     await db.rawQuery('''SELECT CAST(strftime('%Y', date) as int) as year
@@ -167,6 +166,21 @@ class DatabaseClient {
     var records = await db.rawQuery(
         Query.pieQuery(format, date), [DateTime.now().toIso8601String()]);
 
+
+    var args = [
+      format, date,
+      format, date,
+      format, date,
+      format, date,
+      DateTime.now().toIso8601String(),
+      format, format, format, date
+    ];
+
+
+    var queryResult = await db.rawQuery('${Query.pieDataQuery}', args);
+
+    print('result: $queryResult');
+
     return records
         .map((record) =>
         PieData(record['amount'] as int, BillType.fromMap(record)))
@@ -176,6 +190,18 @@ class DatabaseClient {
   Future<List<PieData>> getOverallPieData() async {
     var records = await db.rawQuery(
         Query.overallPieDataQuery, [DateTime.now().toIso8601String()]);
+
+    var now = DateTime.now().toIso8601String();
+
+    var args = [
+      now,
+      now
+    ];
+
+    var queryResults = await db.rawQuery(Query.overAllPieDataQuery, args);
+
+    print('overall: $queryResults');
+
     return records
         .map((record) =>
         PieData(record['amount'] as int, BillType.fromMap(record)))
@@ -190,6 +216,7 @@ class DatabaseClient {
         .toList();
   }
 
+  /*correct the query to get right data cos recurring bill can be moved back */
   Future<int?> getYearOfFirstInsert() async {
     var result = await db.rawQuery(
         "SELECT payment_datetime as edate FROM expenditure ORDER BY payment_datetime ASC LIMIT 1");

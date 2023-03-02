@@ -283,7 +283,11 @@ class Query {
       ) 
       )
       UNION
-      SELECT -1 AS id, 
+      $recursionQuery
+  ''';
+
+  static String recursionQuery = '''
+  SELECT -1 AS id, 
                   title, 
               bill_type, 
               priority, 
@@ -417,5 +421,96 @@ class Query {
    WHERE strftime('%Y-%m-%d', payment_datetime) = strftime('%Y-%m-%d', ?)
    ORDER BY filtered.payment_datetime DESC LIMIT 1;
   ''';
+
+  static String recurringDataWithQuerySpecified = '''
+      SELECT * FROM expenditure e WHERE (
+        pattern != 0
+        AND
+        (
+          (   strftime(?, payment_datetime) == "'" || ? || "'"
+              OR 
+              strftime(?, end_date) == "'" || ? || "'"
+          )
+          OR 
+          (  
+         SELECT CASE WHEN EXISTS (
+            SELECT * FROM expenditure_exception ex 
+            WHERE (
+                e.id == ex.expenditure_id
+                AND 
+              strftime(?, ex.payment_datetime) == "'" || ? || "'"
+            ) 
+         ) THEN CAST(1 AS BIT)
+           ELSE CAST(0 AS BIT) END
+         )
+        )
+      )
+      UNION
+      $recursionQuery
+  ''';
+
+  static String pieDataQuery = '''
+    WITH recurringData AS (
+      $recurringDataWithQuerySpecified
+    ), allBills AS (
+      SELECT * FROM recurringData
+      UNION
+      SELECT * FROM expenditure
+      WHERE strftime(?, payment_datetime) = "'" || ? || "'"
+    ),
+     allBillsAndException AS(
+        $allBillAndExceptionCombined
+    ), filtered AS (
+      SELECT * FROM allBillsAndException WHERE 
+      (
+      (deleted IS NULL OR deleted = 0)
+      AND datetime(payment_datetime) <= datetime(?)
+      )
+    )
+    
+    SELECT SUM(s.amount) as amount,
+      s.bill_type, bp.name as bill_name, bp.image as bill_image,
+      strftime(?, payment_datetime) as date
+      FROM filtered s
+      JOIN bill_type bp ON
+      s.bill_type = bp.id
+    GROUP BY strftime(?, payment_datetime), s.bill_type
+    HAVING strftime(?, s.payment_datetime) = "'" || ? || "'";
+    ''';
+
+  static String recurringDataForOverallQuery = '''
+    SELECT * FROM expenditure WHERE (pattern != 0)
+      UNION
+    $recursionQuery
+  ''';
+
+  static String overAllPieDataQuery = '''
+    WITH recurringData AS (
+      $recurringDataForOverallQuery
+    ) 
+    , allBills AS (
+      SELECT * FROM recurringData
+      UNION
+      SELECT * FROM expenditure WHERE datetime(payment_datetime) <= datetime(?)
+      ), allBillsAndException AS(
+        $allBillAndExceptionCombined
+      ), filtered AS (
+        SELECT * FROM allBillsAndException 
+        WHERE
+        (
+        (deleted IS NULL OR deleted = 0)
+          AND datetime(payment_datetime) <= datetime(?)
+        )
+     )
+     
+    SELECT SUM(s.amount) as amount,
+      s.bill_type, bp.name as bill_name, bp.image as bill_image
+    FROM filtered s
+    JOIN bill_type bp ON
+    s.bill_type = bp.id
+    GROUP BY 2;
+  ''';
+
+
 
 }
