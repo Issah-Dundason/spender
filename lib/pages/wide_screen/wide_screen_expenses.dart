@@ -17,18 +17,21 @@ class WiderScreenExpenses extends StatelessWidget {
       color: Theme.of(context).colorScheme.background,
       child: Row(
         children: [
-          const Flexible(
+           Flexible(
             flex: 3,
             child: Padding(
-              padding: EdgeInsets.only(top: 15.0),
-              child: ExpensesTransactions(),
+              padding: const EdgeInsets.only(top: 15.0),
+              child: BlocBuilder<ExpensesBloc, ExpensesState>(
+                builder: (context, state) {
+                  return const ExpensesTransactions();
+                },
+              ),
             ),
           ),
           Flexible(
               flex: 2,
               child: ListView(
                 children: [
-
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: BlocBuilder<ExpensesBloc, ExpensesState>(
@@ -42,7 +45,7 @@ class WiderScreenExpenses extends StatelessWidget {
                             selectedDay: state.selectedDate,
                             calendarFormat: CalendarFormat.month,
                             firstYear:
-                            state.yearOfFirstInsert ?? DateTime.now().year,
+                                state.yearOfFirstInsert ?? DateTime.now().year,
                             onDateSelected: (date, focus) {
                               context
                                   .read<ExpensesBloc>()

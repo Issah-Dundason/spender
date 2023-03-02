@@ -61,7 +61,6 @@ class _ExpensesPageState extends State<ExpensesPage> {
     return BlocListener<ExpensesBloc, ExpensesState>(
       listener: (context, state) {
         if (state.deleteState == DeleteState.deleted) {
-          context.read<ExpensesBloc>().add(const LoadEvent());
           context.read<HomeBloc>().add(const HomeInitializationEvent());
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text('deleted!')));
