@@ -58,212 +58,6 @@ class Query {
       );
   ''';
 
-  static String generateRecursionQuery = '''
-        WITH RECURSIVE recurringData AS (
-           SELECT * FROM expenditure
-           UNION 
-           SELECT -1 AS id, 
-                  title, 
-              bill_type, 
-              priority, 
-              payment_type, 
-              description,
-              pattern,
-              CASE WHEN recurringData.id = -1
-              THEN recurringData.parent_id
-              ELSE recurringData.id END AS parent_id,
-              CASE 
-                WHEN pattern = 2 
-                  THEN datetime(payment_datetime, '7 days')
-                WHEN pattern = 3
-                  THEN datetime(payment_datetime, '1 months')
-                ELSE datetime(payment_datetime, '1 days')
-                END
-              AS payment_datetime,
-              amount,
-              end_date
-          FROM recurringData 
-          WHERE pattern != 0 AND
-           CASE 
-                WHEN pattern = 2 
-                  THEN datetime(payment_datetime, '7 days')
-                WHEN pattern = 3
-                  THEN datetime(payment_datetime, '1 months')
-                ELSE datetime(payment_datetime, '1 days')
-                END
-           <= datetime(end_date)
-          ),
-          generatedData AS (
-            SELECT
-               r.id,	
-             
-            CASE WHEN ed.title IS NOT NULL 
-              THEN ed.title
-            ELSE r.title END AS title,
-            
-            CASE WHEN ed.bill_type IS NOT NULL 
-              THEN ed.bill_type
-            ELSE r.bill_type END AS bill_type,
-            
-            CASE WHEN ed.priority IS NOT NULL 
-              THEN ed.priority
-            ELSE r.priority END AS priority,
-            
-            CASE WHEN ed.payment_type IS NOT NULL 
-              THEN ed.payment_type
-            ELSE r.payment_type END AS payment_type,
-            
-            CASE WHEN ed.description IS NOT NULL 
-              THEN ed.description
-            ELSE r.description END AS description,
-            
-            r.pattern,
-            
-            r.parent_id,
-            
-            CASE WHEN ed.payment_datetime IS NOT NULL 
-              THEN ed.payment_datetime
-            ELSE r.payment_datetime END AS payment_datetime,
-            
-            CASE WHEN ed.amount IS NOT NULL 
-              THEN ed.amount
-            ELSE r.amount END AS amount,
-            
-            ed.id AS exception_id,
-            
-            r.end_date,
-            
-            ed.deleted
-          
-            FROM recurringData r
-            LEFT JOIN expenditure_exception ed
-            ON strftime('%Y-%m-%d', r.payment_datetime) == ed.instance_date 
-            AND CASE 
-                  WHEN r.id == -1
-                         THEN r.parent_id
-                  ELSE r.id 
-                  END   
-            = ed.expenditure_id
-      ), resolvedData AS (
-          SELECT * FROM generatedData WHERE deleted IS NULL OR deleted = 0
-      )
-  ''';
-
-  static String financialsQuery = '''
-   $generateRecursionQuery,
-   secondResolved AS (
-      SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
-    )
-    SELECT b.amount as budget,
-            CASE 
-              WHEN  b.amount - t.amount_spent   IS NULL THEN b.amount
-              ELSE (b.amount - t.amount_spent) 
-              END as balance,
-            CASE
-              WHEN t.amount_spent IS NULL THEN 0 
-              ELSE t.amount_spent
-              END as amount_spent  
-      FROM budget b 
-      LEFT JOIN 
-      (SELECT SUM(amount) as amount_spent, 
-              strftime('%Y-%m', payment_datetime) as date 
-      FROM secondResolved 
-      GROUP BY 2
-      HAVING strftime('%Y-%m', payment_datetime) = ?) t 
-      on t.date = strftime('%Y-%m', b.date) 
-      WHERE strftime('%Y-%m', b.date) = ?;
-  ''';
-
-  static String getMonthSpendingQuery() {
-    return '''
-    $generateRecursionQuery,
-    secondResolved AS (
-      SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
-    )
-    SELECT strftime('%m',payment_datetime) as month, 
-          SUM(amount) as amount
-    FROM secondResolved
-    GROUP BY strftime('%Y-%m',payment_datetime) 
-    HAVING strftime('%Y',payment_datetime) = ?
-    ORDER BY strftime('%m', payment_datetime) ASC;
-    ''';
-  }
-
-  static String getExpenditureWithLimitQuery() {
-    return '''
-    $generateRecursionQuery
-    SELECT resolvedData.*, 
-           bill_type.id AS bill_type, 
-           bill_type.name AS bill_name,
-           bill_type.image AS bill_image
-    FROM resolvedData JOIN bill_type ON resolvedData.bill_type = bill_type.id
-    WHERE strftime('%Y-%m-%d', payment_datetime) = ?
-    AND datetime(payment_datetime) <= datetime(?)
-    ORDER BY resolvedData.payment_datetime DESC LIMIT ?;
-    ''';
-  }
-
-  static String expenditureByDateQuery = '''
-    $generateRecursionQuery
-    SELECT resolvedData.*, 
-           bill_type.id AS bill_type, 
-           bill_type.name AS bill_name,
-           bill_type.image AS bill_image
-    FROM resolvedData JOIN bill_type ON resolvedData.bill_type = bill_type.id
-    WHERE strftime('%Y-%m-%d', payment_datetime) = ?
-    ORDER BY resolvedData.payment_datetime DESC;
-  ''';
-
-  static String didTransactionOccurQuery = '''
-    $generateRecursionQuery
-     
-     SELECT * FROM resolvedData 
-     WHERE strftime('%Y-%m-%d', payment_datetime) = ?
-     LIMIT 1;
-  ''';
-
-  static String overallPieDataQuery =
-    '''
-    $generateRecursionQuery,
-    secondResolved AS (
-      SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
-    )
-      SELECT SUM(s.amount) as amount,
-        s.bill_type, bp.name as bill_name, bp.image as bill_image
-      FROM secondResolved s
-      JOIN bill_type bp ON
-      s.bill_type = bp.id
-      GROUP BY 2;
-    ''';
-
-  static String lastEndDate = '''
-    $generateRecursionQuery
-    SELECT payment_dateTime FROM resolvedData
-    WHERE
-    datetime(payment_datetime) < datetime(?)
-    AND
-    (id = ? OR parent_id = ?) 
-    ORDER BY datetime(payment_datetime) DESC;
-  ''';
-
-  static String pieQuery(String format, String date) => '''
-    $generateRecursionQuery,
-    secondResolved AS (
-      SELECT * FROM resolvedData WHERE datetime(payment_datetime) < datetime(?)
-    )
-   
-    SELECT SUM(s.amount) as amount,
-           s.bill_type, bp.name as bill_name, bp.image as bill_image,
-           strftime($format, payment_datetime) as date
-     FROM secondResolved s
-     JOIN bill_type bp ON
-     s.bill_type = bp.id
-     GROUP BY strftime($format, payment_datetime), s.bill_type 
-     HAVING strftime($format, s.payment_datetime) = '$date';
-  ''';
-
-  //** new queries
-
   static String recurringDataForDayQuery = '''
       SELECT * FROM expenditure e WHERE (
       pattern != 0
@@ -374,7 +168,7 @@ class Query {
             = ed.expenditure_id
   ''';
 
-  static String billsForDayQuery = '''
+  static String billsForDayQuery([String limitQuery = '']) => '''
     WITH RECURSIVE recurringData AS (
       $recurringDataForDayQuery
     ), 
@@ -396,7 +190,7 @@ class Query {
           bill_type.image AS bill_image
     FROM filtered JOIN bill_type ON filtered.bill_type = bill_type.id
    WHERE strftime('%Y-%m-%d', payment_datetime) = strftime('%Y-%m-%d', ?)
-   ORDER BY filtered.payment_datetime DESC;
+   ORDER BY filtered.payment_datetime DESC $limitQuery;
   ''';
 
   static String dayHasTransactionQuery = '''
@@ -584,5 +378,78 @@ class Query {
       WHERE
     datetime(payment_datetime) < datetime(?)
     ORDER BY datetime(payment_datetime) DESC;
+  ''';
+
+  static String queryForFinancials = '''
+     WITH recurringData AS (
+      SELECT * FROM expenditure e WHERE  ( pattern != 0
+      
+        AND (
+          (   strftime("%Y", payment_datetime) ==  ? 
+              OR 
+              strftime("%Y", end_date) == ?
+          )
+          OR 
+          (  
+         SELECT CASE WHEN EXISTS (
+            SELECT * FROM expenditure_exception ex 
+            WHERE (
+                e.id == ex.expenditure_id
+                AND 
+              strftime("%Y", ex.payment_datetime) ==  ?
+            ) 
+         ) THEN CAST(1 AS BIT)
+           ELSE CAST(0 AS BIT) END
+         )
+          
+        )
+      
+     )
+     UNION
+     $recursionQuery
+     ), allBills AS (
+      SELECT * FROM recurringData
+      UNION
+      SELECT * FROM expenditure
+      WHERE strftime("%Y-%m", payment_datetime) = ?
+    ), allBillsAndException AS(
+        $allBillAndExceptionCombined
+    ), filtered AS (
+      SELECT * FROM allBillsAndException WHERE 
+      (
+      (deleted IS NULL OR deleted = 0)
+      AND datetime(payment_datetime) <= datetime(?)
+      )
+     )
+     SELECT b.amount as budget,
+            CASE 
+              WHEN  b.amount - t.amount_spent   IS NULL THEN b.amount
+              ELSE (b.amount - t.amount_spent) 
+              END as balance,
+            CASE
+              WHEN t.amount_spent IS NULL THEN 0 
+              ELSE t.amount_spent
+              END as amount_spent  
+      FROM budget b 
+      LEFT JOIN 
+      (SELECT SUM(amount) as amount_spent, 
+              strftime('%Y-%m', payment_datetime) as date 
+      FROM filtered 
+      GROUP BY 2
+      HAVING strftime('%Y-%m', payment_datetime) = ?) t 
+      on t.date = strftime('%Y-%m', b.date) 
+      WHERE strftime('%Y-%m', b.date) = ?;
+  ''';
+
+  static String queryForFirstInsert = '''
+   WITH savedData AS (
+    SELECT * FROM expenditure ORDER BY datetime(payment_datetime) ASC LIMIT 1
+   ), allData AS (
+     SELECT payment_datetime FROM savedData UNION
+     SELECT payment_datetime FROM expenditure_exception WHERE (deleted IS NULL OR deleted = 0) 
+   )
+  
+  SELECT payment_datetime FROM allData ORDER BY
+     datetime(payment_datetime) ASC LIMIT 1;
   ''';
 }

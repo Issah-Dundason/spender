@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -52,14 +51,19 @@ class DatabaseClient {
   }
 
   Future<Financials?> getFinancials(String date) async {
-    var result = await db.rawQuery(
-        Query.financialsQuery, [DateTime.now().toIso8601String(), date, date]);
 
-    if (result.isEmpty) {
+    var year = date.split('-')[0];
+    var now = DateTime.now().toIso8601String();
+
+    var args = [year, year, year, date, now, date, date];
+
+    var queryResult = await db.rawQuery(Query.queryForFinancials, args);
+
+    if (queryResult.isEmpty) {
       return null;
     }
 
-    return Financials.fromMap(result[0]);
+    return Financials.fromMap(queryResult[0]);
   }
 
   Future saveBudget(Budget budget) async {
@@ -71,9 +75,15 @@ class DatabaseClient {
   }
 
   Future<List<Bill>> getBillAtWithLimit(DateTime dateTime, int limit) async {
-    var date = DateFormat("yyyy-MM-dd").format(dateTime);
-    var result = await db.rawQuery(Query.getExpenditureWithLimitQuery(),
-        [date, dateTime.toIso8601String(), limit]);
+
+    var suppliedDate = DateUtils.dateOnly(dateTime);
+    var endDatetime = suppliedDate.add(const Duration(hours: 23, minutes: 59));
+    var endDate = endDatetime.toIso8601String();
+
+    var args = [endDate, suppliedDate.toIso8601String(), endDate, endDate, endDate];
+
+    var result = await db.rawQuery(Query.billsForDayQuery('LIMIT $limit'), args);
+
     return result.map((record) {
       Map<String, dynamic> modified = Map.from(record);
       modified["type"] = {
@@ -148,7 +158,7 @@ class DatabaseClient {
 
     var args = [endDate, suppliedDate.toIso8601String(), endDate, endDate, endDate];
 
-    var result = await db.rawQuery(Query.billsForDayQuery, args);
+    var result = await db.rawQuery(Query.billsForDayQuery(), args);
 
     return result.map((record) {
       Map<String, dynamic> modified = Map.from(record);
@@ -163,10 +173,6 @@ class DatabaseClient {
   }
 
   Future<List<PieData>> getPieData(String format, String date) async {
-    var records = await db.rawQuery(
-        Query.pieQuery(format, date), [DateTime.now().toIso8601String()]);
-
-
     var args = [
       format, date,
       format, date,
@@ -176,21 +182,15 @@ class DatabaseClient {
       format, format, format, date
     ];
 
+    var queryResult = await db.rawQuery(Query.pieDataQuery, args);
 
-    var queryResult = await db.rawQuery('${Query.pieDataQuery}', args);
-
-    print('result: $queryResult');
-
-    return records
+    return queryResult
         .map((record) =>
         PieData(record['amount'] as int, BillType.fromMap(record)))
         .toList();
   }
 
   Future<List<PieData>> getOverallPieData() async {
-    var records = await db.rawQuery(
-        Query.overallPieDataQuery, [DateTime.now().toIso8601String()]);
-
     var now = DateTime.now().toIso8601String();
 
     var args = [
@@ -200,9 +200,7 @@ class DatabaseClient {
 
     var queryResults = await db.rawQuery(Query.overAllPieDataQuery, args);
 
-    print('overall: $queryResults');
-
-    return records
+    return queryResults
         .map((record) =>
         PieData(record['amount'] as int, BillType.fromMap(record)))
         .toList();
@@ -216,30 +214,24 @@ class DatabaseClient {
         .toList();
   }
 
-  /*correct the query to get right data cos recurring bill can be moved back */
+
   Future<int?> getYearOfFirstInsert() async {
-    var result = await db.rawQuery(
-        "SELECT payment_datetime as edate FROM expenditure ORDER BY payment_datetime ASC LIMIT 1");
-    if (result.isEmpty) return null;
-    var date = DateTime.parse(result[0]['edate'] as String);
+
+    var queryResult = await db.rawQuery(Query.queryForFirstInsert);
+
+    if (queryResult.isEmpty) return null;
+    var date = DateTime.parse(queryResult[0]['payment_datetime'] as String);
     return date.year;
   }
 
   Future<List<MonthSpending>> getAmountSpentEachMonth(String year) async {
     String dateTime = DateTime.now().toIso8601String();
-    var result =
-    await db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
 
-    print('year: $year');
     var args = [year, year, year, year, dateTime, year];
 
     var queryResult = await db.rawQuery(Query.monthExpensesQuery, args);
 
-    print('month spending: $queryResult');
-
-
-
-    return result
+    return queryResult
         .map((record) => MonthSpending(
         int.parse(record["month"] as String), record["amount"] as int))
         .toList();
@@ -281,22 +273,12 @@ class DatabaseClient {
   }
 
   Future<String> getLastEndDate(int parentId, String date) async {
-    var record = await db.rawQuery(Query.lastEndDate, [
-      date,
-      parentId,
-      parentId,
-    ]);
 
-    print('last date for query: $date');
     var args = [parentId, date];
-
     var queryResults = await db.rawQuery(Query.queryForLastEndDate, args);
 
-    print('Last date: $queryResults');
-    print('actual date: $record');
-
-    if (record.isEmpty) throw UnavailableException();
-    return record.first['payment_datetime'] as String;
+    if (queryResults.isEmpty) throw UnavailableException();
+    return queryResults.first['payment_datetime'] as String;
   }
 }
 
