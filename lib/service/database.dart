@@ -229,6 +229,16 @@ class DatabaseClient {
     String dateTime = DateTime.now().toIso8601String();
     var result =
     await db.rawQuery(Query.getMonthSpendingQuery(), [dateTime, year]);
+
+    print('year: $year');
+    var args = [year, year, year, year, dateTime, year];
+
+    var queryResult = await db.rawQuery(Query.monthExpensesQuery, args);
+
+    print('month spending: $queryResult');
+
+
+
     return result
         .map((record) => MonthSpending(
         int.parse(record["month"] as String), record["amount"] as int))

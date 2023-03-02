@@ -262,6 +262,8 @@ class Query {
      HAVING strftime($format, s.payment_datetime) = '$date';
   ''';
 
+  //** new queries
+
   static String recurringDataForDayQuery = '''
       SELECT * FROM expenditure e WHERE (
       pattern != 0
@@ -511,6 +513,57 @@ class Query {
     GROUP BY 2;
   ''';
 
+  static String monthExpensesQuery = '''
+    WITH recurringData AS (
+      SELECT * FROM expenditure e WHERE  ( pattern != 0
+      
+        AND (
+          (   strftime("%Y", payment_datetime) ==  ? 
+              OR 
+              strftime("%Y", end_date) == ?
+          )
+          
+          OR 
+          (  
+         SELECT CASE WHEN EXISTS (
+            SELECT * FROM expenditure_exception ex 
+            WHERE (
+                e.id == ex.expenditure_id
+                AND 
+              strftime("%Y", ex.payment_datetime) ==  ?
+            ) 
+         ) THEN CAST(1 AS BIT)
+           ELSE CAST(0 AS BIT) END
+         )
+          
+        )
+      
+     )
+     UNION
+     $recursionQuery
+    ), allBills AS (
+      SELECT * FROM recurringData
+      UNION
+      SELECT * FROM expenditure
+      WHERE strftime("%Y", payment_datetime) = ?
+    ),
+     allBillsAndException AS(
+        $allBillAndExceptionCombined
+    ), filtered AS (
+      SELECT * FROM allBillsAndException WHERE 
+      (
+      (deleted IS NULL OR deleted = 0)
+      AND datetime(payment_datetime) <= datetime(?)
+      )
+    )
+  
+    SELECT strftime('%m',payment_datetime) as month, 
+          SUM(amount) as amount
+    FROM filtered
+    GROUP BY strftime('%Y-%m',payment_datetime) 
+    HAVING strftime('%Y',payment_datetime) = ?
+    ORDER BY strftime('%m', payment_datetime) ASC;
+  ''';
 
 
 }
