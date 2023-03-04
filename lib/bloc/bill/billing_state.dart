@@ -20,7 +20,3 @@ class BillingState extends Equatable {
   @override
   List<Object?> get props => [processingState, processingState];
 }
-
-class PState extends BillingState {
-
-}
