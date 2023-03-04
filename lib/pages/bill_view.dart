@@ -13,15 +13,13 @@ import '../model/bill.dart';
 import '../util/calculation.dart';
 import '../components/custom_key_pad.dart';
 
- final appBillFormKey = GlobalKey<FormState>();
+final appBillFormKey = GlobalKey<FormState>();
 
 class BillView extends StatefulWidget {
   final bool showAppBar;
   final Bill? bill;
 
-  const BillView({Key? key,
-    this.showAppBar = true,
-   this.bill})
+  const BillView({Key? key, this.showAppBar = true, this.bill})
       : super(key: key);
 
   @override
@@ -89,21 +87,22 @@ class _BillViewState extends State<BillView>
     var keysHeight = media.height * 0.48;
     var calcWidth = media.width * 0.72;
 
-    if(media.width > 449.5 && media.height > 449.5) {
+    if (media.width > 449.5 && media.height > 449.5) {
       calcWidth = media.width * 0.5;
       keysHeight = media.height * 0.4;
     }
 
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: widget.showAppBar ? AppBar(
-        centerTitle: true,
-        title: const Text('Bill'),
-        foregroundColor: Colors.black,
-        elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.background,
-      ): null,
+      appBar: widget.showAppBar
+          ? AppBar(
+              centerTitle: true,
+              title: const Text('Bill'),
+              foregroundColor: Colors.black,
+              elevation: 0,
+              backgroundColor: Theme.of(context).colorScheme.background,
+            )
+          : null,
       body: WillPopScope(
         onWillPop: () async {
           if (!_showKeypad) return true;
@@ -287,7 +286,7 @@ class _BillViewState extends State<BillView>
                                               return '0 is not allowed';
                                             }
 
-                                            if(s.trim().length > 10) {
+                                            if (s.trim().length > 10) {
                                               return 'can\'t contain more than 10 characters';
                                             }
 
@@ -707,11 +706,17 @@ class _BillViewState extends State<BillView>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(_, true),
-              child:  Text('Yes', style: TextStyle(color:Theme.of(context).colorScheme.primary),),
+              child: Text(
+                'Yes',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(_, false),
-              child:  Text('No', style: TextStyle(color:Theme.of(context).colorScheme.primary),),
+              child: Text(
+                'No',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
             )
           ],
         );

@@ -17,7 +17,7 @@ class YearPickerDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(23)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(08)),
       content: SizedBox(
         width: 300,
         height: 300,

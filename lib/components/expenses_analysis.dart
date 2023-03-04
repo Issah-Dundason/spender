@@ -54,9 +54,8 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
                       padding: const EdgeInsets.all(10),
                       minimumSize: const Size(0, 0),
                       backgroundColor: Theme.of(context).colorScheme.secondary,
-                      elevation: 0,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20))),
+                          borderRadius: BorderRadius.circular(08))),
                   onPressed: showPieChart,
                   child: const Text('Look up'))
             ],

@@ -38,8 +38,7 @@ class WiderScreenExpenses extends StatelessWidget {
                       builder: (context, state) {
                         if (state.yearOfFirstInsert == null &&
                             !state.initialized) {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return const CircularProgressIndicator();
                         }
                         return TransactionCalendar(
                             selectedDay: state.selectedDate,
