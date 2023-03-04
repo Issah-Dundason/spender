@@ -22,7 +22,6 @@ class _ChartWidgetState extends State<ChartWidget> {
   ScrollController scrollController = ScrollController();
 
   void _scrollToRightPosition() async {
-
     int month = 1;
     if (widget.state.monthExpenditures.isNotEmpty) {
       month = widget.state.monthExpenditures.last.month;
@@ -44,6 +43,10 @@ class _ChartWidgetState extends State<ChartWidget> {
         child: AspectRatio(
           aspectRatio: 3.5,
           child: BarChart(BarChartData(
+              barTouchData: BarTouchData(
+                  enabled: true,
+                  touchTooltipData:
+                      BarTouchTooltipData(fitInsideVertically: true)),
               gridData: FlGridData(show: false),
               borderData: FlBorderData(
                 border: null,

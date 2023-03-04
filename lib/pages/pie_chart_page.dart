@@ -141,8 +141,9 @@ class StatChart extends StatelessWidget {
                   children: [
                     ...pieData.map((e) => TableRow(children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
+                          const Spacer(),
                           Text(
                             e.billType.name,
                             textAlign: TextAlign.center,

@@ -121,6 +121,7 @@ class _BillViewState extends State<BillView>
                 }
               },
               builder: (context, state) {
+
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: _hideKeypad,

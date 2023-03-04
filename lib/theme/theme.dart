@@ -23,6 +23,11 @@ class AppTheme {
           primaryContainer: cardColor,
           tertiary: tertiaryColor),
       iconTheme: const IconThemeData(color: tertiaryColor),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+          elevation: MaterialStateProperty.all(0),
+        )
+      ),
       inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: const Color(0xFFFFF0F5),
