@@ -66,7 +66,7 @@ class _MainBottomAppBarState extends State<MainBottomAppBar> {
   void _addBill() async {
     await _showAddBillView();
     if (!mounted) return;
-    context.read<ExpensesBloc>().add(const LoadEvent());
+    context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
     context.read<HomeBloc>().add(const HomeInitializationEvent());
   }
 

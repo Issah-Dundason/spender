@@ -25,7 +25,7 @@ class _AppViewState extends State<AppView> {
   @override
   void initState() {
     timer = Timer.periodic(const Duration(hours: 1), (timer) {
-      context.read<ExpensesBloc>().add(const LoadEvent());
+      context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
       context.read<HomeBloc>().add(const HomeInitializationEvent());
     });
 
@@ -56,7 +56,7 @@ class _AppViewState extends State<AppView> {
         if (index == 2 || index == 3 || index == 4) {
           context.read<AppCubit>().currentState = AppTab.home;
         }
-        context.read<ExpensesBloc>().add(const LoadEvent());
+        context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
         return const NarrowWidthView();
       },
     );

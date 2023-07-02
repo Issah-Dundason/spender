@@ -26,27 +26,21 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9,
-      child: BlocBuilder<ExpensesBloc, ExpensesState>(
+      child: BlocBuilder<ExpensesBloc, IExpensesState>(
         builder: (context, state) {
-          if (state.transactions.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Text("No Data"),
-                  Icon(
-                    Whiteboard.icon,
-                    size: 150,
-                    color: Theme.of(context).colorScheme.primary,
-                  )
-                ],
-              ),
-            );
+
+          if(state is! ExpensesSuccessfulState) {
+            return const Center(child: CircularProgressIndicator(),);
           }
+
+
+          if (state.transactions.isEmpty) {
+            return const EmptyExpensesWidget();
+          }
+
           return RefreshIndicator(
             onRefresh: () async {
-              context.read<ExpensesBloc>().add(const LoadEvent());
+              context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -99,7 +93,31 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
   }
 
   void notifyBlocs() {
-    context.read<ExpensesBloc>().add(const LoadEvent());
+    context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
     context.read<HomeBloc>().add(const HomeInitializationEvent());
+  }
+}
+
+class EmptyExpensesWidget extends StatelessWidget {
+  const EmptyExpensesWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Text("No Data"),
+          Icon(
+            Whiteboard.icon,
+            size: 150,
+            color: Theme.of(context).colorScheme.primary,
+          )
+        ],
+      ),
+    );
   }
 }

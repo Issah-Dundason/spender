@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:spender/util/app_utils.dart';
 
-import '../bloc/home/home_state.dart';
 import '../service/database.dart';
 
 class ChartWidget extends StatefulWidget {
-  final HomeState state;
+   final List<MonthSpending> monthExpenditures;
 
-  const ChartWidget({
-    Key? key,
-    required this.state,
-  }) : super(key: key);
+  const ChartWidget({super.key,
+     this.monthExpenditures = const <MonthSpending>[],
+  });
 
   @override
   State<ChartWidget> createState() => _ChartWidgetState();
@@ -23,8 +21,8 @@ class _ChartWidgetState extends State<ChartWidget> {
 
   void _scrollToRightPosition() async {
     int month = 1;
-    if (widget.state.monthExpenditures.isNotEmpty) {
-      month = widget.state.monthExpenditures.last.month;
+    if (widget.monthExpenditures.isNotEmpty) {
+      month = widget.monthExpenditures.last.month;
     }
 
     var maxScroll = scrollController.position.maxScrollExtent;
@@ -58,11 +56,11 @@ class _ChartWidgetState extends State<ChartWidget> {
                   rightTitles: AxisTitles(),
                   topTitles: AxisTitles(
                       sideTitles: _topTitle(context,
-                          _displayList(widget.state.monthExpenditures))),
+                          _displayList(widget.monthExpenditures))),
                   bottomTitles:
                       AxisTitles(sideTitles: _getBottomTitle(context))),
               barGroups: _chartGroups(
-                  _displayList(widget.state.monthExpenditures), context))),
+                  _displayList(widget.monthExpenditures), context))),
         ),
       ),
     );
@@ -82,9 +80,9 @@ class _ChartWidgetState extends State<ChartWidget> {
   }
 
   List<BarChartGroupData> _chartGroups(
-      List<MonthSpending> monthSpendings, BuildContext context) {
+      List<MonthSpending> data, BuildContext context) {
     var month = DateTime.now().month;
-    return monthSpendings.map((m) {
+    return data.map((m) {
       var r = AppUtils.amountPresented(m.amount);
       return BarChartGroupData(barsSpace: 30, x: m.month, barRods: [
         BarChartRodData(
@@ -100,12 +98,12 @@ class _ChartWidgetState extends State<ChartWidget> {
   }
 
   SideTitles _topTitle(
-      BuildContext context, List<MonthSpending> monthSpendings) {
+      BuildContext context, List<MonthSpending> data) {
     return SideTitles(
         showTitles: true,
         getTitlesWidget: (value, meta) {
           var month = DateTime.now().month;
-          var ms = monthSpendings.firstWhere((m) => m.month == value.toInt());
+          var ms = data.firstWhere((m) => m.month == value.toInt());
           var r = AppUtils.amountPresented(ms.amount);
           return Text('₵${NumberFormat.compact().format(r)}',
               style: TextStyle(

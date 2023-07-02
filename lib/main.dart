@@ -53,26 +53,20 @@ class Spender extends StatelessWidget {
                 ..add(ProfileAvatarChangeEvent(assetName: avatar))),
           BlocProvider(
               lazy: false,
-              create: (_) => StatsBloc(appRepo)..add(StartEvent())
-          )
+              create: (_) => StatsBloc(appRepo)..add(StartEvent())),
+          BlocProvider(
+              create: (_) => HomeBloc(appRepo: appRepo)
+                ..add(const HomeInitializationEvent())),
+          BlocProvider(create: (_) => AppCubit()),
+          BlocProvider(
+              lazy: false,
+              create: (_) => ExpensesBloc(appRepo: appRepo)
+                ..add(const ExpensesLoadingEvent())),
         ],
         child: MaterialApp(
             theme: AppTheme.lightTheme,
             debugShowCheckedModeBanner: false,
-            home: MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                    create: (_) => HomeBloc(appRepo: appRepo)
-                      ..add(const HomeInitializationEvent())),
-                BlocProvider(create: (_) => AppCubit()),
-                BlocProvider(
-                    lazy: false,
-                    create: (_) => ExpensesBloc(appRepo: appRepo)
-                      ..add(const OnStartEvent())
-                      ..add(const LoadEvent())),
-              ],
-              child: const AppView(),
-            )),
+            home: const AppView()),
       ),
     );
   }

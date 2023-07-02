@@ -7,11 +7,13 @@ import 'package:spender/util/app_utils.dart';
 
 class TotalBudgetCard extends StatelessWidget {
   final double backgroundImageWidth;
+  final FinancialData financialsData;
 
-  final Financials financials;
-
-  const TotalBudgetCard(
-      {super.key, required this.financials, this.backgroundImageWidth = 80});
+  const TotalBudgetCard({
+    super.key,
+    required this.financialsData,
+    this.backgroundImageWidth = 80,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,8 @@ class TotalBudgetCard extends StatelessWidget {
                         const SizedBox(
                           height: 9,
                         ),
-                        Text("₵ ${NumberFormat().format(AppUtils.amountPresented(financials.budget))}",
+                        Text(
+                            "₵ ${NumberFormat().format(AppUtils.amountPresented(financialsData.budget))}",
                             style: const TextStyle(
                                 fontSize: 24,
                                 color: Colors.white,
@@ -79,7 +82,7 @@ class TotalBudgetCard extends StatelessWidget {
                           style: TextStyle(fontSize: 17, color: Colors.white),
                         ),
                         Text(
-                          "₵ ${NumberFormat().format(AppUtils.amountPresented(financials.balance))}",
+                          "₵ ${NumberFormat().format(AppUtils.amountPresented(financialsData.balance))}",
                           style: const TextStyle(
                               fontSize: 24,
                               color: Colors.white,

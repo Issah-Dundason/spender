@@ -202,7 +202,7 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
               buildDeleteDialog(message: 'Should delete future events?'));
 
       if (ans == null || !mounted) return;
-      var event = BillDeleteEvent(method: ans, bill: widget.bill);
+      var event = ExpensesBillDeleteEvent(method: ans, bill: widget.bill);
 
       context.read<ExpensesBloc>().add(event);
       return;
@@ -213,6 +213,6 @@ class _EditableTransactionTileState extends State<EditableTransactionTile> {
 
     if (ans == null || ans == DeleteMethod.single || !mounted) return;
 
-    context.read<ExpensesBloc>().add(BillDeleteEvent(bill: widget.bill));
+    context.read<ExpensesBloc>().add(ExpensesBillDeleteEvent(bill: widget.bill));
   }
 }

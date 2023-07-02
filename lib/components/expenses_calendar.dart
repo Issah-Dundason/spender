@@ -1,48 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:spender/bloc/expenses/expenses_state.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../bloc/expenses/expenses_bloc.dart';
+import '../bloc/expenses/expenses_event.dart';
 import '../repository/expenditure_repo.dart';
 
-class TransactionCalendar extends StatelessWidget {
+class TransactionCalendar extends StatefulWidget {
   final CalendarFormat calendarFormat;
-  const TransactionCalendar(
-      {Key? key,
-        required this.selectedDay,
-        this.onDateSelected,
-        required this.firstYear,
-        this.calendarFormat = CalendarFormat.week
-      })
-      : super(key: key);
 
-  final DateTime selectedDay;
-  final int firstYear;
+  const TransactionCalendar({
+    Key? key,
+    this.calendarFormat = CalendarFormat.week,
+  }) : super(key: key);
 
-  final void Function(DateTime, DateTime)? onDateSelected;
+  @override
+  State<TransactionCalendar> createState() => _TransactionCalendarState();
+}
+
+class _TransactionCalendarState extends State<TransactionCalendar> {
+  DateTime selectedDay = DateTime.now();
+  int firstYear = 2012;
+
+  @override
+  void initState() {
+    context.read<ExpensesBloc>().stream.listen((state) {
+      if(state is! ExpensesSuccessfulState) {
+        return;
+      }
+
+      if(state.yearOfFirstInsert == null) {
+        return;
+      }
+
+      setState(() => firstYear = state.yearOfFirstInsert!);
+
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    var last = DateTime.now().add(const Duration(days: 365 * 7));
+    var last = DateTime.now().add(const Duration(days: 2));
+    print("running");
     return TableCalendar(
-      onDaySelected: onDateSelected,
+
+      key: Key(DateTime.now().toString()),
+      onDaySelected: _onDateSelected,
       focusedDay: selectedDay,
-      firstDay:DateTime(firstYear),
+      firstDay: DateTime(firstYear),
       lastDay: last,
-      calendarFormat: calendarFormat,
+      calendarFormat: widget.calendarFormat,
       calendarBuilders: CalendarBuilders(
-          defaultBuilder: _defaultBuilder, outsideBuilder: _defaultBuilder,
+        defaultBuilder: _defaultBuilder,
+        outsideBuilder: _defaultBuilder,
       ),
-      headerStyle: const HeaderStyle(
-          formatButtonVisible: false, titleCentered: true),
+      headerStyle:
+          const HeaderStyle(formatButtonVisible: false, titleCentered: true),
       calendarStyle: const CalendarStyle(
         isTodayHighlighted: false,
       ),
     );
   }
 
-  Widget _defaultBuilder(BuildContext context, DateTime actualDate,
-      DateTime focusDate) {
+  void _onDateSelected(DateTime date, DateTime focus) {
+    setState(() {
+      selectedDay = date;
+    });
+    context.read<ExpensesBloc>().add(ExpensesDateChangeEvent(date));
+  }
+
+  Widget _defaultBuilder(
+      BuildContext context, DateTime actualDate, DateTime focusDate) {
     var appRepo = context.read<AppRepository>();
     String date = DateFormat('yyyy-MM-dd').format(actualDate);
 
@@ -50,7 +81,7 @@ class TransactionCalendar extends StatelessWidget {
       future: appRepo.didTransactionsOnDay(date),
       builder: (context, snapshot) {
         return Container(
-         width: 34,
+          width: 34,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: DateUtils.isSameDay(selectedDay, actualDate)
@@ -65,10 +96,7 @@ class TransactionCalendar extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: DateUtils.isSameDay(selectedDay, actualDate)
-                          ? Theme
-                          .of(context)
-                          .colorScheme
-                          .onSecondary
+                          ? Theme.of(context).colorScheme.onSecondary
                           : Colors.black,
                     )),
                 const SizedBox(
@@ -79,13 +107,10 @@ class TransactionCalendar extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 5,
                     backgroundColor: snapshot.data != null &&
-                        snapshot.data! &&
-                        DateUtils.isSameDay(selectedDay, actualDate)
+                            snapshot.data! &&
+                            DateUtils.isSameDay(selectedDay, actualDate)
                         ? Colors.white
-                        : Theme
-                        .of(context)
-                        .colorScheme
-                        .tertiary,
+                        : Theme.of(context).colorScheme.tertiary,
                   ),
                 )
               ],

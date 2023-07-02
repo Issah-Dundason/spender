@@ -5,36 +5,45 @@ import '../../repository/expenditure_repo.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
-class HomeBloc extends Bloc<HomeEvent, HomeState> {
+class HomeBloc extends Bloc<HomeEvent, IHomeState> {
   final AppRepository appRepo;
 
   HomeBloc({required this.appRepo})
-      : super(HomeState(analysisYear: DateTime.now().year)) {
+      : super(const HomeLoadingState()) {
     on<HomeInitializationEvent>(_onStartHandler);
     on<HomeAnalysisDateChangeEvent>(_onHandleAnalysisDateChange);
   }
 
-  void _onStartHandler(HomeEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(transactions: []));
+  void _onStartHandler(HomeEvent event, Emitter<IHomeState> emit) async {
+    emit(const HomeLoadingState());
+
     DateTime date = DateTime.now();
     var yearAndMonth = DateFormat("yyyy-MM").format(date);
-    emit(state.copyWith(loadingState: DataLoading.pending));
-    var expenditures =
-        await appRepo.getAmountSpentEachMonth("${state.analysisYear}");
+
+    var expenditures = await appRepo.getAmountSpentEachMonth("${date.year}");
     var financials = await appRepo.getFinancials(yearAndMonth);
     var transactions = await appRepo.getBillAt(date, 3);
     var firstRecordYear = await appRepo.getYearOfFirstInsert();
-    emit(state.copyWith(
-      loadingState: DataLoading.done,
-        firstEverRecordYear: firstRecordYear,
-        monthSpending: expenditures,
-        transactions: transactions,
-        financials: financials));
+
+    var newState = HomeSuccessFetchState(
+      currentFinancials: financials,
+      monthExpenditures: expenditures,
+      transactionsToday: transactions,
+      firstEverRecordYear: firstRecordYear,
+    );
+
+    emit(newState);
   }
 
   void _onHandleAnalysisDateChange(
-      HomeAnalysisDateChangeEvent event, Emitter<HomeState> e) async {
+    HomeAnalysisDateChangeEvent event,
+    Emitter<IHomeState> emit,
+  ) async {
+
     var record = await appRepo.getAmountSpentEachMonth('${event.year}');
-    e(state.copyWith(monthSpending: record, analysisYear: event.year));
+
+    var oldState = state as HomeSuccessFetchState;
+
+    emit(oldState.copyWith(monthSpending: record));
   }
 }
