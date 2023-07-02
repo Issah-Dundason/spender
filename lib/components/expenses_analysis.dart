@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../bloc/stats/statistics.dart';
 import '../pages/pie_chart_page.dart';
-import '../repository/expenditure_repo.dart';
-import '../service/database.dart';
 
 const optionsRep = ['Current Month', 'Current Year', 'Last Year', 'Overall'];
 
-extension on FilterOptions {
-  get name => optionsRep[index];
-}
 
 class ExpenseAnalysisSection extends StatefulWidget {
   const ExpenseAnalysisSection({
@@ -23,7 +17,7 @@ class ExpenseAnalysisSection extends StatefulWidget {
 }
 
 class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
-  FilterOptions _options = FilterOptions.currentMonth;
+  StatisticsFilterOption _options = StatisticsFilterOption.currentMonth;
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +30,11 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              DropdownButton<FilterOptions>(
+              DropdownButton<StatisticsFilterOption>(
                   value: _options,
                   underline: Container(),
-                  items: FilterOptions.values
-                      .map((e) => DropdownMenuItem<FilterOptions>(
+                  items: StatisticsFilterOption.values
+                      .map((e) => DropdownMenuItem<StatisticsFilterOption>(
                             value: e,
                             child: Text(e.name),
                           ))
@@ -66,22 +60,17 @@ class _ExpenseAnalysisSectionState extends State<ExpenseAnalysisSection> {
   }
 
   void showPieChart() async {
-    var repo = context.read<AppRepository>();
-    late List<PieData> pieData;
+    if (!mounted) return;
 
-   pieData = await getPieData(repo, _options);
-
-    if(!mounted) return;
-
-    context.read<StatsBloc>().add(FilterChangeEvent(_options));
+    context.read<StatisticsBloc>().add(StatisticsFilterChangeEvent(_options));
 
     await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => const  PieChartPage()));
+      context,
+      MaterialPageRoute(builder: (_) => const PieChartPage()),
+    );
   }
 
-  void showChart(FilterOptions? options) {
+  void showChart(StatisticsFilterOption? options) {
     if (options == null) return;
     setState(() => _options = options);
   }

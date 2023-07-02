@@ -21,16 +21,16 @@ class PieChartPage extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.background,
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
-        body: BlocBuilder<StatsBloc, StatState>(
+        body: BlocBuilder<StatisticsBloc, IStatisticsState>(
           builder: (context, state) {
 
-            if(state is Loading) {
+            if(state is StatisticsLoadingState) {
               return const Center(child: CircularProgressIndicator(),);
             }
 
-            var pieData = state.pieData;
+            var pieData = (state as StatisticsSuccessState).pieData;
 
-            return StatChart(
+            return StatisticsChart(
               pieData: pieData,
             );
           },
@@ -38,10 +38,10 @@ class PieChartPage extends StatelessWidget {
   }
 }
 
-class StatChart extends StatelessWidget {
+class StatisticsChart extends StatelessWidget {
   final List<PieData> pieData;
 
-  const StatChart({Key? key, required this.pieData}) : super(key: key);
+  const StatisticsChart({Key? key, required this.pieData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

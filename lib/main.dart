@@ -53,7 +53,7 @@ class Spender extends StatelessWidget {
                 ..add(ProfileAvatarChangeEvent(assetName: avatar))),
           BlocProvider(
               lazy: false,
-              create: (_) => StatsBloc(appRepo)..add(StartEvent())),
+              create: (_) => StatisticsBloc(appRepo)..add(StatisticsInitializationEvent())),
           BlocProvider(
               create: (_) => HomeBloc(appRepo: appRepo)
                 ..add(const HomeInitializationEvent())),
