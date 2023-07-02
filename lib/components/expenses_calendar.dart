@@ -8,7 +8,7 @@ import '../bloc/expenses/expenses_bloc.dart';
 import '../bloc/expenses/expenses_event.dart';
 import '../repository/expenditure_repo.dart';
 
-class TransactionCalendar extends StatefulWidget {
+class TransactionCalendar extends StatelessWidget {
   final CalendarFormat calendarFormat;
 
   const TransactionCalendar({
@@ -17,64 +17,40 @@ class TransactionCalendar extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<TransactionCalendar> createState() => _TransactionCalendarState();
-}
-
-class _TransactionCalendarState extends State<TransactionCalendar> {
-  DateTime selectedDay = DateTime.now();
-  int firstYear = 2012;
-
-  @override
-  void initState() {
-    context.read<ExpensesBloc>().stream.listen((state) {
-      if(state is! ExpensesSuccessfulState) {
-        return;
-      }
-
-      if(state.yearOfFirstInsert == null) {
-        return;
-      }
-
-      setState(() => firstYear = state.yearOfFirstInsert!);
-
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     var last = DateTime.now().add(const Duration(days: 2));
-    print("running");
-    return TableCalendar(
 
-      key: Key(DateTime.now().toString()),
-      onDaySelected: _onDateSelected,
-      focusedDay: selectedDay,
-      firstDay: DateTime(firstYear),
-      lastDay: last,
-      calendarFormat: widget.calendarFormat,
-      calendarBuilders: CalendarBuilders(
-        defaultBuilder: _defaultBuilder,
-        outsideBuilder: _defaultBuilder,
-      ),
-      headerStyle:
-          const HeaderStyle(formatButtonVisible: false, titleCentered: true),
-      calendarStyle: const CalendarStyle(
-        isTodayHighlighted: false,
-      ),
-    );
-  }
-
-  void _onDateSelected(DateTime date, DateTime focus) {
-    setState(() {
-      selectedDay = date;
+    return BlocBuilder<ExpensesBloc, IExpensesState>(builder: (context, state) {
+      if (state is! ExpensesSuccessfulState) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return TableCalendar(
+        onDaySelected: (selected, _) {
+          context.read<ExpensesBloc>().add(ExpensesDateChangeEvent(selected));
+        },
+        focusedDay: state.selectedDate,
+        firstDay: DateTime(state.yearOfFirstInsert ?? DateTime.now().year),
+        lastDay: last,
+        calendarFormat: calendarFormat,
+        calendarBuilders: CalendarBuilders(
+          defaultBuilder: _defaultBuilder,
+          outsideBuilder: _defaultBuilder,
+        ),
+        headerStyle:
+            const HeaderStyle(formatButtonVisible: false, titleCentered: true),
+        calendarStyle: const CalendarStyle(
+          isTodayHighlighted: false,
+        ),
+      );
     });
-    context.read<ExpensesBloc>().add(ExpensesDateChangeEvent(date));
   }
 
   Widget _defaultBuilder(
       BuildContext context, DateTime actualDate, DateTime focusDate) {
     var appRepo = context.read<AppRepository>();
+    var state = context.read<ExpensesBloc>().state as ExpensesSuccessfulState;
     String date = DateFormat('yyyy-MM-dd').format(actualDate);
 
     return FutureBuilder(
@@ -84,7 +60,7 @@ class _TransactionCalendarState extends State<TransactionCalendar> {
           width: 34,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: DateUtils.isSameDay(selectedDay, actualDate)
+            color: DateUtils.isSameDay(state.selectedDate, actualDate)
                 ? const Color(0xFFFF250c)
                 : Colors.transparent,
           ),
@@ -95,7 +71,7 @@ class _TransactionCalendarState extends State<TransactionCalendar> {
                 Text(actualDate.day.toString(),
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      color: DateUtils.isSameDay(selectedDay, actualDate)
+                      color: DateUtils.isSameDay(state.selectedDate, actualDate)
                           ? Theme.of(context).colorScheme.onSecondary
                           : Colors.black,
                     )),
@@ -108,7 +84,7 @@ class _TransactionCalendarState extends State<TransactionCalendar> {
                     radius: 5,
                     backgroundColor: snapshot.data != null &&
                             snapshot.data! &&
-                            DateUtils.isSameDay(selectedDay, actualDate)
+                            DateUtils.isSameDay(state.selectedDate, actualDate)
                         ? Colors.white
                         : Theme.of(context).colorScheme.tertiary,
                   ),

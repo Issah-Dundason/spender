@@ -88,7 +88,6 @@ class _HomeYearBtnState extends State<HomeYearBtn> {
   @override
   void initState() {
     year = DateTime.now().year;
-
     super.initState();
   }
 
@@ -120,6 +119,7 @@ class _HomeYearBtnState extends State<HomeYearBtn> {
               },
             ));
     if (!mounted || result == null) return;
+    setState(() => year = result);
     context.read<HomeBloc>().add(HomeAnalysisDateChangeEvent(result));
   }
 }
