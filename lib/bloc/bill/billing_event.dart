@@ -2,29 +2,38 @@ import '../../model/bill.dart';
 
 enum UpdateMethod { single, multiple }
 
-abstract class BillEvent {
-  const BillEvent();
+abstract class IBillEvent {
+  const IBillEvent();
 }
 
-class BillSaveEvent extends BillEvent {
+class BillSaveEvent extends IBillEvent {
   final Bill bill;
 
   const BillSaveEvent(this.bill);
 }
 
-class RecurrenceUpdateEvent extends BillEvent {
+class RecurringBillUpdateEvent extends IBillEvent {
   final String instanceDate;
   final Bill update;
   final UpdateMethod updateMethod;
 
-  RecurrenceUpdateEvent(this.instanceDate, this.update,
-      [this.updateMethod = UpdateMethod.single]);
+  RecurringBillUpdateEvent(
+    this.instanceDate,
+    this.update, [
+    this.updateMethod = UpdateMethod.single,
+  ]);
 }
 
-class NonRecurringUpdateEvent extends BillEvent {
+class NonRecurringBillUpdateEvent extends IBillEvent {
   final Bill update;
 
-  NonRecurringUpdateEvent(this.update);
+  NonRecurringBillUpdateEvent(this.update);
 }
 
-class BillInitializationEvent extends BillEvent{}
+class BillTypesFetchEvent extends IBillEvent {}
+
+class BillUpdateEvent extends IBillEvent {
+  final Bill bill;
+
+  const BillUpdateEvent(this.bill);
+}

@@ -11,12 +11,14 @@ var avatars = {
   'workerman.svg'
 };
 
-class ProfileState extends Equatable{
+class ProfileState extends Equatable {
   final String currentAvatar;
   final Set<String> optionalAvatars;
 
-  const ProfileState(
-      {this.currentAvatar = 'housewife.svg', this.optionalAvatars = const {}});
+  const ProfileState({
+    this.currentAvatar = 'housewife.svg',
+    this.optionalAvatars = const {},
+  });
 
   @override
   List<Object?> get props => [currentAvatar, optionalAvatars];

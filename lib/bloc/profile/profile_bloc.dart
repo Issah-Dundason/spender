@@ -9,7 +9,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   _onProfileAvatarChange(
-      ProfileAvatarChangeEvent e, Emitter<ProfileState> emitter) async {
+    ProfileAvatarChangeEvent e,
+    Emitter<ProfileState> emitter,
+  ) async {
+
     String currentAssetName = e.assetName;
 
     //save to shared preference
@@ -17,7 +20,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     prefs.setString("profile/avatar", currentAssetName);
 
     var newOptions = avatars.where((a) => a != currentAssetName).toSet();
+
     emitter(ProfileState(
-        currentAvatar: currentAssetName, optionalAvatars: newOptions));
+      currentAvatar: currentAssetName,
+      optionalAvatars: newOptions,
+    ));
   }
 }
