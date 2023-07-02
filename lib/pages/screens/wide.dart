@@ -236,7 +236,7 @@ class _WiderWidthViewState extends State<WiderWidthView> {
 
     if (pages.containsKey(tab)) return pages[tab]!;
 
-    return const BillView(showAppBar: false);
+    return  const BillView(showAppBar: false);
   }
 
   void onHome() {

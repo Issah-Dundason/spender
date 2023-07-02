@@ -58,15 +58,19 @@ class StatisticsSuccessState extends IStatisticsState{
   List<Object?> get props => [currentFilter, pieData];
 }
 
-abstract class StatisticsEvent {}
-
-class StatisticsFilterChangeEvent extends StatisticsEvent {
-  StatisticsFilterOption option;
-
-  StatisticsFilterChangeEvent(this.option);
+abstract class StatisticsEvent {
+  const StatisticsEvent();
 }
 
-class StatisticsInitializationEvent extends StatisticsEvent {}
+class StatisticsFilterChangeEvent extends StatisticsEvent {
+  final StatisticsFilterOption option;
+
+  const StatisticsFilterChangeEvent(this.option);
+}
+
+class StatisticsInitializationEvent extends StatisticsEvent {
+  const StatisticsInitializationEvent();
+}
 
 
 class StatisticsBloc extends Bloc<StatisticsEvent, IStatisticsState> {

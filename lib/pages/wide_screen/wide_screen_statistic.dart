@@ -13,7 +13,6 @@ class WideScreenStats extends StatelessWidget {
         if (state is StatisticsLoadingState) {
           return const CircularProgressIndicator();
         }
-
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
@@ -26,9 +25,12 @@ class WideScreenStats extends StatelessWidget {
                 children: [
                   StatButton(
                     text: 'Current Month',
-                    selected: (state as StatisticsSuccessState).currentFilter == StatisticsFilterOption.currentMonth,
+                    selected: (state as StatisticsSuccessState).currentFilter ==
+                        StatisticsFilterOption.currentMonth,
                     onTap: () {
-                      context.read<StatisticsBloc>().add(StatisticsFilterChangeEvent(StatisticsFilterOption.currentMonth));
+                      context.read<StatisticsBloc>().add(
+                          const StatisticsFilterChangeEvent(
+                              StatisticsFilterOption.currentMonth));
                     },
                   ),
                   const SizedBox(
@@ -36,9 +38,12 @@ class WideScreenStats extends StatelessWidget {
                   ),
                   StatButton(
                     text: 'Current Year',
-                    selected: state.currentFilter == StatisticsFilterOption.currentYear,
+                    selected: state.currentFilter ==
+                        StatisticsFilterOption.currentYear,
                     onTap: () {
-                      context.read<StatisticsBloc>().add(StatisticsFilterChangeEvent(StatisticsFilterOption.currentYear));
+                      context.read<StatisticsBloc>().add(
+                          const StatisticsFilterChangeEvent(
+                              StatisticsFilterOption.currentYear));
                     },
                   ),
                   const SizedBox(
@@ -46,9 +51,12 @@ class WideScreenStats extends StatelessWidget {
                   ),
                   StatButton(
                     text: 'Last Year',
-                    selected: state.currentFilter == StatisticsFilterOption.lastYear,
+                    selected:
+                        state.currentFilter == StatisticsFilterOption.lastYear,
                     onTap: () {
-                      context.read<StatisticsBloc>().add(StatisticsFilterChangeEvent(StatisticsFilterOption.lastYear));
+                      context.read<StatisticsBloc>().add(
+                          const StatisticsFilterChangeEvent(
+                              StatisticsFilterOption.lastYear));
                     },
                   ),
                   const SizedBox(
@@ -56,14 +64,19 @@ class WideScreenStats extends StatelessWidget {
                   ),
                   StatButton(
                     text: 'Overall',
-                    selected: state.currentFilter == StatisticsFilterOption.overall,
+                    selected:
+                        state.currentFilter == StatisticsFilterOption.overall,
                     onTap: () {
-                      context.read<StatisticsBloc>().add(StatisticsFilterChangeEvent(StatisticsFilterOption.overall));
+                      context.read<StatisticsBloc>().add(
+                          const StatisticsFilterChangeEvent(
+                              StatisticsFilterOption.overall));
                     },
                   ),
                 ],
               ),
-              const SizedBox(height: 30,),
+              const SizedBox(
+                height: 30,
+              ),
               Expanded(child: StatisticsChart(pieData: state.pieData))
             ],
           ),

@@ -11,6 +11,7 @@ import '../bloc/expenses/expenses_bloc.dart';
 import '../bloc/expenses/expenses_event.dart';
 import '../bloc/home/home_bloc.dart';
 import '../bloc/home/home_event.dart';
+import '../bloc/stats/statistics.dart';
 import '../components/product_dropdown.dart';
 import '../model/bill_type.dart';
 import '../model/bill.dart';
@@ -67,6 +68,14 @@ class _BillViewState extends State<BillView>
     super.initState();
   }
 
+
+  @override
+  void didUpdateWidget(BillView oldWidget) {
+    var state = context.read<BillBloc>().state;
+    billTypes = state.billTypes;
+    super.didUpdateWidget(oldWidget);
+  }
+
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery
@@ -112,6 +121,7 @@ class _BillViewState extends State<BillView>
                 if (state is BillSavedState) {
                   context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
                   context.read<HomeBloc>().add(const HomeInitializationEvent());
+                  context.read<StatisticsBloc>().add(const StatisticsInitializationEvent());
                   _showSnackBar("Entry saved");
                   _clearContent();
                 }
@@ -119,6 +129,7 @@ class _BillViewState extends State<BillView>
                 if (state is BillUpdatedState) {
                   context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
                   context.read<HomeBloc>().add(const HomeInitializationEvent());
+                  context.read<StatisticsBloc>().add(const StatisticsInitializationEvent());
                   Navigator.of(context).pop();
                 }
 
