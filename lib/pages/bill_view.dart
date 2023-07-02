@@ -55,14 +55,8 @@ class _BillViewState extends State<BillView>
 
   @override
   void initState() {
-    if(billTypes.isEmpty) {
-      print("running");
-      // context.read<BillBloc>().add(BillTypesFetchEvent());
-    }
-
-    final state = context.read<BillBloc>().state;
-
-    print(state.runtimeType.toString());
+    var state = context.read<BillBloc>().state;
+    billTypes = state.billTypes;
 
     if(state is BillUpdateState) {
       _showBillToUpdateData(state.bill);
@@ -128,13 +122,6 @@ class _BillViewState extends State<BillView>
                   Navigator.of(context).pop();
                 }
 
-                if(state is BillTypesFetchedState) {
-                  setState(() => billTypes = state.billTypes);
-                }
-
-                if (state is BillUpdateState) {
-                 _showBillToUpdateData(state.bill);
-                }
               },
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
@@ -383,24 +370,22 @@ class _BillViewState extends State<BillView>
   }
 
   void _showBillToUpdateData(Bill bill) {
+    toUpdate = bill;
     _billNameController.text = bill.title;
     _descriptionController.text = bill.description ?? "";
     var amount = AppUtils.amountPresented(bill.amount);
     _amountController.text = '$amount';
     _calculator.add('$amount');
 
-    setState(() {
-      toUpdate = bill;
-      _billType = toUpdate!.type;
-      _paymentType = toUpdate!.paymentType;
-      _priority = toUpdate!.priority;
-      _selectedRecurrence = toUpdate!.pattern;
-      _selectedDate = DateTime.parse(toUpdate!.paymentDateTime);
-      _selectedTime = TimeOfDay.fromDateTime(_selectedDate);
-      _endDate = toUpdate!.endDate != null
-          ? DateTime.parse(toUpdate!.endDate!)
-          : _endDate;
-    });
+    _billType = toUpdate!.type;
+    _paymentType = toUpdate!.paymentType;
+    _priority = toUpdate!.priority;
+    _selectedRecurrence = toUpdate!.pattern;
+    _selectedDate = DateTime.parse(toUpdate!.paymentDateTime);
+    _selectedTime = TimeOfDay.fromDateTime(_selectedDate);
+    _endDate = toUpdate!.endDate != null
+        ? DateTime.parse(toUpdate!.endDate!)
+        : _endDate;
   }
 
   String _getEndDateText() {

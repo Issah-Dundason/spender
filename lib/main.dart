@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spender/bloc/bill/bill_bloc.dart';
+import 'package:spender/bloc/bill/billing_event.dart';
 import 'package:spender/bloc/expenses/expenses_bloc.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
@@ -62,7 +63,7 @@ class Spender extends StatelessWidget {
                 StatisticsInitializationEvent(),
               ),
           ),
-          BlocProvider(create: (_) => BillBloc(appRepo: appRepo)),
+          BlocProvider(create: (_) => BillBloc(appRepo: appRepo)..add(const BillTypesFetchEvent())),
           BlocProvider(
             create: (_) => HomeBloc(appRepo: appRepo)
               ..add(const HomeInitializationEvent()),

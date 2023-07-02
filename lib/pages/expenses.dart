@@ -11,14 +11,9 @@ import '../components/expenses_analysis.dart';
 import '../components/expenses_calendar.dart';
 import '../components/expenses_transactions.dart';
 
-class ExpensesPage extends StatefulWidget {
+class ExpensesPage extends StatelessWidget {
   const ExpensesPage({Key? key}) : super(key: key);
 
-  @override
-  State<ExpensesPage> createState() => _ExpensesPageState();
-}
-
-class _ExpensesPageState extends State<ExpensesPage> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -63,8 +58,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
           Expanded(
               child: Draggable(
                 axis: Axis.horizontal,
-            
-            feedback: const Material(child: SizedBox( height: 300, child: ExpensesTransactions())),
+            feedback:  Material(child: SizedBox( height: size.height * 0.5, child: const ExpensesTransactions())),
             childWhenDragging: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: const [
@@ -75,16 +69,20 @@ class _ExpensesPageState extends State<ExpensesPage> {
             child: const ExpensesTransactions(),
             onDragEnd: (drag) {
               var bloc = context.read<ExpensesBloc>();
-              var state
-              = bloc.state as ExpensesSuccessfulState;
-              if(drag.velocity.pixelsPerSecond.dx < 0) {
+              var state = bloc.state as ExpensesSuccessfulState;
+
+              var changeInX = drag.velocity.pixelsPerSecond.dx;
+
+              if(changeInX < 0) {
                 var newDate = DateUtils.dateOnly((state).selectedDate).add(const Duration(days: 1));
                 bloc.add(ExpensesDateChangeEvent(newDate));
-                return;
               }
 
-              var newDate = DateUtils.dateOnly((state).selectedDate).subtract(const Duration(days: 1));
-              bloc.add(ExpensesDateChangeEvent(newDate));
+              if(changeInX > (size.width / 2)) {
+                var newDate = DateUtils.dateOnly((state).selectedDate).subtract(const Duration(days: 1));
+                bloc.add(ExpensesDateChangeEvent(newDate));
+              }
+
             },
           ))
         ],

@@ -8,7 +8,6 @@ import '../bloc/expenses/expenses_event.dart';
 import '../bloc/expenses/expenses_state.dart';
 import '../icons/icons.dart';
 import '../model/bill.dart';
-import '../pages/bill_view.dart';
 import 'expense_transaction_tile.dart';
 
 class ExpensesTransactions extends StatelessWidget {
@@ -17,7 +16,7 @@ class ExpensesTransactions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.9,
+      width: MediaQuery.of(context).size.width * 0.95,
       child: BlocBuilder<ExpensesBloc, IExpensesState>(
         builder: (context, state) {
           if (state is! ExpensesSuccessfulState) {
@@ -35,7 +34,7 @@ class ExpensesTransactions extends StatelessWidget {
               context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 9),
               decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.background,
                   borderRadius: const BorderRadius.only(
@@ -65,9 +64,6 @@ class ExpensesTransactions extends StatelessWidget {
   }
 
   void showUpdate(Bill bill, BuildContext context) async {
-     Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const BillView()),
-      );
      context.read<BillBloc>().add(BillUpdateEvent(bill));
   }
 }
@@ -79,8 +75,8 @@ class EmptyExpensesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20.0),
+    return Container(
+      color: Colors.transparent,
       child: Stack(
         alignment: Alignment.center,
         children: [

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/bill/bill_bloc.dart';
 
 import '../bloc/app/app_cubit.dart';
+import '../bloc/bill/billing_event.dart';
 import '../icons/icons.dart';
-import '../pages/bill_view.dart';
 
 class MainBottomAppBar extends StatelessWidget {
   const MainBottomAppBar({Key? key}) : super(key: key);
@@ -52,6 +53,6 @@ class MainBottomAppBar extends StatelessWidget {
   }
 
   void _addBill(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const BillView()));
+    context.read<BillBloc>().add(const BillCreationEvent());
   }
 }

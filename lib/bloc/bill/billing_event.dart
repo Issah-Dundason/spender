@@ -27,10 +27,16 @@ class RecurringBillUpdateEvent extends IBillEvent {
 class NonRecurringBillUpdateEvent extends IBillEvent {
   final Bill update;
 
-  NonRecurringBillUpdateEvent(this.update);
+  const NonRecurringBillUpdateEvent(this.update);
 }
 
-class BillTypesFetchEvent extends IBillEvent {}
+class BillTypesFetchEvent extends IBillEvent {
+  const BillTypesFetchEvent();
+}
+
+class BillCreationEvent extends IBillEvent {
+  const BillCreationEvent();
+}
 
 class BillUpdateEvent extends IBillEvent {
   final Bill bill;

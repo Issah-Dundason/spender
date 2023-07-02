@@ -12,46 +12,53 @@ import 'billing_state.dart';
 class BillBloc extends Bloc<IBillEvent, IBillingState> {
   final AppRepository appRepo;
 
-  BillBloc({required this.appRepo}) : super(const InitialBillingState()) {
+  BillBloc({required this.appRepo}) : super(const IdleBillingState([])) {
     on<BillSaveEvent>(_onBillSave);
     on<RecurringBillUpdateEvent>(_onRecurrenceUpdate);
     on<NonRecurringBillUpdateEvent>(_onNonRecurrenceUpdate);
     on<BillTypesFetchEvent>(_onFetchEvents);
     on<BillUpdateEvent>(_onBillUpdate);
+    on<BillCreationEvent>(_onBillCreate);
   }
 
   void _onFetchEvents(BillTypesFetchEvent e, Emitter<IBillingState> emit) async {
     var types = await appRepo.getBillTypes();
-    emit(BillTypesFetchedState(types));
+    emit(IdleBillingState(types));
   }
 
   void _onBillSave(BillSaveEvent e, Emitter<IBillingState> emit) async {
-    emit(const BillSavingState());
+    emit(BillSavingState(state.billTypes));
     await appRepo.saveBill(e.bill);
-    emit(const BillSavedState());
+    emit(BillSavedState(state.billTypes));
   }
 
   void _onBillUpdate(BillUpdateEvent e, Emitter<IBillingState> emit) {
-    emit(BillUpdateState(e.bill));
+    emit(IdleBillingState(state.billTypes));
+    emit(BillUpdateState(e.bill, state.billTypes));
   }
 
   void _onNonRecurrenceUpdate(
       NonRecurringBillUpdateEvent e, Emitter<IBillingState> emit) async {
-    emit(const BillSavingState());
+    emit(BillSavingState(state.billTypes));
     await appRepo.updateBill(e.update.id!, e.update.toNewBillJson());
-    emit(const BillUpdatedState());
+    emit(BillUpdatedState(state.billTypes));
+  }
+
+  void _onBillCreate(BillCreationEvent e, Emitter<IBillingState> emit) async {
+    emit(IdleBillingState(state.billTypes));
+    emit(BillCreateState(state.billTypes));
   }
 
   void _onRecurrenceUpdate(
       RecurringBillUpdateEvent e, Emitter<IBillingState> emit) async {
-    emit(const BillSavingState());
+    emit(BillSavingState(state.billTypes));
 
     if (e.update.isGenerated) {
       await updateGenerated(e);
     } else {
       await updateActualBillInstance(e);
     }
-    emit(const BillUpdatedState());
+    emit(BillUpdatedState(state.billTypes));
  }
 
   Future<void> updateGenerated(RecurringBillUpdateEvent e) async {
@@ -123,6 +130,4 @@ class BillBloc extends Bloc<IBillEvent, IBillingState> {
     await appRepo.updateBill(update.id!, update.toNewBillJson());
     await appRepo.deleteAllExceptionsForParent(update.id!);
   }
-
 }
-

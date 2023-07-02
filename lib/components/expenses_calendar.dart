@@ -18,7 +18,7 @@ class TransactionCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var last = DateTime.now().add(const Duration(days: 2));
+    var last = DateTime.now().add(const Duration(days: 365 * 7));
 
     return BlocBuilder<ExpensesBloc, IExpensesState>(builder: (context, state) {
       if (state is! ExpensesSuccessfulState) {

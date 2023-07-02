@@ -1,44 +1,41 @@
 import 'package:equatable/equatable.dart';
-
 import '../../model/bill.dart';
 import '../../model/bill_type.dart';
 
-enum ProcessingState { none, done, pending }
-
 abstract class IBillingState extends Equatable {
-  const IBillingState();
+  final List<BillType> billTypes;
+
+  const IBillingState(this.billTypes);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [billTypes];
 }
 
-class InitialBillingState extends IBillingState {
-  const InitialBillingState();
+class IdleBillingState extends IBillingState {
+  const IdleBillingState(super.billTypes);
 }
 
 class BillUpdateState extends IBillingState {
   final Bill bill;
 
-  const BillUpdateState(this.bill);
+  const BillUpdateState(this.bill, super.billTypes);
 
   @override
-  List<Object?> get props => [bill];
-}
-
-class BillTypesFetchedState extends IBillingState {
-  final List<BillType> billTypes;
-
-  const BillTypesFetchedState(this.billTypes);
+  List<Object?> get props => [bill, billTypes];
 }
 
 class BillSavingState extends IBillingState {
-  const BillSavingState();
+  const BillSavingState(super.billTypes);
 }
 
 class BillSavedState extends IBillingState {
-  const BillSavedState();
+  const BillSavedState(super.billTypes);
 }
 
 class BillUpdatedState extends IBillingState {
-  const BillUpdatedState();
+  const BillUpdatedState(super.billTypes);
+}
+
+class BillCreateState extends IBillingState {
+  const BillCreateState(super.billTypes);
 }
