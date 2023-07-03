@@ -52,14 +52,14 @@ class _BillViewState extends State<BillView>
 
   final _calculator = Calculator();
 
-  static final  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     var state = context.read<BillBloc>().state;
     billTypes = state.billTypes;
 
-    if(state is BillUpdateState) {
+    if (state is BillUpdateState) {
       _showBillToUpdateData(state.bill);
     }
 
@@ -67,7 +67,6 @@ class _BillViewState extends State<BillView>
         vsync: this, duration: const Duration(milliseconds: 150));
     super.initState();
   }
-
 
   @override
   void didUpdateWidget(BillView oldWidget) {
@@ -78,9 +77,7 @@ class _BillViewState extends State<BillView>
 
   @override
   Widget build(BuildContext context) {
-    var deviceSize = MediaQuery
-        .of(context)
-        .size;
+    var deviceSize = MediaQuery.of(context).size;
 
     var keysHeight = deviceSize.height * 0.48;
     var calcWidth = deviceSize.width * 0.72;
@@ -91,21 +88,15 @@ class _BillViewState extends State<BillView>
     }
 
     return Scaffold(
-      backgroundColor: Theme
-          .of(context)
-          .colorScheme
-          .background,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: widget.showAppBar
           ? AppBar(
-        centerTitle: true,
-        title: const Text('Bill'),
-        foregroundColor: Colors.black,
-        elevation: 0,
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .background,
-      )
+              centerTitle: true,
+              title: const Text('Bill'),
+              foregroundColor: Colors.black,
+              elevation: 0,
+              backgroundColor: Theme.of(context).colorScheme.background,
+            )
           : null,
       body: WillPopScope(
         onWillPop: () async {
@@ -117,22 +108,28 @@ class _BillViewState extends State<BillView>
           children: [
             BlocListener<BillBloc, IBillingState>(
               listener: (bloc, state) {
-
                 if (state is BillSavedState) {
-                  context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
+                  context
+                      .read<ExpensesBloc>()
+                      .add(const ExpensesLoadingEvent());
                   context.read<HomeBloc>().add(const HomeInitializationEvent());
-                  context.read<StatisticsBloc>().add(const StatisticsInitializationEvent());
+                  context
+                      .read<StatisticsBloc>()
+                      .add(const StatisticsInitializationEvent());
                   _showSnackBar("Entry saved");
                   _clearContent();
                 }
 
                 if (state is BillUpdatedState) {
-                  context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
+                  context
+                      .read<ExpensesBloc>()
+                      .add(const ExpensesLoadingEvent());
                   context.read<HomeBloc>().add(const HomeInitializationEvent());
-                  context.read<StatisticsBloc>().add(const StatisticsInitializationEvent());
+                  context
+                      .read<StatisticsBloc>()
+                      .add(const StatisticsInitializationEvent());
                   Navigator.of(context).pop();
                 }
-
               },
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
@@ -236,7 +233,7 @@ class _BillViewState extends State<BillView>
                                       child: TextFormField(
                                         onTap: _hideKeypad,
                                         textCapitalization:
-                                        TextCapitalization.sentences,
+                                            TextCapitalization.sentences,
                                         minLines: 2,
                                         maxLines: 4,
                                         controller: _descriptionController,
@@ -291,7 +288,8 @@ class _BillViewState extends State<BillView>
                                   child: Container(
                                     margin: const EdgeInsets.only(bottom: 20),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         BillButtonSection(
                                           alignment: CrossAxisAlignment.center,
@@ -323,14 +321,14 @@ class _BillViewState extends State<BillView>
                                     isProcessing
                                         ? const CircularProgressIndicator()
                                         : Visibility(
-                                      visible: !_showKeypad,
-                                      child: ElevatedButton(
-                                          onPressed: onSubmit,
-                                          style: _getButtonStyle(context),
-                                          child: Text(toUpdate == null
-                                              ? "ADD"
-                                              : "Update")),
-                                    ),
+                                            visible: !_showKeypad,
+                                            child: ElevatedButton(
+                                                onPressed: onSubmit,
+                                                style: _getButtonStyle(context),
+                                                child: Text(toUpdate == null
+                                                    ? "ADD"
+                                                    : "Update")),
+                                          ),
                                     const SizedBox(
                                       height: 15,
                                     )
@@ -355,10 +353,7 @@ class _BillViewState extends State<BillView>
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
-                            color: Theme
-                                .of(context)
-                                .colorScheme
-                                .background,
+                            color: Theme.of(context).colorScheme.background,
                             width: double.infinity,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -395,15 +390,14 @@ class _BillViewState extends State<BillView>
     _selectedDate = DateTime.parse(toUpdate!.paymentDateTime);
     _selectedTime = TimeOfDay.fromDateTime(_selectedDate);
 
-    if(toUpdate?.endDate != null) {
+    if (toUpdate?.endDate != null) {
       _endDate = DateTime.parse(toUpdate!.endDate!);
     }
-
   }
 
   String _getEndDateText() {
-    return DateFormat('dd MMM, yy')
-        .format(_endDate ?? _selectedDate.add(const Duration(days: 365)),
+    return DateFormat('dd MMM, yy').format(
+      _endDate ?? _selectedDate.add(const Duration(days: 365)),
     );
   }
 
@@ -423,9 +417,7 @@ class _BillViewState extends State<BillView>
       return '0 is not allowed';
     }
 
-    if (text
-        .trim()
-        .length > 10) {
+    if (text.trim().length > 10) {
       return 'can\'t contain more than 10 characters';
     }
 
@@ -470,7 +462,8 @@ class _BillViewState extends State<BillView>
       if (_selectedRecurrence == Pattern.once) {
         _endDate = null;
       } else if (toUpdate != null && !(toUpdate!.isRecurring)) {
-        _endDate = DateUtils.dateOnly(_selectedDate).add(const Duration(days: 30, hours: 23, minutes: 59));
+        _endDate = DateUtils.dateOnly(_selectedDate)
+            .add(const Duration(days: 30, hours: 23, minutes: 59));
       } else if (toUpdate?.endDate != null) {
         _endDate = DateTime.parse(toUpdate!.endDate as String);
       }
@@ -480,7 +473,7 @@ class _BillViewState extends State<BillView>
   void _onTime() async {
     _hideKeypad();
     var time =
-    await showTimePicker(context: context, initialTime: _selectedTime);
+        await showTimePicker(context: context, initialTime: _selectedTime);
     setState(() => _selectedTime = time ?? _selectedTime);
   }
 
@@ -504,12 +497,16 @@ class _BillViewState extends State<BillView>
 
       if (_selectedRecurrence == Pattern.once) return;
 
-    if( _endDate!.isBefore(_selectedDate) && toUpdate?.isRecurring != null && !(toUpdate!.isRecurring) ) {
-        var start = DateUtils.dateOnly(DateTime.parse(toUpdate!.paymentDateTime));
+      if (_endDate!.isBefore(_selectedDate) &&
+          toUpdate?.isRecurring != null &&
+          !(toUpdate!.isRecurring)) {
+        var start =
+            DateUtils.dateOnly(DateTime.parse(toUpdate!.paymentDateTime));
         var end = DateUtils.dateOnly(_endDate!);
         var days = end.difference(start).inDays;
-        _endDate = DateUtils.dateOnly(_selectedDate).add(Duration(days: days, hours: 23, minutes: 59));
-    }
+        _endDate = DateUtils.dateOnly(_selectedDate)
+            .add(Duration(days: days, hours: 23, minutes: 59));
+      }
     });
   }
 
@@ -574,10 +571,9 @@ class _BillViewState extends State<BillView>
     if (changedFields.isEmpty) {
       await showDialog(
           context: context,
-          builder: (_) =>
-          const AlertDialog(
-            content: Text('No change has been made'),
-          ));
+          builder: (_) => const AlertDialog(
+                content: Text('No change has been made'),
+              ));
       return;
     }
 
@@ -640,20 +636,14 @@ class _BillViewState extends State<BillView>
               onPressed: () => Navigator.pop(_, true),
               child: Text(
                 'Yes',
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .colorScheme
-                    .primary),
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(_, false),
               child: Text(
                 'No',
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .colorScheme
-                    .primary),
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
             )
           ],
@@ -665,10 +655,7 @@ class _BillViewState extends State<BillView>
   ButtonStyle _getButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
         minimumSize: const Size.fromHeight(55),
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .secondary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)));
   }
@@ -676,8 +663,7 @@ class _BillViewState extends State<BillView>
   void _showErrorDialog(BuildContext context) async {
     await showDialog(
         context: context,
-        builder: (_) =>
-            AlertDialog(
+        builder: (_) => AlertDialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
               title: const Text(
@@ -723,8 +709,7 @@ class _BillViewState extends State<BillView>
         firstDate: _selectedDate,
         lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
     setState(
-          () =>
-      _endDate =
+      () => _endDate =
           date?.add(const Duration(hours: 23, minutes: 59)) ?? _endDate,
     );
   }
@@ -737,7 +722,6 @@ class _BillViewState extends State<BillView>
     _animController.dispose();
     super.dispose();
   }
-
 }
 
 class BillButtonSection extends StatelessWidget {
@@ -747,12 +731,13 @@ class BillButtonSection extends StatelessWidget {
   final IconData iconData;
   final CrossAxisAlignment alignment;
 
-  const BillButtonSection({super.key,
-    required this.onTap,
-    required this.header,
-    required this.text,
-    required this.iconData,
-   this.alignment = CrossAxisAlignment.start });
+  const BillButtonSection(
+      {super.key,
+      required this.onTap,
+      required this.header,
+      required this.text,
+      required this.iconData,
+      this.alignment = CrossAxisAlignment.start});
 
   @override
   Widget build(BuildContext context) {
@@ -773,10 +758,7 @@ class BillButtonSection extends StatelessWidget {
                 Container(
                   margin: const EdgeInsets.only(left: 5),
                   decoration: BoxDecoration(
-                      color: Theme
-                          .of(context)
-                          .colorScheme
-                          .secondary,
+                      color: Theme.of(context).colorScheme.secondary,
                       borderRadius: BorderRadius.circular(7)),
                   padding: const EdgeInsets.all(5),
                   child: Icon(
