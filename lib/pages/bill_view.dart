@@ -394,9 +394,11 @@ class _BillViewState extends State<BillView>
     _selectedRecurrence = toUpdate!.pattern;
     _selectedDate = DateTime.parse(toUpdate!.paymentDateTime);
     _selectedTime = TimeOfDay.fromDateTime(_selectedDate);
-    _endDate = toUpdate!.endDate != null
-        ? DateTime.parse(toUpdate!.endDate!)
-        : _endDate;
+
+    if(toUpdate?.endDate != null) {
+      _endDate = DateTime.parse(toUpdate!.endDate!);
+    }
+
   }
 
   String _getEndDateText() {
@@ -467,16 +469,9 @@ class _BillViewState extends State<BillView>
 
       if (_selectedRecurrence == Pattern.once) {
         _endDate = null;
-        return;
-      }
-
-      if (toUpdate == null) {
-        _endDate = DateUtils.dateOnly(_selectedDate)
-            .add(const Duration(days: 30, hours: 23, minutes: 59));
-        return;
-      }
-
-      if (toUpdate?.endDate != null) {
+      } else if (toUpdate != null && !(toUpdate!.isRecurring)) {
+        _endDate = DateUtils.dateOnly(_selectedDate).add(const Duration(days: 30, hours: 23, minutes: 59));
+      } else if (toUpdate?.endDate != null) {
         _endDate = DateTime.parse(toUpdate!.endDate as String);
       }
     });
@@ -503,28 +498,18 @@ class _BillViewState extends State<BillView>
         initialDate: _selectedDate,
         firstDate: DateTime(199),
         lastDate: lastDate);
+
     setState(() {
       _selectedDate = date ?? _selectedDate;
 
       if (_selectedRecurrence == Pattern.once) return;
 
-      if (toUpdate == null) {
-        _endDate = DateUtils.dateOnly(_selectedDate)
-            .add(const Duration(days: 30, hours: 23, minutes: 59));
-        return;
-      }
-
-      if (date == null || toUpdate!.isGenerated || toUpdate?.endDate == null) {
-        return;
-      }
-
-      var start = DateUtils.dateOnly(DateTime.parse(toUpdate!.paymentDateTime));
-      var end = DateUtils.dateOnly(DateTime.parse(toUpdate!.endDate!));
-
-      var days = end.difference(start).inDays;
-
-      _endDate = DateUtils.dateOnly(_selectedDate)
-          .add(Duration(days: days, hours: 23, minutes: 59));
+    if( _endDate!.isBefore(_selectedDate) && toUpdate?.isRecurring != null && !(toUpdate!.isRecurring) ) {
+        var start = DateUtils.dateOnly(DateTime.parse(toUpdate!.paymentDateTime));
+        var end = DateUtils.dateOnly(_endDate!);
+        var days = end.difference(start).inDays;
+        _endDate = DateUtils.dateOnly(_selectedDate).add(Duration(days: days, hours: 23, minutes: 59));
+    }
     });
   }
 
@@ -734,7 +719,7 @@ class _BillViewState extends State<BillView>
   void _onEndDate() async {
     var date = await showDatePicker(
         context: context,
-        initialDate: _endDate!,
+        initialDate: _endDate ?? _selectedDate,
         firstDate: _selectedDate,
         lastDate: _selectedDate.add(const Duration(days: 365 * 7)));
     setState(
