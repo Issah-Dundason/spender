@@ -1,25 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spender/bloc/bill/billing_event.dart';
+import 'package:spender/bloc/bill/bill_bloc.dart';
 
 import '../bloc/app/app_cubit.dart';
-import '../bloc/bill/bill_bloc.dart';
-import '../bloc/expenses/expenses_bloc.dart';
-import '../bloc/expenses/expenses_event.dart';
-import '../bloc/home/home_bloc.dart';
-import '../bloc/home/home_event.dart';
+import '../bloc/bill/billing_event.dart';
 import '../icons/icons.dart';
-import '../pages/bill_view.dart';
-import '../repository/expenditure_repo.dart';
 
-class MainBottomAppBar extends StatefulWidget {
+class MainBottomAppBar extends StatelessWidget {
   const MainBottomAppBar({Key? key}) : super(key: key);
 
-  @override
-  State<MainBottomAppBar> createState() => _MainBottomAppBarState();
-}
-
-class _MainBottomAppBarState extends State<MainBottomAppBar> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppTab>(
@@ -43,7 +32,7 @@ class _MainBottomAppBarState extends State<MainBottomAppBar> {
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   child: IconButton(
                       splashRadius: 30,
-                      onPressed: _addBill,
+                      onPressed: () => _addBill(context),
                       icon: const Icon(AddIcon.icon))),
               IconButton(
                   color: state == AppTab.expenses
@@ -63,23 +52,7 @@ class _MainBottomAppBarState extends State<MainBottomAppBar> {
     );
   }
 
-  void _addBill() async {
-    await _showAddBillView();
-    if (!mounted) return;
-    context.read<ExpensesBloc>().add(const LoadEvent());
-    context.read<HomeBloc>().add(const HomeInitializationEvent());
-  }
-
-  Future<dynamic> _showAddBillView() async {
-    var appRepo = context.read<AppRepository>();
-
-    if (!mounted) return;
-
-    return Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => BlocProvider(
-            create: (_) {
-              return BillBloc(appRepo: appRepo)..add(BillInitializationEvent());
-            },
-            child: const BillView())));
+  void _addBill(BuildContext context) {
+    context.read<BillBloc>().add(const BillCreationEvent());
   }
 }

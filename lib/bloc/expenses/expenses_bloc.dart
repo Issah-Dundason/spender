@@ -9,7 +9,7 @@ import 'package:spender/util/app_utils.dart';
 
 import '../../model/bill.dart';
 
-class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
+class ExpensesBloc extends Bloc<IExpensesEvent, IExpensesState> {
   final AppRepository appRepo;
 
   final _removers = [
@@ -19,59 +19,88 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   ];
 
   ExpensesBloc({required this.appRepo})
-      : super(ExpensesState(selectedDate: DateTime.now())) {
-    on<ChangeDateEvent>(_onDateChange);
-    on<OnStartEvent>(_onStart);
-    on<LoadEvent>(_onLoad);
-    on<BillDeleteEvent>(_onDelete);
+      : super(ExpensesSuccessfulState(selectedDate: DateTime.now())) {
+    on<ExpensesDateChangeEvent>(_onDateChange);
+    on<ExpensesLoadingEvent>(_onLoad);
+    on<ExpensesBillDeleteEvent>(_onDelete);
   }
 
-  void _onDateChange(ChangeDateEvent e, Emitter<ExpensesState> emitter) async {
-    emitter(state.copyWith(deleteState: DeleteState.none));
+  void _onDateChange(ExpensesDateChangeEvent e, Emitter<IExpensesState> emit) async {
+    emit(const ExpensesLoadingState());
+
     var date = DateFormat("yyyy-MM-dd").format(e.selectedDate);
     var expenditures = await appRepo.getAllBills(date);
-    emitter(state.copyWith(
-        selectedDate: e.selectedDate, transactions: expenditures));
-  }
-
-  void _onStart(OnStartEvent e, Emitter<ExpensesState> emitter) async {
-    emitter(state.copyWith(deleteState: DeleteState.none));
     int? year = await appRepo.getYearOfFirstInsert();
-    emitter(state.copyWith(yearOfFirstInsert: year, initialized: true));
+
+    var nextState = ExpensesSuccessfulState(
+      selectedDate: e.selectedDate,
+      yearOfFirstInsert: year,
+      transactions: expenditures,
+    );
+
+    emit(nextState);
   }
 
-  void _onLoad(ExpensesEvent e, Emitter<ExpensesState> emitter) async {
-    emitter(state.copyWith(transactions: [], deleteState: DeleteState.none));
-    var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
+  void _onLoad(IExpensesEvent e, Emitter<IExpensesState> emit) async {
+    var selectedDate = DateTime.now();
+
+    if(state is ExpensesSuccessfulState) {
+      selectedDate = (state as ExpensesSuccessfulState).selectedDate;
+    }
+
+    emit(const ExpensesLoadingState());
+
+    var date = DateFormat("yyyy-MM-dd").format(selectedDate);
     var expenditures = await appRepo.getAllBills(date);
     int? year = await appRepo.getYearOfFirstInsert();
-    emitter(
-      state.copyWith(transactions: expenditures, yearOfFirstInsert: year),
+
+    var nextState = ExpensesSuccessfulState(
+      selectedDate: selectedDate,
+      yearOfFirstInsert: year,
+      transactions: expenditures,
     );
+
+    emit(nextState);
   }
 
   int _getIndex(Bill bill) {
     return bill.isRecurring.toInt + bill.isGenerated.toInt;
   }
 
-  void _onDelete(BillDeleteEvent event, Emitter<ExpensesState> emit) async {
-    emit(state.copyWith(deleteState: DeleteState.deleting));
+  void _onDelete(ExpensesBillDeleteEvent event, Emitter<IExpensesState> emit) async {
+    var selectedDate = DateTime.now();
+
+    if(state is ExpensesSuccessfulState) {
+      selectedDate = (state as ExpensesSuccessfulState).selectedDate;
+    }
+
+    emit(const ExpensesLoadingState());
     await _removers[_getIndex(event.bill)].remove(appRepo, event);
-    var date = DateFormat("yyyy-MM-dd").format(state.selectedDate);
+    emit(const ExpensesDeletedState());
+
+    var date = DateFormat("yyyy-MM-dd").format(selectedDate);
     var expenditures = await appRepo.getAllBills(date);
-    emit(state.copyWith(deleteState: DeleteState.deleted, transactions: expenditures));
+    int? year = await appRepo.getYearOfFirstInsert();
+
+    var nextState = ExpensesSuccessfulState(
+      selectedDate: selectedDate,
+      yearOfFirstInsert: year,
+      transactions: expenditures,
+    );
+
+    emit(nextState);
   }
 }
 
 class BillRemover {
-  Future<void> remove(AppRepository repo, BillDeleteEvent event) async {
+  Future<void> remove(AppRepository repo, ExpensesBillDeleteEvent event) async {
     await repo.deleteBill(event.bill.id!);
   }
 }
 
 class RecurringBillRemover implements BillRemover {
   @override
-  Future<void> remove(AppRepository repo, BillDeleteEvent event) async {
+  Future<void> remove(AppRepository repo, ExpensesBillDeleteEvent event) async {
     if (event.method == DeleteMethod.single) {
       await _onDeleteSingle(repo, event.bill);
       return;
@@ -108,7 +137,7 @@ class RecurringBillRemover implements BillRemover {
 
 class GeneratedBillRemover implements BillRemover {
   @override
-  Future<void> remove(AppRepository repo, BillDeleteEvent event) async {
+  Future<void> remove(AppRepository repo, ExpensesBillDeleteEvent event) async {
     if (event.method == DeleteMethod.multiple) {
       await _deleteMultipleBills(repo, event.bill);
       return;
@@ -150,9 +179,9 @@ class GeneratedBillRemover implements BillRemover {
       DateTime end = await getLastDay(bill, repo);
 
       await repo.deleteParentExceptionAfterDate(
-            bill.parentId!,
-            end.toIso8601String(),
-          );
+        bill.parentId!,
+        end.toIso8601String(),
+      );
     } on UnavailableException {
       await repo.deleteBill(bill.parentId!);
       await repo.deleteAllExceptionsForParent(bill.parentId!);
@@ -160,7 +189,8 @@ class GeneratedBillRemover implements BillRemover {
   }
 
   Future<DateTime> getLastDay(Bill bill, AppRepository repo) async {
-    var lastPaymentDate = await repo.getLastEndDate(bill.parentId!, bill.paymentDateTime);
+    var lastPaymentDate =
+        await repo.getLastEndDate(bill.parentId!, bill.paymentDateTime);
     var lastDate = DateUtils.dateOnly(DateTime.parse(lastPaymentDate));
     var end = lastDate.add(const Duration(hours: 23, minutes: 59));
     return end;

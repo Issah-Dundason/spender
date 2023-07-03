@@ -25,12 +25,12 @@ void main() async {
         AppRepository repo = AppRepository(dbClient);
         return ExpensesBloc(appRepo: repo);
       },
-      act: (bloc) => bloc.add(ChangeDateEvent(DateTime.parse('2023-02-06'))),
+      act: (bloc) => bloc.add(ExpensesDateChangeEvent(DateTime.parse('2023-02-06'))),
       wait: const Duration(milliseconds: 5),
       skip: 1,
       expect: () {
         return [
-          predicate<ExpensesState>((state) {
+          predicate<ExpensesSuccessfulState>((state) {
             var bill = state.transactions[0];
             return bill.isGenerated && bill.isRecurring;
           })
@@ -44,12 +44,12 @@ void main() async {
         AppRepository repo = AppRepository(dbClient);
         return ExpensesBloc(appRepo: repo);
       },
-      act: (bloc) => bloc.add(ChangeDateEvent(DateTime.parse('2023-02-05'))),
+      act: (bloc) => bloc.add(ExpensesDateChangeEvent(DateTime.parse('2023-02-05'))),
       wait: const Duration(milliseconds: 5),
       skip: 1,
       expect: () {
         return [
-          predicate<ExpensesState>((state) {
+          predicate<ExpensesSuccessfulState>((state) {
             var bill = state.transactions[0];
             return !bill.isGenerated && bill.isRecurring;
           })
@@ -63,12 +63,12 @@ void main() async {
         AppRepository repo = AppRepository(dbClient);
         return ExpensesBloc(appRepo: repo);
       },
-      act: (bloc) => bloc.add(ChangeDateEvent(DateTime.parse('2023-02-13'))),
+      act: (bloc) => bloc.add(ExpensesDateChangeEvent(DateTime.parse('2023-02-13'))),
       wait: const Duration(milliseconds: 5),
       skip: 1,
       expect: () {
         return [
-          predicate<ExpensesState>((state) {
+          predicate<ExpensesSuccessfulState>((state) {
             var bill = state.transactions[0];
             return !bill.isGenerated &&
                 !bill.isRecurring &&
@@ -98,7 +98,7 @@ void main() async {
         },
         wait: waitTime,
         act: (bloc) {
-          bloc.add(BillDeleteEvent(bill: firstTestBill));
+          bloc.add(ExpensesBillDeleteEvent(bill: firstTestBill));
         },
         expect: verifyDeletionStateChanges,
         verify: (bloc) {
@@ -119,7 +119,7 @@ void main() async {
           var repo = AppRepository(dbClient);
           return ExpensesBloc(appRepo: repo);
         },
-        act: (bloc) => bloc.add(BillDeleteEvent(bill: secondTestBill)),
+        act: (bloc) => bloc.add(ExpensesBillDeleteEvent(bill: secondTestBill)),
         expect: verifyDeletionStateChanges,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
@@ -144,7 +144,7 @@ void main() async {
           var repo = AppRepository(dbClient);
           return ExpensesBloc(appRepo: repo);
         },
-        act: (bloc) => bloc.add(BillDeleteEvent(bill: thirdTestBill)),
+        act: (bloc) => bloc.add(ExpensesBillDeleteEvent(bill: thirdTestBill)),
         expect: verifyDeletionStateChanges,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
@@ -194,7 +194,7 @@ void main() async {
         }
       },
       act: (bloc) => bloc.add(
-        BillDeleteEvent(bill: fourthTestBill),
+        ExpensesBillDeleteEvent(bill: fourthTestBill),
       ),
     );
 
@@ -223,7 +223,7 @@ void main() async {
           expect(bills.first.amount, equals(10));
         }));
       },
-      act: (bloc) => bloc.add(BillDeleteEvent(bill: fifthTestBill)),
+      act: (bloc) => bloc.add(ExpensesBillDeleteEvent(bill: fifthTestBill)),
     );
   });
 
@@ -264,7 +264,7 @@ void main() async {
             }));
           }
         },
-        act: (bloc) => bloc.add(BillDeleteEvent(
+        act: (bloc) => bloc.add(ExpensesBillDeleteEvent(
             bill: firstTestBill, method: DeleteMethod.multiple)));
 
     blocTest('deletion of parent ensures no generated bills are returned',
@@ -287,7 +287,7 @@ void main() async {
             }));
           }
         },
-        act: (bloc) => bloc.add(BillDeleteEvent(
+        act: (bloc) => bloc.add(ExpensesBillDeleteEvent(
             bill: secondTestBill, method: DeleteMethod.multiple)));
   });
 
@@ -295,11 +295,14 @@ void main() async {
 
 verifyDeletionStateChanges() {
   return [
-    predicate<ExpensesState>((state) {
-      return state.deleteState == DeleteState.deleting;
+    predicate<IExpensesState>((state) {
+      return state is ExpensesLoadingState;
     }),
-    predicate<ExpensesState>((state) {
-      return state.deleteState == DeleteState.deleted;
+    predicate<IExpensesState>((state) {
+      return state is ExpensesDeletedState;
+    }),
+    predicate<IExpensesState>((state) {
+      return state is ExpensesSuccessfulState;
     }),
   ];
 }

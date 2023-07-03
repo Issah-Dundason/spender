@@ -17,8 +17,12 @@ class WiderScreenHome extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: () async { context.read<HomeBloc>().add(const HomeInitializationEvent()); },
-      child: BlocBuilder<HomeBloc, HomeState>(
+      child: BlocBuilder<HomeBloc, IHomeState>(
         builder: (context, state) {
+
+          if(state is HomeLoadingState) {
+            return const Center(child: CircularProgressIndicator(),);
+          }
 
           var width = MediaQuery.of(context).size.width;
           var count = 2;
@@ -34,7 +38,7 @@ class WiderScreenHome extends StatelessWidget {
                 SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      if (state.currentFinancials == null)
+                      if ((state as HomeSuccessFetchState).currentFinancials == null)
                         const Padding(
                           padding: EdgeInsets.only(top: 40.0),
                           child: Text(
@@ -72,19 +76,19 @@ class WiderScreenHome extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
+                          children: const [
+                            Text(
                               "Analytics (Amount Spent)",
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                             ),
-                            HomeYearBtn(year: state.analysisYear)
+                            HomeYearBtn()
                           ],
                         ),
                       ),
                       const SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: ChartWidget(state: state),
+                        child: ChartWidget(monthExpenditures: state.monthExpenditures),
                       ),
                       const SizedBox(height: 20)
                     ],
@@ -93,7 +97,7 @@ class WiderScreenHome extends StatelessWidget {
                  SliverToBoxAdapter(child:
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: HomeTransactions(horizontalCardsCount: count,),
+                  child: HomeTransactions(horizontalCardsCount: count, bills: state.transactionsToday,),
                 ),),
               ],
             ),

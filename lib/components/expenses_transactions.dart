@@ -1,56 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spender/bloc/bill/bill_bloc.dart';
 import 'package:spender/bloc/bill/billing_event.dart';
 
-import '../bloc/bill/bill_bloc.dart';
 import '../bloc/expenses/expenses_bloc.dart';
 import '../bloc/expenses/expenses_event.dart';
 import '../bloc/expenses/expenses_state.dart';
-import '../bloc/home/home_bloc.dart';
-import '../bloc/home/home_event.dart';
 import '../icons/icons.dart';
 import '../model/bill.dart';
-import '../pages/bill_view.dart';
-import '../repository/expenditure_repo.dart';
 import 'expense_transaction_tile.dart';
 
-class ExpensesTransactions extends StatefulWidget {
+class ExpensesTransactions extends StatelessWidget {
   const ExpensesTransactions({Key? key}) : super(key: key);
 
   @override
-  State<ExpensesTransactions> createState() => _ExpensesTransactionsState();
-}
-
-class _ExpensesTransactionsState extends State<ExpensesTransactions> {
-  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.9,
-      child: BlocBuilder<ExpensesBloc, ExpensesState>(
+      width: MediaQuery.of(context).size.width * 0.95,
+      child: BlocBuilder<ExpensesBloc, IExpensesState>(
         builder: (context, state) {
-          if (state.transactions.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Text("No Data"),
-                  Icon(
-                    Whiteboard.icon,
-                    size: 150,
-                    color: Theme.of(context).colorScheme.primary,
-                  )
-                ],
-              ),
+          if (state is! ExpensesSuccessfulState) {
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           }
+
+          if (state.transactions.isEmpty) {
+            return const EmptyExpensesWidget();
+          }
+
           return RefreshIndicator(
             onRefresh: () async {
-              context.read<ExpensesBloc>().add(const LoadEvent());
+              context.read<ExpensesBloc>().add(const ExpensesLoadingEvent());
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              decoration:  BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 9),
+              decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.background,
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(24),
@@ -60,7 +45,7 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
                   ...state.transactions.map((e) {
                     return GestureDetector(
                       behavior: HitTestBehavior.translucent,
-                      onTap: () => showUpdate(e),
+                      onTap: () => showUpdate(e, context),
                       child: EditableTransactionTile(
                         bill: e,
                         textColor: Colors.black,
@@ -78,28 +63,31 @@ class _ExpensesTransactionsState extends State<ExpensesTransactions> {
     );
   }
 
-  void showUpdate(Bill bill) async {
-    await _showAddBillView(bill);
-    notifyBlocs();
+  void showUpdate(Bill bill, BuildContext context) async {
+     context.read<BillBloc>().add(BillUpdateEvent(bill));
   }
+}
 
-  Future<dynamic> _showAddBillView(Bill bill) async {
-    var appRepo = context.read<AppRepository>();
+class EmptyExpensesWidget extends StatelessWidget {
+  const EmptyExpensesWidget({
+    super.key,
+  });
 
-    if (!mounted) return;
-
-    return Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => BlocProvider(
-            create: (_) {
-              return BillBloc(appRepo: appRepo)..add(BillInitializationEvent());
-            },
-            child: BillView(
-              bill: bill,
-            ))));
-  }
-
-  void notifyBlocs() {
-    context.read<ExpensesBloc>().add(const LoadEvent());
-    context.read<HomeBloc>().add(const HomeInitializationEvent());
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.transparent,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Text("No Data"),
+          Icon(
+            Whiteboard.icon,
+            size: 150,
+            color: Theme.of(context).colorScheme.primary,
+          )
+        ],
+      ),
+    );
   }
 }

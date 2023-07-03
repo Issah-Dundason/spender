@@ -11,6 +11,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../database/test_database.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
   late BillBlocDatabaseClient dbClient;
 
@@ -37,7 +38,7 @@ void main() {
       bloc.add(BillSaveEvent(bill));
     },
     wait: const Duration(milliseconds: 20),
-    expect: verifyStateChanges,
+    expect: verifyStateChangesForSaving,
     verify: (bloc) {
       var repo = AppRepository(dbClient);
       for (int i = 1; i <= 5; i++) {
@@ -70,9 +71,9 @@ void main() {
         act: (bloc) {
           var bill =
               firstTest.copyWith(paymentDateTime: '2023-01-28', amount: 30);
-          bloc.add(RecurrenceUpdateEvent(firstTest.paymentDateTime, bill));
+          bloc.add(RecurringBillUpdateEvent(firstTest.paymentDateTime, bill));
         },
-        expect: verifyStateChanges,
+        expect: verifyStateChangesForUpdating,
         verify: (bloc) {
           var repo = AppRepository(dbClient);
           repo.getAllBills('2023-01-28').then(expectAsync1((bills) {
@@ -93,10 +94,10 @@ void main() {
         wait: const Duration(milliseconds: 20),
         act: (bloc) {
           var bill = secondTest.copyWith(amount: 12);
-          var event = RecurrenceUpdateEvent(secondTest.paymentDateTime, bill);
+          var event = RecurringBillUpdateEvent(secondTest.paymentDateTime, bill);
           bloc.add(event);
         },
-        expect: verifyStateChanges,
+        expect: verifyStateChangesForUpdating,
         build: () {
           return BillBloc(appRepo: AppRepository(dbClient));
         },
@@ -123,9 +124,9 @@ void main() {
         var bill =
             thirdTest.copyWith(amount: 15, paymentType: PaymentType.momo);
         bloc.add(
-            RecurrenceUpdateEvent('2023-02-14', bill, UpdateMethod.multiple));
+            RecurringBillUpdateEvent('2023-02-14', bill, UpdateMethod.multiple));
       },
-      expect: verifyStateChanges,
+      expect: verifyStateChangesForUpdating,
       verify: (bloc) {
         var repo = AppRepository(dbClient);
         repo.getAllBills('2023-02-13').then(expectAsync1((bills) {
@@ -148,13 +149,24 @@ void main() {
   });
 }
 
-verifyStateChanges() {
+verifyStateChangesForSaving() {
   return [
-    predicate<BillingState>((state) {
-      return state.processingState == ProcessingState.pending;
+    predicate<IBillingState>((state) {
+      return state is BillSavingState;
     }),
-    predicate<BillingState>((state) {
-      return state.processingState == ProcessingState.done;
+    predicate<IBillingState>((state) {
+      return state is BillSavedState;
+    })
+  ];
+}
+
+verifyStateChangesForUpdating() {
+  return [
+    predicate<IBillingState>((state) {
+      return state is BillSavingState;
+    }),
+    predicate<IBillingState>((state) {
+      return state is BillUpdatedState;
     })
   ];
 }

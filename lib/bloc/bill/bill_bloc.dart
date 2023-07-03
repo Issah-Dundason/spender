@@ -9,47 +9,59 @@ import 'package:spender/service/database.dart';
 import '../../repository/expenditure_repo.dart';
 import 'billing_state.dart';
 
-class BillBloc extends Bloc<BillEvent, BillingState> {
+class BillBloc extends Bloc<IBillEvent, IBillingState> {
   final AppRepository appRepo;
 
-  BillBloc({required this.appRepo}) : super(const BillingState()) {
+  BillBloc({required this.appRepo}) : super(const IdleBillingState([])) {
     on<BillSaveEvent>(_onBillSave);
-    on<RecurrenceUpdateEvent>(_onRecurrenceUpdate);
-    on<NonRecurringUpdateEvent>(_onNonRecurrenceUpdate);
-    on<BillInitializationEvent>(_onInit);
+    on<RecurringBillUpdateEvent>(_onRecurrenceUpdate);
+    on<NonRecurringBillUpdateEvent>(_onNonRecurrenceUpdate);
+    on<BillTypesFetchEvent>(_onFetchEvents);
+    on<BillUpdateEvent>(_onBillUpdate);
+    on<BillCreationEvent>(_onBillCreate);
   }
 
-  void _onInit(BillInitializationEvent e, Emitter<BillingState> emitter) async {
+  void _onFetchEvents(BillTypesFetchEvent e, Emitter<IBillingState> emit) async {
     var types = await appRepo.getBillTypes();
-    emitter(state.copyWith(billTypes: types));
+    emit(IdleBillingState(types));
   }
 
-  void _onBillSave(BillSaveEvent e, Emitter<BillingState> emitter) async {
-    emitter(state.copyWith(processingState: ProcessingState.pending));
+  void _onBillSave(BillSaveEvent e, Emitter<IBillingState> emit) async {
+    emit(BillSavingState(state.billTypes));
     await appRepo.saveBill(e.bill);
-    emitter(state.copyWith(processingState: ProcessingState.done));
+    emit(BillSavedState(state.billTypes));
+  }
+
+  void _onBillUpdate(BillUpdateEvent e, Emitter<IBillingState> emit) {
+    emit(IdleBillingState(state.billTypes));
+    emit(BillUpdateState(e.bill, state.billTypes));
   }
 
   void _onNonRecurrenceUpdate(
-      NonRecurringUpdateEvent e, Emitter<BillingState> emitter) async {
-    emitter(state.copyWith(processingState: ProcessingState.pending));
+      NonRecurringBillUpdateEvent e, Emitter<IBillingState> emit) async {
+    emit(BillSavingState(state.billTypes));
     await appRepo.updateBill(e.update.id!, e.update.toNewBillJson());
-    emitter(state.copyWith(processingState: ProcessingState.done));
+    emit(BillUpdatedState(state.billTypes));
+  }
+
+  void _onBillCreate(BillCreationEvent e, Emitter<IBillingState> emit) async {
+    emit(IdleBillingState(state.billTypes));
+    emit(BillCreateState(state.billTypes));
   }
 
   void _onRecurrenceUpdate(
-      RecurrenceUpdateEvent e, Emitter<BillingState> emitter) async {
-    emitter(state.copyWith(processingState: ProcessingState.pending));
+      RecurringBillUpdateEvent e, Emitter<IBillingState> emit) async {
+    emit(BillSavingState(state.billTypes));
 
     if (e.update.isGenerated) {
       await updateGenerated(e);
     } else {
       await updateActualBillInstance(e);
     }
-    emitter(state.copyWith(processingState: ProcessingState.done));
+    emit(BillUpdatedState(state.billTypes));
  }
 
-  Future<void> updateGenerated(RecurrenceUpdateEvent e) async {
+  Future<void> updateGenerated(RecurringBillUpdateEvent e) async {
     if(e.updateMethod == UpdateMethod.single) {
       await updateSingleGeneratedInstance(e.instanceDate, e.update);
       return;
@@ -57,7 +69,7 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     await updateMultipleGeneratedInstance(e.instanceDate, e.update);
   }
 
-  Future<void> updateActualBillInstance(RecurrenceUpdateEvent e) async {
+  Future<void> updateActualBillInstance(RecurringBillUpdateEvent e) async {
     if(e.updateMethod == UpdateMethod.single) {
       await updateSingleInstance(e.instanceDate, e.update);
       return;
@@ -118,6 +130,4 @@ class BillBloc extends Bloc<BillEvent, BillingState> {
     await appRepo.updateBill(update.id!, update.toNewBillJson());
     await appRepo.deleteAllExceptionsForParent(update.id!);
   }
-
 }
-

@@ -33,7 +33,7 @@ class AppRepository {
     return _dbClient.didTransactionOccurOnDay(day);
   }
 
-  Future<Financials?> getFinancials(String date) {
+  Future<FinancialData?> getFinancials(String date) {
     return _dbClient.getFinancials(date);
   }
 

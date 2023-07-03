@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -13,54 +11,15 @@ import '../components/expenses_analysis.dart';
 import '../components/expenses_calendar.dart';
 import '../components/expenses_transactions.dart';
 
-class ExpensesPage extends StatefulWidget {
+class ExpensesPage extends StatelessWidget {
   const ExpensesPage({Key? key}) : super(key: key);
-
-  @override
-  State<ExpensesPage> createState() => _ExpensesPageState();
-}
-
-class _ExpensesPageState extends State<ExpensesPage> {
-  final PageController _pageController = PageController();
-  int _pageCount = 0;
-  late DateTime _startDate;
-  late StreamSubscription _subscription;
-
-  @override
-  void initState() {
-    _subscription =
-        context.read<ExpensesBloc>().stream.listen(onExpensesChange);
-    super.initState();
-  }
-
-  void onExpensesChange(state) {
-    var start = state.yearOfFirstInsert == null
-        ? DateUtils.dateOnly(DateTime(DateTime.now().year))
-        : DateUtils.dateOnly(DateTime(state.yearOfFirstInsert!));
-
-    var end =
-        DateUtils.dateOnly(DateTime.now()).add(const Duration(days: 365 * 7));
-
-    int days = end.difference(start).inDays;
-
-    var current =
-        DateUtils.dateOnly(state.selectedDate).difference(start).inDays;
-
-    setState(() {
-      _pageCount = days + 1;
-      _startDate = start;
-      Future.delayed(Duration.zero, () {
-        _pageController.jumpToPage(current);
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return BlocListener<ExpensesBloc, ExpensesState>(
+    return BlocListener<ExpensesBloc, IExpensesState>(
       listener: (context, state) {
-        if (state.deleteState == DeleteState.deleted) {
+        if (state is ExpensesDeletedState) {
           context.read<HomeBloc>().add(const HomeInitializationEvent());
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text('deleted!')));
@@ -71,79 +30,63 @@ class _ExpensesPageState extends State<ExpensesPage> {
           Align(
             alignment: Alignment.center,
             child: SizedBox(
-                width: size.width * 0.9,
-                child: BlocBuilder<ExpensesBloc, ExpensesState>(
-                  builder: (context, state) {
-                    if (state.yearOfFirstInsert == null && !state.initialized) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    return TransactionCalendar(
-                        selectedDay: state.selectedDate,
-                        firstYear:
-                            state.yearOfFirstInsert ?? DateTime.now().year,
-                        onDateSelected: (date, focus) {
-                          context
-                              .read<ExpensesBloc>()
-                              .add(ChangeDateEvent(date));
-                        });
-                  },
-                )),
+                width: size.width * 0.9, child: const TransactionCalendar()),
           ),
           const ExpansionTile(
             title: Text('Statistics'),
             children: [ExpenseAnalysisSection()],
           ),
-          const SizedBox(
-            height: 5,
-          ),
+          const SizedBox(height: 5),
           Align(
             alignment: Alignment.center,
             child: SizedBox(
                 width: size.width * 0.9,
-                child: BlocBuilder<ExpensesBloc, ExpensesState>(
+                child: BlocBuilder<ExpensesBloc, IExpensesState>(
                     builder: (context, state) {
+                  if (state is! ExpensesSuccessfulState) {
+                    return const Text("...");
+                  }
+
                   var date =
                       DateFormat("yyyy-MM-dd").format(state.selectedDate);
+
                   return Text('Transactions on $date',
                       style: const TextStyle(fontSize: 16));
                 })),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Expanded(
-              child: PageView.builder(
-            controller: _pageController,
-            itemCount: _pageCount,
-            onPageChanged: (i) {
-              var nextDate = _startDate.add(Duration(days: i));
+              child: Draggable(
+                axis: Axis.horizontal,
+            feedback:  Material(child: SizedBox( height: size.height * 0.5, child: const ExpensesTransactions())),
+            childWhenDragging: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: const [
+                Icon(Icons.keyboard_double_arrow_left, size: 24,),
+                Icon(Icons.keyboard_double_arrow_right, size: 24,),
+              ],
+            ),
+            child: const ExpensesTransactions(),
+            onDragEnd: (drag) {
               var bloc = context.read<ExpensesBloc>();
-              if (DateUtils.isSameDay(bloc.state.selectedDate, nextDate)) {
-                return;
+              var state = bloc.state as ExpensesSuccessfulState;
+
+              var changeInX = drag.velocity.pixelsPerSecond.dx;
+
+              if(changeInX < 0) {
+                var newDate = DateUtils.dateOnly((state).selectedDate).add(const Duration(days: 1));
+                bloc.add(ExpensesDateChangeEvent(newDate));
               }
-              bloc.add(ChangeDateEvent(nextDate));
-            },
-            itemBuilder: (_, i) {
-              return const ExpensesTransactions();
+
+              if(changeInX > (size.width / 2)) {
+                var newDate = DateUtils.dateOnly((state).selectedDate).subtract(const Duration(days: 1));
+                bloc.add(ExpensesDateChangeEvent(newDate));
+              }
+
             },
           ))
         ],
       ),
     );
-  }
-
-  @override
-  void didUpdateWidget(covariant ExpensesPage oldWidget) {
-    _subscription.cancel();
-    _subscription =
-        context.read<ExpensesBloc>().stream.listen(onExpensesChange);
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    _subscription.cancel();
-    super.dispose();
   }
 }

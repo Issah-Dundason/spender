@@ -48,7 +48,7 @@ class DatabaseClient {
   }
 
 
-  Future<Financials?> getFinancials(String date) async {
+  Future<FinancialData?> getFinancials(String date) async {
 
     var year = date.split('-')[0];
     var now = DateTime.now().toIso8601String();
@@ -61,7 +61,7 @@ class DatabaseClient {
       return null;
     }
 
-    return Financials.fromMap(queryResult[0]);
+    return FinancialData.fromMap(queryResult[0]);
   }
 
   Future saveBudget(Budget budget) async {
@@ -291,14 +291,14 @@ class PieData extends Equatable {
   List<Object?> get props => [amount, billType];
 }
 
-class Financials extends Equatable {
+class FinancialData extends Equatable {
   final int budget;
   final int balance;
   final int amountSpent;
 
-  const Financials(this.budget, this.balance, this.amountSpent);
+  const FinancialData(this.budget, this.balance, this.amountSpent);
 
-  Financials.fromMap(Map<String, dynamic> map)
+  FinancialData.fromMap(Map<String, dynamic> map)
       : budget = map["budget"],
         balance = map["balance"],
         amountSpent = map["amount_spent"];

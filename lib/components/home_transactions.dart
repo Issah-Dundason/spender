@@ -9,63 +9,59 @@ import 'package:spender/model/bill.dart';
 
 import '../bloc/app/app_cubit.dart';
 import '../bloc/expenses/expenses_bloc.dart';
-import '../bloc/home/home_bloc.dart';
 import '../util/app_utils.dart';
 
 class HomeTransactions extends StatelessWidget {
   final int horizontalCardsCount;
+  final List<Bill> bills;
 
-  const HomeTransactions({Key? key, this.horizontalCardsCount = 1}) : super(key: key);
+  const HomeTransactions({Key? key, this.horizontalCardsCount = 1, this.bills = const <Bill>[]}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeBloc, HomeState>(
-      builder: (context, state) {
-        return Column(
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Transactions",
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w500)),
-                TextButton(
-                    onPressed: () {
-                      context.read<AppCubit>().currentState = AppTab.expenses;
-                      context.read<ExpensesBloc>().add(ChangeDateEvent(DateTime.now()));
-                    },
-                    child: Text(
-                      "View All",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.tertiary),
-                    )),
-              ],
-            ),
-            if (state.transactionsToday.isEmpty)
-              const _NoTransaction()
-            else
-              GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: horizontalCardsCount, mainAxisExtent: 90,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 15),
-                itemCount: state.transactionsToday.length,
-                itemBuilder: (BuildContext context, int index) {
-                var t = state.transactionsToday[index];
-                 return GestureDetector(
-                   onTap: () => _onTransactionTap(context, t),
-                   child: TransactionTile(
-                     image: t.type.image,
-                     bill: t.title,
-                     type: t.paymentType.name,
-                     amount: AppUtils.amountPresented(t.amount),
-                     date: t.formattedDate,
-                   ),
-                 );
-                },)
+            const Text("Transactions",
+                style: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w500)),
+            TextButton(
+                onPressed: () {
+                  context.read<AppCubit>().currentState = AppTab.expenses;
+                  context.read<ExpensesBloc>().add(ExpensesDateChangeEvent(DateTime.now()));
+                },
+                child: Text(
+                  "View All",
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.tertiary),
+                )),
           ],
-        );
-      },
+        ),
+        if (bills.isEmpty)
+          const _NoTransaction()
+        else
+          GridView.builder(
+            shrinkWrap: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: horizontalCardsCount, mainAxisExtent: 90,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 15),
+            itemCount: bills.length,
+            itemBuilder: (BuildContext context, int index) {
+              var t = bills[index];
+              return GestureDetector(
+                onTap: () => _onTransactionTap(context, t),
+                child: TransactionTile(
+                  image: t.type.image,
+                  bill: t.title,
+                  type: t.paymentType.name,
+                  amount: AppUtils.amountPresented(t.amount),
+                  date: t.formattedDate,
+                ),
+              );
+            },)
+      ],
     );
   }
 

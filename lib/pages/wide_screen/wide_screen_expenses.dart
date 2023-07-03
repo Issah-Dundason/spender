@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:spender/bloc/bill/bill_bloc.dart';
+import 'package:spender/pages/bill_view.dart';
 
-import '../../bloc/expenses/expenses_bloc.dart';
-import '../../bloc/expenses/expenses_event.dart';
-import '../../bloc/expenses/expenses_state.dart';
+import '../../bloc/bill/billing_state.dart';
 import '../../components/expenses_calendar.dart';
 import '../../components/expenses_transactions.dart';
 
@@ -13,49 +12,35 @@ class WiderScreenExpenses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).colorScheme.background,
-      child: Row(
-        children: [
-           Flexible(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: BlocBuilder<ExpensesBloc, ExpensesState>(
-                builder: (context, state) {
-                  return const ExpensesTransactions();
-                },
+    return BlocListener<BillBloc, IBillingState>(
+      listener: (context, state) {
+        if(state is BillUpdateState) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const BillView()));
+        }
+      },
+      child: Container(
+        color: Theme.of(context).colorScheme.background,
+        child: Row(
+          children: [
+            const Flexible(
+              flex: 3,
+              child: Padding(
+                padding: EdgeInsets.only(top: 15.0),
+                child: ExpensesTransactions(),
               ),
             ),
-          ),
-          Flexible(
-              flex: 2,
-              child: ListView(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: BlocBuilder<ExpensesBloc, ExpensesState>(
-                      builder: (context, state) {
-                        if (state.yearOfFirstInsert == null &&
-                            !state.initialized) {
-                          return const CircularProgressIndicator();
-                        }
-                        return TransactionCalendar(
-                            selectedDay: state.selectedDate,
-                            calendarFormat: CalendarFormat.month,
-                            firstYear:
-                                state.yearOfFirstInsert ?? DateTime.now().year,
-                            onDateSelected: (date, focus) {
-                              context
-                                  .read<ExpensesBloc>()
-                                  .add(ChangeDateEvent(date));
-                            });
-                      },
-                    ),
-                  )
-                ],
-              ))
-        ],
+            Flexible(
+                flex: 2,
+                child: ListView(
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: TransactionCalendar(),
+                    )
+                  ],
+                ))
+          ],
+        ),
       ),
     );
   }

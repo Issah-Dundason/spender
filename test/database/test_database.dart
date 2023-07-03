@@ -1,4 +1,3 @@
-import 'package:path_provider/path_provider.dart';
 import 'package:spender/model/bill.dart';
 import 'package:spender/model/bill_type.dart';
 import 'package:spender/repository/expenditure_repo.dart';
@@ -8,8 +7,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class ExpensesBlocDatabaseClient extends DatabaseClient {
-  static const String _databaseName = "spenderExpensesBlocTest.app";
-
   //add types before saving
   var testJson = [
     {
@@ -121,8 +118,7 @@ class ExpensesBlocDatabaseClient extends DatabaseClient {
   }
 
   Future<void> _openDatabase() async {
-    var dir = await getApplicationDocumentsDirectory();
-    db = await databaseFactoryFfi.openDatabase("${dir.path}/$_databaseName");
+    db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
     await _create(db);
   }
 
@@ -160,10 +156,7 @@ class ExpensesBlocDatabaseClient extends DatabaseClient {
 }
 
 class BillBlocDatabaseClient extends DatabaseClient {
-  static const String _databaseName = "spenderBillBlocTest.app";
-
   late List<BillType> billTypes;
-
   //add types before saving
   var testJson = [
     //for updating generated bill
@@ -195,8 +188,7 @@ class BillBlocDatabaseClient extends DatabaseClient {
   }
 
   Future<void> _openDatabase() async {
-    var dir = await getApplicationDocumentsDirectory();
-    db = await databaseFactoryFfi.openDatabase("${dir.path}/$_databaseName");
+    db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
     await _create(db);
   }
 

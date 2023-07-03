@@ -9,14 +9,9 @@ import '../components/home_chart.dart';
 import '../components/home_transactions.dart';
 import '../components/year_picker_dialog.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -26,72 +21,76 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: ListView(
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              BlocBuilder<HomeBloc, HomeState>(
-                builder: (context, state) {
-                  var width = MediaQuery.of(context).size.width;
-                  if (state.loadingState == DataLoading.pending) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (state.currentFinancials != null) {
-                    return Align(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: BlocBuilder<HomeBloc, IHomeState>(
+              builder: (context, state) {
+                var width = MediaQuery.of(context).size.width;
+
+                if (state is HomeLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                var currentState = state as HomeSuccessFetchState;
+
+                return ListView(
+                  children: [
+                    const SizedBox(height: 20,),
+                    if (state.currentFinancials != null)
+                      Align(
                         child: SizedBox(
                             width: width * 0.8,
                             child: TotalBudgetCard(
-                              financials: state.currentFinancials!,
+                              financialsData: state.currentFinancials!,
                               backgroundImageWidth: width * 0.68,
-                            )));
-                  }
-                  return const NoBudgetWidget();
-                },
-              ),
-              const SizedBox(
-                height: 60,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Analytics (Amount Spent)",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  BlocBuilder<HomeBloc, HomeState>(
-                    builder: (context, state) {
-                      return HomeYearBtn(year: state.analysisYear);
-                    },
-                  )
-                ],
-              ),
-              const SizedBox(height: 20),
-              BlocBuilder<HomeBloc, HomeState>(
-                  builder: (context, state) => ChartWidget(
-                        state: state,
-                      )),
-              const SizedBox(height: 20),
-              const HomeTransactions()
-            ],
-          ),
-        ),
+                            )),
+                      ),
+                    if (state.currentFinancials == null) const NoBudgetWidget(),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          "Analytics (Amount Spent)",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                        HomeYearBtn()
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    ChartWidget(
+                      monthExpenditures: currentState.monthExpenditures,
+                    ),
+                    const SizedBox(height: 20),
+                    HomeTransactions(
+                      bills: currentState.transactionsToday,
+                    )
+                  ],
+                );
+              },
+            )),
       ),
     );
   }
 }
 
 class HomeYearBtn extends StatefulWidget {
-  final int year;
-
-  const HomeYearBtn({Key? key, required this.year}) : super(key: key);
+  const HomeYearBtn({Key? key}) : super(key: key);
 
   @override
   State<HomeYearBtn> createState() => _HomeYearBtnState();
 }
 
 class _HomeYearBtnState extends State<HomeYearBtn> {
+  late int year;
+
+  @override
+  void initState() {
+    year = DateTime.now().year;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -100,19 +99,19 @@ class _HomeYearBtnState extends State<HomeYearBtn> {
           backgroundColor: Theme.of(context).colorScheme.secondary,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(08))),
-      child: Text("Year-${widget.year}"),
+      child: Text("Year-$year"),
     );
   }
 
   void _handleDialogPressed() async {
-    var state = context.read<HomeBloc>().state;
+    var state = context.read<HomeBloc>().state as HomeSuccessFetchState;
     DateTime firstYear = state.firstEverRecordYear != null
         ? DateTime(state.firstEverRecordYear!)
         : DateTime.now();
     var result = await showDialog(
         context: context,
         builder: (_) => YearPickerDialog(
-              selectedDate: DateTime(state.analysisYear),
+              selectedDate: DateTime(year),
               firstDate: firstYear,
               lastDate: DateTime.now(),
               onChange: (t) {
@@ -120,6 +119,7 @@ class _HomeYearBtnState extends State<HomeYearBtn> {
               },
             ));
     if (!mounted || result == null) return;
+    setState(() => year = result);
     context.read<HomeBloc>().add(HomeAnalysisDateChangeEvent(result));
   }
 }

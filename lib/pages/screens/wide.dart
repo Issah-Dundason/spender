@@ -3,14 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spender/pages/wide_screen/wide_screen_statistic.dart';
 
 import '../../bloc/app/app_cubit.dart';
-import '../../bloc/bill/bill_bloc.dart';
-import '../../bloc/bill/billing_event.dart';
 import '../../bloc/home/home_bloc.dart';
 import '../../bloc/home/home_event.dart';
 import '../../bloc/profile/profile_bloc.dart';
 import '../../components/appbar.dart';
 import '../../icons/icons.dart';
-import '../../repository/expenditure_repo.dart';
 import '../bill_view.dart';
 import '../profile_page.dart';
 import '../wide_screen/wide_screen_expenses.dart';
@@ -239,12 +236,7 @@ class _WiderWidthViewState extends State<WiderWidthView> {
 
     if (pages.containsKey(tab)) return pages[tab]!;
 
-    var repo = context.read<AppRepository>();
-    return BlocProvider(
-        create: (_) => BillBloc(appRepo: repo)..add(BillInitializationEvent()),
-        child: const BillView(
-          showAppBar: false,
-        ));
+    return  const BillView(showAppBar: false);
   }
 
   void onHome() {

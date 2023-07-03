@@ -14,8 +14,13 @@ class BudgetTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BudgetReviewBloc, BudgetReviewState>(
+    return BlocBuilder<BudgetReviewBloc, IBudgetDataState>(
       builder: (context, state) {
+
+        if(state is! BudgetDataFetchedState) {
+          return const Center(child: CircularProgressIndicator(),);
+        }
+
         return SizedBox(
           width: double.infinity,
           child: DataTable(columns: const [

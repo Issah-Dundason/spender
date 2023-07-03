@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spender/bloc/bill/bill_bloc.dart';
+import 'package:spender/bloc/bill/billing_event.dart';
 import 'package:spender/bloc/expenses/expenses_bloc.dart';
 import 'package:spender/bloc/expenses/expenses_event.dart';
 import 'package:spender/bloc/home/home_bloc.dart';
@@ -49,30 +51,35 @@ class Spender extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-              create: (_) => ProfileBloc()
-                ..add(ProfileAvatarChangeEvent(assetName: avatar))),
+            create: (_) => ProfileBloc()
+              ..add(
+                ProfileAvatarChangeEvent(assetName: avatar),
+              ),
+          ),
           BlocProvider(
-              lazy: false,
-              create: (_) => StatsBloc(appRepo)..add(StartEvent())
-          )
+            lazy: false,
+            create: (_) => StatisticsBloc(appRepo)
+              ..add(
+                StatisticsInitializationEvent(),
+              ),
+          ),
+          BlocProvider(create: (_) => BillBloc(appRepo: appRepo)..add(const BillTypesFetchEvent())),
+          BlocProvider(
+            create: (_) => HomeBloc(appRepo: appRepo)
+              ..add(const HomeInitializationEvent()),
+          ),
+          BlocProvider(create: (_) => AppCubit()),
+          BlocProvider(
+            lazy: false,
+            create: (_) => ExpensesBloc(appRepo: appRepo)
+              ..add(const ExpensesLoadingEvent()),
+          ),
         ],
         child: MaterialApp(
-            theme: AppTheme.lightTheme,
-            debugShowCheckedModeBanner: false,
-            home: MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                    create: (_) => HomeBloc(appRepo: appRepo)
-                      ..add(const HomeInitializationEvent())),
-                BlocProvider(create: (_) => AppCubit()),
-                BlocProvider(
-                    lazy: false,
-                    create: (_) => ExpensesBloc(appRepo: appRepo)
-                      ..add(const OnStartEvent())
-                      ..add(const LoadEvent())),
-              ],
-              child: const AppView(),
-            )),
+          theme: AppTheme.lightTheme,
+          debugShowCheckedModeBanner: false,
+          home: const AppView(),
+        ),
       ),
     );
   }

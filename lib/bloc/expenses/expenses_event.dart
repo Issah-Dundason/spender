@@ -1,22 +1,22 @@
 
 import '../../model/bill.dart';
 
-abstract class ExpensesEvent {
-  const ExpensesEvent();
+abstract class IExpensesEvent {
+  const IExpensesEvent();
 }
 
-class ChangeDateEvent extends ExpensesEvent {
+class ExpensesDateChangeEvent extends IExpensesEvent {
   final DateTime selectedDate;
 
-  ChangeDateEvent(this.selectedDate);
+  ExpensesDateChangeEvent(this.selectedDate);
 }
 
-class OnStartEvent extends ExpensesEvent {
-  const OnStartEvent();
+class ExpensesInitialization extends IExpensesEvent {
+  const ExpensesInitialization();
 }
 
-class LoadEvent extends ExpensesEvent {
-  const LoadEvent();
+class ExpensesLoadingEvent extends IExpensesEvent {
+  const ExpensesLoadingEvent();
 }
 
 enum DeleteMethod {
@@ -24,11 +24,11 @@ enum DeleteMethod {
   multiple
 }
 
-class BillDeleteEvent extends ExpensesEvent {
+class ExpensesBillDeleteEvent extends IExpensesEvent {
  final DeleteMethod method;
  final Bill bill;
 
- BillDeleteEvent({this.method = DeleteMethod.single, required this.bill});
+ ExpensesBillDeleteEvent({this.method = DeleteMethod.single, required this.bill});
 }
 
 
